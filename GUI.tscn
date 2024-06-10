@@ -1,0 +1,432 @@
+[gd_scene load_steps=15 format=3 uid="uid://e6mmj1a8sstd"]
+
+[ext_resource type="Script" path="res://OverEasyMaster.cs" id="1_pe8jw"]
+[ext_resource type="Script" path="res://FileButton.cs" id="1_w33wv"]
+[ext_resource type="Script" path="res://SetDataTree.cs" id="2_objna"]
+[ext_resource type="Script" path="res://SetDataTreeButton.cs" id="4_6llyt"]
+[ext_resource type="Script" path="res://ObjectEditors/StringSchema.cs" id="5_kge3j"]
+[ext_resource type="Script" path="res://ObjectScrollContainerButton.cs" id="5_nw6mg"]
+[ext_resource type="Script" path="res://ObjectScrollContainer.cs" id="5_nwqhc"]
+[ext_resource type="Script" path="res://ObjectEditors/IntSchema.cs" id="6_w3oxx"]
+[ext_resource type="Script" path="res://ObjectEditors/FloatSchema.cs" id="7_hvdad"]
+[ext_resource type="Script" path="res://ObjectEditors/ColorSchema.cs" id="8_orrkn"]
+[ext_resource type="Script" path="res://ObjectEditors/Vector2Schema.cs" id="9_w8md7"]
+[ext_resource type="Script" path="res://ObjectEditors/Vector3Schema.cs" id="10_txxg7"]
+[ext_resource type="Script" path="res://ObjectEditors/Vector4Schema.cs" id="11_4sjmf"]
+[ext_resource type="Script" path="res://ObjectEditors/LabelSchema.cs" id="12_vva3x"]
+
+[node name="Control" type="Control" node_paths=PackedStringArray("ColorSchemaTemplate", "FloatSchemaTemplate", "IntSchemaTemplate", "LabelSchemaTemplate", "StringSchemaTemplate", "Vector2SchemaTemplate", "Vector3SchemaTemplate", "Vector4SchemaTemplate")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_pe8jw")
+ColorSchemaTemplate = NodePath("ObjectScrollContainer/ObjectDataContainer/color_schema")
+FloatSchemaTemplate = NodePath("ObjectScrollContainer/ObjectDataContainer/float_schema")
+IntSchemaTemplate = NodePath("ObjectScrollContainer/ObjectDataContainer/int_schema")
+LabelSchemaTemplate = NodePath("ObjectScrollContainer/ObjectDataContainer/label_schema")
+StringSchemaTemplate = NodePath("ObjectScrollContainer/ObjectDataContainer/string_schema")
+Vector2SchemaTemplate = NodePath("ObjectScrollContainer/ObjectDataContainer/vec2_schema")
+Vector3SchemaTemplate = NodePath("ObjectScrollContainer/ObjectDataContainer/vec3_schema")
+Vector4SchemaTemplate = NodePath("ObjectScrollContainer/ObjectDataContainer/vec4_schema")
+
+[node name="GridContainer" type="GridContainer" parent="."]
+layout_mode = 0
+offset_right = 199.0
+offset_bottom = 40.0
+
+[node name="MenuGrid" type="GridContainer" parent="GridContainer"]
+layout_mode = 2
+columns = 5
+
+[node name="File" type="MenuButton" parent="GridContainer/MenuGrid"]
+layout_mode = 2
+text = "File"
+item_count = 5
+popup/item_0/text = "Open/Create Project"
+popup/item_0/id = 0
+popup/item_1/text = "Save Edits To Project Folder"
+popup/item_1/id = 1
+popup/item_2/text = ""
+popup/item_2/id = 4
+popup/item_2/separator = true
+popup/item_3/text = "Apply Project Files To Game Folder"
+popup/item_3/id = 2
+popup/item_4/text = "Restore Backup Files"
+popup/item_4/id = 3
+script = ExtResource("1_w33wv")
+
+[node name="Edit" type="MenuButton" parent="GridContainer/MenuGrid"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Edit"
+
+[node name="Display" type="MenuButton" parent="GridContainer/MenuGrid"]
+layout_mode = 2
+text = "Display"
+
+[node name="Tools" type="MenuButton" parent="GridContainer/MenuGrid"]
+layout_mode = 2
+text = "Tools"
+
+[node name="SetDataTree" type="Tree" parent="."]
+layout_mode = 2
+offset_left = 18.0
+offset_top = 31.0
+offset_right = 318.0
+offset_bottom = 900.0
+focus_neighbor_left = NodePath("../SetDataTreeButton")
+focus_neighbor_top = NodePath("../GridContainer/MenuGrid")
+focus_previous = NodePath("../SetDataTreeButton")
+focus_mode = 0
+theme_override_font_sizes/font_size = 12
+script = ExtResource("2_objna")
+
+[node name="SetDataTreeButton" type="Button" parent="."]
+z_index = 1
+layout_mode = 0
+offset_top = 31.0
+offset_right = 18.0
+offset_bottom = 899.0
+focus_neighbor_right = NodePath("../SetDataTree")
+focus_next = NodePath("../SetDataTree")
+focus_previous = NodePath("../GridContainer/MenuGrid")
+text = ">"
+script = ExtResource("4_6llyt")
+
+[node name="ObjectScrollContainer" type="ScrollContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -268.0
+offset_top = 31.0
+offset_right = -18.0
+offset_bottom = 900.0
+grow_horizontal = 0
+script = ExtResource("5_nwqhc")
+
+[node name="ObjectDataContainer" type="VBoxContainer" parent="ObjectScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="string_schema" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer"]
+visible = false
+layout_mode = 2
+script = ExtResource("5_kge3j")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/string_schema"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.4
+tooltip_text = "String type"
+bbcode_enabled = true
+text = "[img]res://addons/datatable_godot/icons/String.svg[/img] String Name"
+fit_content = true
+
+[node name="LineEdit" type="LineEdit" parent="ObjectScrollContainer/ObjectDataContainer/string_schema"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="int_schema" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer"]
+visible = false
+layout_mode = 2
+script = ExtResource("6_w3oxx")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/int_schema"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.4
+tooltip_text = "String type"
+bbcode_enabled = true
+text = "[img]res://addons/datatable_godot/icons/Int.svg[/img] String Name"
+fit_content = true
+
+[node name="SpinBox" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/int_schema"]
+layout_mode = 2
+
+[node name="float_schema" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer"]
+visible = false
+layout_mode = 2
+script = ExtResource("7_hvdad")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/float_schema"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.4
+tooltip_text = "String type"
+bbcode_enabled = true
+text = "[img]res://addons/datatable_godot/icons/Float.svg[/img] String Name"
+fit_content = true
+
+[node name="SpinBox" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/float_schema"]
+layout_mode = 2
+
+[node name="color_schema" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer"]
+visible = false
+layout_mode = 2
+script = ExtResource("8_orrkn")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/color_schema"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.4
+tooltip_text = "String type"
+bbcode_enabled = true
+text = "[img]res://addons/datatable_godot/icons/Color.svg[/img] String Name"
+fit_content = true
+
+[node name="ParamValue" type="ColorPickerButton" parent="ObjectScrollContainer/ObjectDataContainer/color_schema"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="vec2_schema" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer"]
+visible = false
+layout_mode = 2
+script = ExtResource("9_w8md7")
+
+[node name="paramName" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec2_schema"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.4
+tooltip_text = "Vector2 type"
+bbcode_enabled = true
+text = "[img]res://addons/datatable_godot/icons/Vector2.svg[/img] Vec2 Name"
+fit_content = true
+
+[node name="paramValue" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec2_schema"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="x_box" type="HBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec2_schema/paramValue"]
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec2_schema/paramValue/x_box"]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+size_flags_stretch_ratio = 0.2
+bbcode_enabled = true
+text = "[color=fab293]X: [/color]"
+fit_content = true
+
+[node name="x_value" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/vec2_schema/paramValue/x_box"]
+layout_mode = 2
+size_flags_horizontal = 3
+step = 0.0
+allow_greater = true
+allow_lesser = true
+custom_arrow_step = 0.05
+
+[node name="y_box" type="HBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec2_schema/paramValue"]
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec2_schema/paramValue/y_box"]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+size_flags_stretch_ratio = 0.2
+bbcode_enabled = true
+text = "[color=93fab2]Y: [/color]"
+fit_content = true
+
+[node name="y_value" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/vec2_schema/paramValue/y_box"]
+layout_mode = 2
+size_flags_horizontal = 3
+step = 0.0
+allow_greater = true
+allow_lesser = true
+custom_arrow_step = 0.05
+
+[node name="vec3_schema" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer"]
+visible = false
+layout_mode = 2
+script = ExtResource("10_txxg7")
+
+[node name="paramName" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.4
+tooltip_text = "Vector3 type"
+bbcode_enabled = true
+text = "[img]res://addons/datatable_godot/icons/Vector3.svg[/img] Vec3 Name"
+fit_content = true
+
+[node name="paramValue" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="x_box" type="HBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema/paramValue"]
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema/paramValue/x_box"]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+size_flags_stretch_ratio = 0.2
+bbcode_enabled = true
+text = "[color=fab293]X: [/color]"
+fit_content = true
+
+[node name="x_value" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema/paramValue/x_box"]
+layout_mode = 2
+size_flags_horizontal = 3
+step = 0.0
+allow_greater = true
+allow_lesser = true
+custom_arrow_step = 0.05
+
+[node name="y_box" type="HBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema/paramValue"]
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema/paramValue/y_box"]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+size_flags_stretch_ratio = 0.2
+bbcode_enabled = true
+text = "[color=93fab2]Y: [/color]"
+fit_content = true
+
+[node name="y_value" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema/paramValue/y_box"]
+layout_mode = 2
+size_flags_horizontal = 3
+step = 0.0
+allow_greater = true
+allow_lesser = true
+custom_arrow_step = 0.05
+
+[node name="z_box" type="HBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema/paramValue"]
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema/paramValue/z_box"]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+size_flags_stretch_ratio = 0.2
+bbcode_enabled = true
+text = "[color=b293fa]Z: [/color]"
+fit_content = true
+
+[node name="z_value" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema/paramValue/z_box"]
+layout_mode = 2
+size_flags_horizontal = 3
+step = 0.0
+allow_greater = true
+allow_lesser = true
+custom_arrow_step = 0.05
+
+[node name="vec4_schema" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer"]
+visible = false
+layout_mode = 2
+script = ExtResource("11_4sjmf")
+
+[node name="paramName" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.4
+tooltip_text = "Vector4 type"
+bbcode_enabled = true
+text = "[img]res://addons/datatable_godot/icons/Vector4.svg[/img] Vec4 Name"
+fit_content = true
+
+[node name="paramValue" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="x_box" type="HBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue"]
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue/x_box"]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+size_flags_stretch_ratio = 0.2
+bbcode_enabled = true
+text = "[color=fab293]X: [/color]"
+fit_content = true
+
+[node name="x_value" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue/x_box"]
+layout_mode = 2
+size_flags_horizontal = 3
+step = 0.0
+allow_greater = true
+allow_lesser = true
+custom_arrow_step = 0.05
+
+[node name="y_box" type="HBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue"]
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue/y_box"]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+size_flags_stretch_ratio = 0.2
+bbcode_enabled = true
+text = "[color=93fab2]Y: [/color]"
+fit_content = true
+
+[node name="y_value" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue/y_box"]
+layout_mode = 2
+size_flags_horizontal = 3
+step = 0.0
+allow_greater = true
+allow_lesser = true
+custom_arrow_step = 0.05
+
+[node name="z_box" type="HBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue"]
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue/z_box"]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+size_flags_stretch_ratio = 0.2
+bbcode_enabled = true
+text = "[color=b293fa]Z: [/color]"
+fit_content = true
+
+[node name="z_value" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue/z_box"]
+layout_mode = 2
+size_flags_horizontal = 3
+step = 0.0
+allow_greater = true
+allow_lesser = true
+custom_arrow_step = 0.05
+
+[node name="w_box" type="HBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue"]
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue/w_box"]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+size_flags_stretch_ratio = 0.2
+bbcode_enabled = true
+text = "[color=93dbfa]W: [/color]"
+fit_content = true
+
+[node name="w_value" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue/w_box"]
+layout_mode = 2
+size_flags_horizontal = 3
+step = 0.0
+allow_greater = true
+allow_lesser = true
+custom_arrow_step = 0.05
+
+[node name="label_schema" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer"]
+visible = false
+layout_mode = 2
+script = ExtResource("12_vva3x")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/label_schema"]
+layout_mode = 2
+
+[node name="ObjectScrollContainerButton" type="Button" parent="."]
+z_index = 1
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -18.0
+offset_top = 31.0
+offset_bottom = 899.0
+grow_horizontal = 0
+focus_neighbor_right = NodePath("../SetDataTree")
+focus_next = NodePath("../SetDataTree")
+focus_previous = NodePath("../GridContainer/MenuGrid")
+text = "<"
+script = ExtResource("5_nw6mg")

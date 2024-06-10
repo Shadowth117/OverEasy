@@ -1,0 +1,97 @@
+green1 Forest Village - Save Chicken Elder Oma-Oma!
+green2 Forest Village - Defeat Era Gecko!
+green3 Forest Village - Secret little forest hut
+green4 Forest Village - Traveling Mini Game Salesman
+green5 Forest Village - Secret inside the waterfall
+green6 Forest Village - Secret of the windmill!
+green7 Forest Village - Save the 8 Chickens!
+green8 Forest Village - Defeat 100 Crows!
+green_boss Forest Village - Boss
+green_boss2 Forest Village - Post Boss Area
+battle_green Forest Village Battle 1 
+battle_green2 Forest Village Battle 2 
+blue1 Pirates Island - Save Chicken Elder Uri-Uri!
+blue2 Pirates Island - Hurry to the Pirate Ship!
+blue3 Pirates Island - Race against King Clippen!!
+blue4 Pirates Island - Save Rolly!
+blue5 Pirates Island - Treasure in the Captain's Room
+blue6 Pirates Island - Defeat 100 Crows!
+blue7 Pirates Island - Chicken and the Game Salesman
+blue8 Pirates Island - Save the 8 Chickens!
+blue_boss Pirates Island - Boss
+blue_boss2 Pirates Island - Post Boss Area
+battle_blue Pirates Island - Battle
+red1 Dino Mountain - Save Chicken Elder Ura-Ura!
+red2 Dino Mountain - Defeat the 3 Bone Dragons!
+red3 Dino Mountain - Defeat 100 Crows!
+red4 Dino Mountain - Chick has been kidnapped!
+red5 Dino Mountain - Save the 8 Chickens!
+red6 Dino Mountain - The Traveling Game Salesman
+red7 Dino Mountain - Battle Race! Champion Runny!
+red8 Dino Mountain - To the mountaintop!
+red_boss Dino Mountain - Boss
+red_boss2 Dino Mountain - Post Boss Area
+battle_red Dino Mountain - Battle
+purple1 Blizzard Castle - Save Chicken Elder Ponee!
+purple2 Blizzard Castle - Secret of Ice Castle!
+purple3 Blizzard Castle - After the blizzard...
+purple4 Blizzard Castle - Save Bantam!
+purple5 Blizzard Castle - Save the 8 Chickens!
+purple6 Blizzard Castle - Race against Queen Rabbish!
+purple7 Blizzard Castle - Makin' money with minigames!
+purple8 Blizzard Castle - Defeat 100 Crows!
+purple_boss Blizzard Castle - Boss
+purple_boss2 Blizzard Castle - Post Boss Area
+battle_purple Blizzard Castle - Battle
+orange1 Circus Park - Save Chicken Elder Allani!
+orange2 Circus Park - Secret of the Fun House!
+orange3 Circus Park - The clock stands still...
+orange4 Circus Park - The Caged Crow and the Emblem!
+orange5 Circus Park - Fireworks party!
+orange6 Circus Park - Save the 8 Chickens!
+orange7 Circus Park - Defeat 100 Crows!
+orange8 Circus Park - Win a prize from the Game Man!
+orange_boss Circus Park - Boss
+orange_boss2 Circus Park - Post Boss Area
+battle_orange Circus Park - Battle
+yellow1 Sand Ruin - The Secret of the Giant Egg!
+yellow2 Sand Ruin - Defeat Dark Corvo!
+yellow3 Sand Ruin - Open the Rainbow Gate!
+yellow4 Sand Ruin - Even more minigames!
+yellow5 Sand Ruin - Save the 8 Chickens!
+yellow6 Sand Ruin - Sand Ruins under attack!
+yellow7 Sand Ruin - Emblem atop the pillar
+yellow8 Sand Ruin - Race Against King Biboo!
+yellow_boss Sand Ruin - Boss
+yellow_boss2 Sand Ruin - Post Boss Area
+battle_yellow Sand Ruin - Battle
+last Giant Palace - Showdown with Dark Raven!
+last2 Giant Palace - Deep inside the temple...
+last3 Giant Palace - Roll down the long slope!
+last4 Giant Palace - Death match! Get the Crows!
+last5 Giant Palace - Save the 8 Chickens!
+last6 Giant Palace - Climb up the hill!
+last7 Giant Palace - What's the Game Man doing here?
+last8 Giant palace - Last Battle! Crow Army!
+last_boss Giant Palace - Boss
+last_boss2 Giant Palace - Boss Part 2
+battle_last Giant Palace - Battle
+title Title Screen
+green_battle_test Forest Village Battle 1 (Same as normal, but only 1 player spawn)
+green2_battle_test Forest Village Battle 2 (Same as normal, but only 1 player spawn)
+blue_battle_test Pirates Island Battle (Same as normal, but only 1 player spawn)
+red_battle_test Dino Mountain Battle (Same as normal, but only 1 player spawn)
+purple_battle_test Blizzard Castle Battle (Same as normal, but only 1 player spawn)
+orange_battle_test Circus Park Battle (Same as normal, but only 1 player spawn)
+yellow_battle_test Sand Ruin Battle (Same as normal, but only 1 player spawn)
+last_battle_test Giant Palace Battle (Same as normal, but only 1 player spawn)
+stg_blue_night Pirates Island (Prototype, Night)
+stg_purple_n Blizzard Castle (Prototype, Night)
+stg_purple_night Blizzard Castle (Prototype, Night)
+stg_battle_red Dino Mountain (Prototype, Unused Battle Stage)
+stg_test Dino Mountain - (Prototype)
+stg_test2 Pirates Island - (Prototype)
+stg_test2_n Pirates Island - (Prototype, Night)
+stg_test07 Blizzard Castle - (Prototype)
+stg_test08 Pirates Island - (Prototype, Boss Battle)
+practice Practice (Test Stage)
