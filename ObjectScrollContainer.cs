@@ -7,10 +7,14 @@ public partial class ObjectScrollContainer : ScrollContainer
 	public override void _Ready()
 	{
 		OverEasyGlobals.objectScrollContainer = this;
-	}
+
+		//Force it off at the start
+        OverEasyGlobals.OnObjectScrollContainerButtonReleased();
+        OverEasyGlobals.OnObjectScrollContainerButtonReleased();
+    }
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
-	}
+    }
 }

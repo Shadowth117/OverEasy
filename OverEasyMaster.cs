@@ -27,7 +27,6 @@ public partial class OverEasyMaster : Control
 		OverEasyGlobals.StartUp();
 		OverEasyGlobals.OESceneTree = GetTree();
 		OverEasyGlobals.OEMainViewPort = GetViewport();
-
 		OverEasyGlobals.OESceneTree.Root.SizeChanged += OverEasyGlobals.OnWindowSizeChanged;
 		
 		OverEasyGlobals.ColorSchemaTemplate = this.ColorSchemaTemplate;
@@ -38,6 +37,7 @@ public partial class OverEasyMaster : Control
 		OverEasyGlobals.Vector2SchemaTemplate = this.Vector2SchemaTemplate;
 		OverEasyGlobals.Vector3SchemaTemplate = this.Vector3SchemaTemplate;
 		OverEasyGlobals.Vector4SchemaTemplate = this.Vector4SchemaTemplate;
+		this.MouseFilter = MouseFilterEnum.Ignore;
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.

@@ -1,21 +1,45 @@
-[gd_scene load_steps=15 format=3 uid="uid://e6mmj1a8sstd"]
+[gd_scene load_steps=28 format=3 uid="uid://e6mmj1a8sstd"]
 
 [ext_resource type="Script" path="res://OverEasyMaster.cs" id="1_pe8jw"]
 [ext_resource type="Script" path="res://FileButton.cs" id="1_w33wv"]
 [ext_resource type="Script" path="res://SetDataTree.cs" id="2_objna"]
+[ext_resource type="Script" path="res://MenuBarCollision.cs" id="3_x7jb2"]
+[ext_resource type="Script" path="res://SetDataTreeCollision.cs" id="4_2w6hp"]
 [ext_resource type="Script" path="res://SetDataTreeButton.cs" id="4_6llyt"]
 [ext_resource type="Script" path="res://ObjectEditors/StringSchema.cs" id="5_kge3j"]
 [ext_resource type="Script" path="res://ObjectScrollContainerButton.cs" id="5_nw6mg"]
 [ext_resource type="Script" path="res://ObjectScrollContainer.cs" id="5_nwqhc"]
+[ext_resource type="Script" path="res://ObjectPanelCollision.cs" id="5_q64ci"]
+[ext_resource type="Script" path="res://SetDataTreeButtonCollision.cs" id="5_y6jdj"]
 [ext_resource type="Script" path="res://ObjectEditors/IntSchema.cs" id="6_w3oxx"]
+[ext_resource type="Script" path="res://ObjectPanelButtonCollision.cs" id="7_0xjd5"]
 [ext_resource type="Script" path="res://ObjectEditors/FloatSchema.cs" id="7_hvdad"]
 [ext_resource type="Script" path="res://ObjectEditors/ColorSchema.cs" id="8_orrkn"]
 [ext_resource type="Script" path="res://ObjectEditors/Vector2Schema.cs" id="9_w8md7"]
 [ext_resource type="Script" path="res://ObjectEditors/Vector3Schema.cs" id="10_txxg7"]
 [ext_resource type="Script" path="res://ObjectEditors/Vector4Schema.cs" id="11_4sjmf"]
 [ext_resource type="Script" path="res://ObjectEditors/LabelSchema.cs" id="12_vva3x"]
+[ext_resource type="PackedScene" uid="uid://bjwcv22xkffj0" path="res://player.glb" id="15_cvn4i"]
+[ext_resource type="PackedScene" uid="uid://bp17fc5qsd0m8" path="res://ViewerCamera.tscn" id="16_wiw1n"]
+[ext_resource type="Script" path="res://GUIArea.cs" id="17_7fdyu"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_onrwx"]
+size = Vector2(318, 31)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_y1os6"]
+size = Vector2(300, 869)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jjxky"]
+size = Vector2(23, 869)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_tl7e2"]
+size = Vector2(249, 868)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_uxe8r"]
+size = Vector2(21, 869)
 
 [node name="Control" type="Control" node_paths=PackedStringArray("ColorSchemaTemplate", "FloatSchemaTemplate", "IntSchemaTemplate", "LabelSchemaTemplate", "StringSchemaTemplate", "Vector2SchemaTemplate", "Vector3SchemaTemplate", "Vector4SchemaTemplate")]
+process_mode = 3
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -31,6 +55,35 @@ StringSchemaTemplate = NodePath("ObjectScrollContainer/ObjectDataContainer/strin
 Vector2SchemaTemplate = NodePath("ObjectScrollContainer/ObjectDataContainer/vec2_schema")
 Vector3SchemaTemplate = NodePath("ObjectScrollContainer/ObjectDataContainer/vec3_schema")
 Vector4SchemaTemplate = NodePath("ObjectScrollContainer/ObjectDataContainer/vec4_schema")
+
+[node name="GUIArea" type="Area2D" parent="."]
+collision_layer = 2
+script = ExtResource("17_7fdyu")
+
+[node name="MenuBarCollision" type="CollisionShape2D" parent="GUIArea"]
+position = Vector2(159, 15.5)
+shape = SubResource("RectangleShape2D_onrwx")
+script = ExtResource("3_x7jb2")
+
+[node name="SetDataTreeCollision" type="CollisionShape2D" parent="GUIArea"]
+position = Vector2(168, 465.5)
+shape = SubResource("RectangleShape2D_y1os6")
+script = ExtResource("4_2w6hp")
+
+[node name="SetDataTreeButtonCollision" type="CollisionShape2D" parent="GUIArea"]
+position = Vector2(6.5, 465.5)
+shape = SubResource("RectangleShape2D_jjxky")
+script = ExtResource("5_y6jdj")
+
+[node name="ObjectPanelCollision" type="CollisionShape2D" parent="GUIArea"]
+position = Vector2(1457.5, 465.5)
+shape = SubResource("RectangleShape2D_tl7e2")
+script = ExtResource("5_q64ci")
+
+[node name="ObjectPanelButtonCollision" type="CollisionShape2D" parent="GUIArea"]
+position = Vector2(1592.5, 465.5)
+shape = SubResource("RectangleShape2D_uxe8r")
+script = ExtResource("7_0xjd5")
 
 [node name="GridContainer" type="GridContainer" parent="."]
 layout_mode = 0
@@ -430,3 +483,8 @@ focus_next = NodePath("../SetDataTree")
 focus_previous = NodePath("../GridContainer/MenuGrid")
 text = "<"
 script = ExtResource("5_nw6mg")
+
+[node name="ViewerCameraTarget" parent="." instance=ExtResource("16_wiw1n")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 5)
+
+[node name="player" parent="." instance=ExtResource("15_cvn4i")]
