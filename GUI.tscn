@@ -1,30 +1,32 @@
-[gd_scene load_steps=28 format=3 uid="uid://e6mmj1a8sstd"]
+[gd_scene load_steps=30 format=3 uid="uid://e6mmj1a8sstd"]
 
 [ext_resource type="Script" path="res://OverEasyMaster.cs" id="1_pe8jw"]
-[ext_resource type="Script" path="res://FileButton.cs" id="1_w33wv"]
-[ext_resource type="Script" path="res://SetDataTree.cs" id="2_objna"]
-[ext_resource type="Script" path="res://MenuBarCollision.cs" id="3_x7jb2"]
-[ext_resource type="Script" path="res://SetDataTreeCollision.cs" id="4_2w6hp"]
-[ext_resource type="Script" path="res://SetDataTreeButton.cs" id="4_6llyt"]
+[ext_resource type="Script" path="res://Controls/FileButton.cs" id="1_w33wv"]
+[ext_resource type="Script" path="res://Controls/SetDataTree.cs" id="2_objna"]
+[ext_resource type="Script" path="res://Controls/MenuBarCollision.cs" id="3_x7jb2"]
+[ext_resource type="Script" path="res://Controls/SetDataTreeCollision.cs" id="4_2w6hp"]
+[ext_resource type="Script" path="res://Controls/SetDataTreeButton.cs" id="4_6llyt"]
+[ext_resource type="Script" path="res://Controls/SetDataTreeButtonCollision.cs" id="5_k45em"]
 [ext_resource type="Script" path="res://ObjectEditors/StringSchema.cs" id="5_kge3j"]
-[ext_resource type="Script" path="res://ObjectScrollContainerButton.cs" id="5_nw6mg"]
-[ext_resource type="Script" path="res://ObjectScrollContainer.cs" id="5_nwqhc"]
-[ext_resource type="Script" path="res://ObjectPanelCollision.cs" id="5_q64ci"]
-[ext_resource type="Script" path="res://SetDataTreeButtonCollision.cs" id="5_y6jdj"]
+[ext_resource type="Script" path="res://Controls/ObjectScrollContainerButton.cs" id="5_nw6mg"]
+[ext_resource type="Script" path="res://Controls/ObjectScrollContainer.cs" id="5_nwqhc"]
+[ext_resource type="Script" path="res://Controls/ObjectPanelCollision.cs" id="6_1cerq"]
 [ext_resource type="Script" path="res://ObjectEditors/IntSchema.cs" id="6_w3oxx"]
-[ext_resource type="Script" path="res://ObjectPanelButtonCollision.cs" id="7_0xjd5"]
 [ext_resource type="Script" path="res://ObjectEditors/FloatSchema.cs" id="7_hvdad"]
+[ext_resource type="Script" path="res://Controls/ObjectPanelButtonCollision.cs" id="7_k1esd"]
 [ext_resource type="Script" path="res://ObjectEditors/ColorSchema.cs" id="8_orrkn"]
 [ext_resource type="Script" path="res://ObjectEditors/Vector2Schema.cs" id="9_w8md7"]
+[ext_resource type="Script" path="res://Controls/DayNightToggle.cs" id="9_y4wsg"]
 [ext_resource type="Script" path="res://ObjectEditors/Vector3Schema.cs" id="10_txxg7"]
 [ext_resource type="Script" path="res://ObjectEditors/Vector4Schema.cs" id="11_4sjmf"]
 [ext_resource type="Script" path="res://ObjectEditors/LabelSchema.cs" id="12_vva3x"]
 [ext_resource type="PackedScene" uid="uid://bjwcv22xkffj0" path="res://player.glb" id="15_cvn4i"]
 [ext_resource type="PackedScene" uid="uid://bp17fc5qsd0m8" path="res://ViewerCamera.tscn" id="16_wiw1n"]
-[ext_resource type="Script" path="res://GUIArea.cs" id="17_7fdyu"]
+[ext_resource type="Script" path="res://Controls/GUIArea.cs" id="17_7fdyu"]
+[ext_resource type="Script" path="res://Controls/ModelRoot.cs" id="20_bmy2d"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_onrwx"]
-size = Vector2(318, 31)
+size = Vector2(393, 31)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_y1os6"]
 size = Vector2(300, 869)
@@ -61,7 +63,7 @@ collision_layer = 2
 script = ExtResource("17_7fdyu")
 
 [node name="MenuBarCollision" type="CollisionShape2D" parent="GUIArea"]
-position = Vector2(159, 15.5)
+position = Vector2(196.5, 15.5)
 shape = SubResource("RectangleShape2D_onrwx")
 script = ExtResource("3_x7jb2")
 
@@ -73,17 +75,17 @@ script = ExtResource("4_2w6hp")
 [node name="SetDataTreeButtonCollision" type="CollisionShape2D" parent="GUIArea"]
 position = Vector2(6.5, 465.5)
 shape = SubResource("RectangleShape2D_jjxky")
-script = ExtResource("5_y6jdj")
+script = ExtResource("5_k45em")
 
 [node name="ObjectPanelCollision" type="CollisionShape2D" parent="GUIArea"]
 position = Vector2(1457.5, 465.5)
 shape = SubResource("RectangleShape2D_tl7e2")
-script = ExtResource("5_q64ci")
+script = ExtResource("6_1cerq")
 
 [node name="ObjectPanelButtonCollision" type="CollisionShape2D" parent="GUIArea"]
 position = Vector2(1592.5, 465.5)
 shape = SubResource("RectangleShape2D_uxe8r")
-script = ExtResource("7_0xjd5")
+script = ExtResource("7_k1esd")
 
 [node name="GridContainer" type="GridContainer" parent="."]
 layout_mode = 0
@@ -92,7 +94,7 @@ offset_bottom = 40.0
 
 [node name="MenuGrid" type="GridContainer" parent="GridContainer"]
 layout_mode = 2
-columns = 5
+columns = 6
 
 [node name="File" type="MenuButton" parent="GridContainer/MenuGrid"]
 layout_mode = 2
@@ -123,6 +125,16 @@ text = "Display"
 [node name="Tools" type="MenuButton" parent="GridContainer/MenuGrid"]
 layout_mode = 2
 text = "Tools"
+
+[node name="Label" type="Label" parent="GridContainer/MenuGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.903598, 0.903598, 0.903598, 1)
+text = "Day Toggle:"
+
+[node name="DayNightToggle" type="CheckButton" parent="GridContainer/MenuGrid"]
+layout_mode = 2
+button_pressed = true
+script = ExtResource("9_y4wsg")
 
 [node name="SetDataTree" type="Tree" parent="."]
 layout_mode = 2
@@ -487,4 +499,12 @@ script = ExtResource("5_nw6mg")
 [node name="ViewerCameraTarget" parent="." instance=ExtResource("16_wiw1n")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 5)
 
-[node name="player" parent="." instance=ExtResource("15_cvn4i")]
+[node name="ModelRoot" type="Node3D" parent="."]
+script = ExtResource("20_bmy2d")
+
+[node name="Test" type="Node3D" parent="ModelRoot"]
+
+[node name="player" parent="ModelRoot/Test" instance=ExtResource("15_cvn4i")]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="ModelRoot/Test"]
+root_node = NodePath("../player")

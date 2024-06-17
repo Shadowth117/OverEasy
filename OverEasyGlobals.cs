@@ -2,6 +2,7 @@ using AquaModelLibrary.Data.BillyHatcher;
 using AquaModelLibrary.Data.BillyHatcher.SetData;
 using AquaModelLibrary.Data.Ninja;
 using Godot;
+using OverEasy.Billy;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,29 +30,38 @@ namespace OverEasy
 		public static CollisionShape2D objectPanelCollision = null;
 		public static CollisionShape2D objectPanelButtonCollision = null;
 
+		public static Dictionary<string, Texture2D> globalTexturePool = new Dictionary<string, Texture2D>();
+		public static Dictionary<string, List<Texture2D>> orderedTextureArchivePools = new Dictionary<string, List<Texture2D>>();
+
 		public static string gameFolderLocation = null;
 		public static string backupFolderLocation = null;
 		public static string modFolderLocation = null;
 		public static GameType gameType = GameType.None;
 		public static List<string> mapKeyOrderList = new List<string>();
 		public static Dictionary<string, string> mapNames = new Dictionary<string, string>();
+        public static bool allowedToUpdate = false;
 
-		public static bool mouseInGuiArea = false;
+        public static bool mouseInGuiArea = false;
 		public static SceneTree OESceneTree = null;
 		public static Viewport OEMainViewPort = null;
 		public static Tree setDataTree = null;
+		public static Node3D modelRoot = null;
 
 		public static bool setDataTreeItemActivatedSet = false;
 		public static ScrollContainer objectScrollContainer = null;
 		public static Button setDataTreeButton = null;
 		public static Button objectScrollContainerButton = null;
+        public static Dictionary<string, Container> activeObjectEditorObjects = new Dictionary<string, Container>();
 
-		public static StageDef stgDef = null;
+        public static StageDef stgDef = null;
 		public static SetObjList loadedBillySetObjects = null;
 		public static SetObjList loadedBillySetDesignObjects = null;
 		public static Dictionary<int, SetObjDefinition> cachedBillySetObjDefinitions = new Dictionary<int, SetObjDefinition>();
 		public static EditingType currentEditorType = EditingType.None;
-		public static bool allowedToUpdate = false;
+		public static bool isDay = true;
+		public static Node3D daySkybox = null;
+		public static Node3D nightSkybox = null;
+		public static DayNightToggle dayNightToggle = null;
 
 		public static int currentObjectId = -1;
 		public static int currentArchiveFileId = -1;
@@ -61,7 +71,7 @@ namespace OverEasy
 		public static string editorRootDirectory = null;
 		public static TreeItem currentObjectTreeItem = null;
 
-        public static bool CanMove3dCamera 
+		public static bool CanMove3dCamera 
 		{ 
 			get 
 			{
@@ -69,16 +79,12 @@ namespace OverEasy
 			} 
 		}
 
-        public static Dictionary<string, Container> activeObjectEditorObjects = new Dictionary<string, Container>();
-
 		public enum EditingType
 		{
 			None = 0,
 			BillySetObj = 1,
 			BillySetDesign = 2,
 		}
-
-
 		/// <summary>
 		/// Dialog for loading a compatible game or project
 		/// </summary>
@@ -137,6 +143,21 @@ namespace OverEasy
 			OEMainViewPort.AddChild(confirmRestoreBackupFilesDialog);
 		}
 
+		public static void DayNightToggle()
+		{
+			isDay = !isDay;
+
+            if (daySkybox != null)
+            {
+                daySkybox.Visible = isDay;
+            }
+            if (nightSkybox != null)
+            {
+                nightSkybox.Visible = !isDay;
+            }
+            ModelConversion.BillyModeNightToggle(modelRoot);
+        }
+
 		public static void CopyModFiles()
 		{
 			var modFiles = Directory.GetFiles(modFolderLocation);
@@ -162,38 +183,55 @@ namespace OverEasy
 		/// Resets editor data when we try to load a new project to avoid shenanigans.
 		/// </summary>
 		public static void ResetLoadedData(string path)
-		{
-			modFolderLocation = null;
-			allowedToUpdate = false;
+        {
+            modFolderLocation = null;
+            allowedToUpdate = false;
 
-			currentObjectId = -1;
-			currentArchiveFileId = -1;
-			currentPRD = null;
-			currentArhiveFilename = null;
-			currentStageDefId = -1;
-			currentObjectTreeItem = null;
-			stgDef = null;
-			loadedBillySetObjects = null;
-			cachedBillySetObjDefinitions.Clear();
-			currentEditorType = EditingType.None;
-			var objDataContainer = (VBoxContainer)objectScrollContainer.GetChild(0);
-			foreach (var obj in activeObjectEditorObjects)
-			{
-				//Assume the object is in there. If it's not, we have some problems.
-				objDataContainer.RemoveChild(obj.Value);
-			}
-			activeObjectEditorObjects.Clear();
+            currentObjectId = -1;
+            currentArchiveFileId = -1;
+            currentPRD = null;
+            currentArhiveFilename = null;
+            currentStageDefId = -1;
+            currentObjectTreeItem = null;
+            stgDef = null;
+            loadedBillySetObjects = null;
+            cachedBillySetObjDefinitions.Clear();
+            currentEditorType = EditingType.None;
+            var objDataContainer = (VBoxContainer)objectScrollContainer.GetChild(0);
+            foreach (var obj in activeObjectEditorObjects)
+            {
+                //Assume the object is in there. If it's not, we have some problems.
+                objDataContainer.RemoveChild(obj.Value);
+            }
+            activeObjectEditorObjects.Clear();
 
-			if (setDataTree != null)
-			{
-				setDataTree.Clear();
-			}
-		}
+            if (setDataTree != null)
+            {
+                setDataTree.Clear();
+            }
 
-		/// <summary>
-		/// Actions for when the window size changes
-		/// </summary>
-		public static void OnWindowSizeChanged()
+            ClearModelAndTextureData();
+        }
+
+        private static void ClearModelAndTextureData()
+        {
+            globalTexturePool.Clear();
+            foreach (var set in orderedTextureArchivePools)
+            {
+                set.Value.Clear();
+            }
+            orderedTextureArchivePools.Clear();
+            foreach (var child in modelRoot.GetChildren())
+            {
+                modelRoot.RemoveChild(child);
+                child.QueueFree();
+            }
+        }
+
+        /// <summary>
+        /// Actions for when the window size changes
+        /// </summary>
+        public static void OnWindowSizeChanged()
 		{
 			var viewPortSize = OEMainViewPort.GetVisibleRect().Size;
 			setDataTree.Size = new Vector2(300, viewPortSize.Y - 31);
@@ -204,36 +242,36 @@ namespace OverEasy
 			setDataTreeCollision.GlobalPosition = new Vector2(setDataTreeCollision.GlobalPosition.X, 31 + (viewPortSize.Y - 31) / 2);
 			var setDataTreeShape = (RectangleShape2D)setDataTreeCollision.Shape;
 			if(setDataTree.Visible == false)
-            {
-                setDataTreeShape.Size = new Vector2(setDataTreeShape.Size.X, 0);
-            }
-            else
-            {
-                setDataTreeShape.Size = new Vector2(setDataTreeShape.Size.X, (viewPortSize.Y - 31));
-            }
-            setDataTreeCollision.Shape = setDataTreeShape;
+			{
+				setDataTreeShape.Size = new Vector2(setDataTreeShape.Size.X, 0);
+			}
+			else
+			{
+				setDataTreeShape.Size = new Vector2(setDataTreeShape.Size.X, (viewPortSize.Y - 31));
+			}
+			setDataTreeCollision.Shape = setDataTreeShape;
 
-            objectPanelCollision.GlobalPosition = new Vector2(objectPanelCollision.GlobalPosition.X, 31 + (viewPortSize.Y - 31) / 2);
-            var objPanelShape = (RectangleShape2D)objectPanelCollision.Shape;
+			objectPanelCollision.GlobalPosition = new Vector2(objectPanelCollision.GlobalPosition.X, 31 + (viewPortSize.Y - 31) / 2);
+			var objPanelShape = (RectangleShape2D)objectPanelCollision.Shape;
 			if(objectScrollContainer.Visible == false)
 			{
 				objPanelShape.Size = new Vector2(objPanelShape.Size.X, 0);
 			} else
-            {
-                objPanelShape.Size = new Vector2(objPanelShape.Size.X, (viewPortSize.Y - 31));
-            }
+			{
+				objPanelShape.Size = new Vector2(objPanelShape.Size.X, (viewPortSize.Y - 31));
+			}
 			objectPanelCollision.Shape = objPanelShape;
 
-            setDataTreeButtonCollision.GlobalPosition = new Vector2(setDataTreeButtonCollision.GlobalPosition.X, 31 + (viewPortSize.Y - 31) / 2);
-            var setDataTreeButtonShape = (RectangleShape2D)setDataTreeButtonCollision.Shape;
-            setDataTreeButtonShape.Size = new Vector2(setDataTreeButtonShape.Size.X, (viewPortSize.Y - 31));
-            setDataTreeButtonCollision.Shape = setDataTreeButtonShape;
+			setDataTreeButtonCollision.GlobalPosition = new Vector2(setDataTreeButtonCollision.GlobalPosition.X, 31 + (viewPortSize.Y - 31) / 2);
+			var setDataTreeButtonShape = (RectangleShape2D)setDataTreeButtonCollision.Shape;
+			setDataTreeButtonShape.Size = new Vector2(setDataTreeButtonShape.Size.X, (viewPortSize.Y - 31));
+			setDataTreeButtonCollision.Shape = setDataTreeButtonShape;
 
-            objectPanelButtonCollision.GlobalPosition = new Vector2(objectPanelButtonCollision.GlobalPosition.X, 31 +(viewPortSize.Y - 31) / 2);
-            var objPanelButtonShape = (RectangleShape2D)objectPanelButtonCollision.Shape;
-            objPanelButtonShape.Size = new Vector2(objPanelButtonShape.Size.X, (viewPortSize.Y - 31));
-            objectPanelButtonCollision.Shape = objPanelButtonShape;
-        }
+			objectPanelButtonCollision.GlobalPosition = new Vector2(objectPanelButtonCollision.GlobalPosition.X, 31 +(viewPortSize.Y - 31) / 2);
+			var objPanelButtonShape = (RectangleShape2D)objectPanelButtonCollision.Shape;
+			objPanelButtonShape.Size = new Vector2(objPanelButtonShape.Size.X, (viewPortSize.Y - 31));
+			objectPanelButtonCollision.Shape = objPanelButtonShape;
+		}
 
 		/// <summary>
 		/// Method for handling what happens when we select an option under the File menu
@@ -269,24 +307,28 @@ namespace OverEasy
 			setDataTree.Visible = currentVisibility;
 			setDataTree.SetProcessInput(currentVisibility);
 
-            var viewPortSize = OEMainViewPort.GetVisibleRect().Size;
-            var setDataTreeShape = (RectangleShape2D)setDataTreeCollision.Shape;
-            if (setDataTree.Visible == false)
-            {
-                setDataTreeShape.Size = new Vector2(setDataTreeShape.Size.X, 0);
-            }
-            else
-            {
-                setDataTreeShape.Size = new Vector2(setDataTreeShape.Size.X, (viewPortSize.Y - 31));
-            }
-            setDataTreeCollision.Shape = setDataTreeShape;
-        }
+			var viewPortSize = OEMainViewPort.GetVisibleRect().Size;
+			var setDataTreeShape = (RectangleShape2D)setDataTreeCollision.Shape;
+			if (setDataTree.Visible == false)
+			{
+				setDataTreeShape.Size = new Vector2(setDataTreeShape.Size.X, 0);
+			}
+			else
+			{
+				setDataTreeShape.Size = new Vector2(setDataTreeShape.Size.X, (viewPortSize.Y - 31));
+			}
+			setDataTreeCollision.Shape = setDataTreeShape;
+		}
 
 		/// <summary>
 		/// Method for handling the result of clicking the Show/Hide button for the object data panel
 		/// </summary>
 		public static void OnObjectScrollContainerButtonReleased()
 		{
+			if (activeObjectEditorObjects.Count == 0)
+			{
+				return;
+			}
 			var currentVisibility = !objectScrollContainer.Visible;
 			objectScrollContainer.Visible = currentVisibility;
 			objectScrollContainer.SetProcessInput(currentVisibility);
@@ -296,18 +338,23 @@ namespace OverEasy
 				objSet.Value.Visible = currentVisibility;
 			}
 
-            var viewPortSize = OEMainViewPort.GetVisibleRect().Size;
-            var objPanelShape = (RectangleShape2D)objectPanelCollision.Shape;
-            if (objectScrollContainer.Visible == false)
-            {
-                objPanelShape.Size = new Vector2(objPanelShape.Size.X, 0);
-            }
-            else
-            {
-                objPanelShape.Size = new Vector2(objPanelShape.Size.X, (viewPortSize.Y - 31));
-            }
-            objectPanelCollision.Shape = objPanelShape;
-        }
+			ToggleObjectScrollContainerCollision();
+		}
+
+		public static void ToggleObjectScrollContainerCollision()
+		{
+			var viewPortSize = OEMainViewPort.GetVisibleRect().Size;
+			var objPanelShape = (RectangleShape2D)objectPanelCollision.Shape;
+			if (objectScrollContainer.Visible == false)
+			{
+				objPanelShape.Size = new Vector2(objPanelShape.Size.X, 0);
+			}
+			else
+			{
+				objPanelShape.Size = new Vector2(objPanelShape.Size.X, (viewPortSize.Y - 31));
+			}
+			objectPanelCollision.Shape = objPanelShape;
+		}
 
 		/// <summary>
 		/// Method for handling what happens when we load a game
@@ -502,9 +549,14 @@ namespace OverEasy
 			switch (gameType)
 			{
 				case GameType.BillyPC:
-
-					//Load Set Design
-					string setDesignFilePath = GetAssetPath(def.setDesignFilename);
+                    daySkybox = null;
+                    nightSkybox = null;
+                    dayNightToggle.ButtonPressed = true;
+                    isDay = true;
+                    SetCameraSettingsBilly();
+                    ClearModelAndTextureData();
+                    //Load Set Design
+                    string setDesignFilePath = GetAssetPath(def.setDesignFilename);
 					if (File.Exists(setDesignFilePath))
 					{
 						loadedBillySetDesignObjects = new SetObjList(File.ReadAllBytes(setDesignFilePath));
@@ -517,9 +569,29 @@ namespace OverEasy
 						loadedBillySetObjects = new SetObjList(File.ReadAllBytes(setObjFilePath));
 					}
 
-					break;
+					string lndPath = GetAssetPath(def.lndFilename);
+					if (File.Exists(lndPath))
+					{
+						modelRoot.AddChild(Billy.ModelConversion.LNDToGDModel(def.lndFilename, new LND(File.ReadAllBytes(lndPath))));
+					}
+
+                    if (daySkybox != null)
+                    {
+                        daySkybox.Visible = isDay;
+                    }
+                    if (nightSkybox != null)
+                    {
+                        nightSkybox.Visible = !isDay;
+                    }
+                    break;
 				case GameType.BillyGC:
-					var prdMissionname = GetBillyMissionName(def.missionName);
+                    daySkybox = null;
+                    nightSkybox = null;
+					dayNightToggle.ButtonPressed = true;
+                    isDay = true;
+                    SetCameraSettingsBilly();
+                    ClearModelAndTextureData();
+                    var prdMissionname = GetBillyMissionName(def.missionName);
 					currentPRD = new PRD(File.ReadAllBytes(GetAssetPath($"k_{prdMissionname}.prd")));
 
 					for (int i = 0; i < currentPRD.files.Count; i++)
@@ -541,6 +613,10 @@ namespace OverEasy
 						}
 
 						//Load Stage Model
+						if (currentPRD.fileNames[i] == def.lndFilename)
+						{
+							modelRoot.AddChild(Billy.ModelConversion.LNDToGDModel(def.lndFilename, new LND(currentPRD.files[i])));
+						}
 
 						//Load Stage Object models (We need to link these somehow...)
 
@@ -554,18 +630,56 @@ namespace OverEasy
 
 						//Load stage bsp?
 					}
+					if(daySkybox != null)
+					{
+						daySkybox.Visible = isDay;
+                    }
+                    if (nightSkybox != null)
+                    {
+                        nightSkybox.Visible = !isDay;
+                    }
 
-
-					//Load common object models, enemies, items. May want to do this in the initial load step
-					break;
+                    //Load common object models, enemies, items. May want to do this in the initial load step
+                    break;
 			}
 		}
 
-		/// <summary>
-		/// For some reason this one mission doesn't correlate to the actual mission name.
-		/// Billy mission names are technically hardcoded, but in most cases we can infer them from the stagedef mission name anyways.
-		/// </summary>
-		private static string GetBillyMissionName(string missionName)
+		public static void SetCameraSettings()
+		{
+			ViewerCamera.SCROLL_SPEED = 10;
+			ViewerCamera.ZOOM_SPEED = 5;
+			ViewerCamera.SPIN_SPEED = 10;
+			ViewerCamera.DEFAULT_DISTANCE = 20;
+			ViewerCamera.ROTATE_SPEED_X = 40;
+			ViewerCamera.ROTATE_SPEED_Y = 40;
+			ViewerCamera.TOUCH_ZOOM_SPEED = 40;
+			ViewerCamera.SHIFT_MULTIPLIER = 2.5;
+			ViewerCamera.CTRL_MULTIPLIER = 0.4;
+			ViewerCamera.FREECAM_ACCELERATION = 30;
+			ViewerCamera.FREECAM_DECELERATION = -10;
+			ViewerCamera.FREECAM_VELOCITY_MULTIPLIER = 4;
+        }
+        public static void SetCameraSettingsBilly()
+        {
+            ViewerCamera.SCROLL_SPEED = 1000;
+            ViewerCamera.ZOOM_SPEED = 500;
+            ViewerCamera.SPIN_SPEED = 10;
+            ViewerCamera.DEFAULT_DISTANCE = 2000;
+            ViewerCamera.ROTATE_SPEED_X = 40;
+            ViewerCamera.ROTATE_SPEED_Y = 40;
+            ViewerCamera.TOUCH_ZOOM_SPEED = 4000;
+            ViewerCamera.SHIFT_MULTIPLIER = 2.5;
+            ViewerCamera.CTRL_MULTIPLIER = 0.4;
+            ViewerCamera.FREECAM_ACCELERATION = 3000;
+            ViewerCamera.FREECAM_DECELERATION = -10;
+            ViewerCamera.FREECAM_VELOCITY_MULTIPLIER = 400;
+        }
+
+        /// <summary>
+        /// For some reason this one mission doesn't correlate to the actual mission name.
+        /// Billy mission names are technically hardcoded, but in most cases we can infer them from the stagedef mission name anyways.
+        /// </summary>
+        private static string GetBillyMissionName(string missionName)
 		{
 			if (missionName == "last")
 			{
@@ -660,7 +774,7 @@ namespace OverEasy
 			{
 				OnObjectScrollContainerButtonReleased();
 			}
-            switch (currentEditorType)
+			switch (currentEditorType)
 			{
 				case EditingType.BillySetObj:
 					LoadBillySetObject(loadedBillySetObjects);
@@ -684,6 +798,7 @@ namespace OverEasy
 			var setObj = setObjList.setObjs[currentObjectId];
 			LoadBillySetObjectGui(setObjList);
 			LoadBillySetObjectTemplateInfo(setObjList);
+			ToggleObjectScrollContainerCollision();
 			allowedToUpdate = true;
 		}
 

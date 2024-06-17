@@ -16,62 +16,62 @@ public partial class ViewerCamera : Camera3D
 	/// Multiplier for zooming in and out with a mouse
 	/// </summary>
 	[Export]
-	public double SCROLL_SPEED = 10;
+	public static double SCROLL_SPEED = 10;
 	/// <summary>
 	/// Multiplier for zooming and out with a touch screen
 	/// </summary>
 	[Export]
-	public double ZOOM_SPEED = 5;
+	public static double ZOOM_SPEED = 5;
 	/// <summary>
 	/// Multiplier for spinning the camera on the roll axis
 	/// </summary>
 	[Export]
-	public double SPIN_SPEED = 10;
+	public static double SPIN_SPEED = 10;
 	/// <summary>
 	/// Initial distance in meters the camera should distance itself from the target
 	/// </summary>
 	[Export]
-	public double DEFAULT_DISTANCE = 20;
+	public static double DEFAULT_DISTANCE = 20;
 	/// <summary>
 	/// Multiplier for rotating the camera on the X axis
 	/// </summary>
 	[Export]
-	public double ROTATE_SPEED_X = 40;
+	public static double ROTATE_SPEED_X = 40;
 	/// <summary>
 	/// Multiplier for rotating the camera on the Y axis
 	/// </summary>
 	[Export]
-	public double ROTATE_SPEED_Y = 40;
+	public static double ROTATE_SPEED_Y = 40;
 	/// <summary>
 	/// Multiplier for rotating the camera via touch screen dragging
 	/// </summary>
 	[Export]
-	public double TOUCH_ZOOM_SPEED = 40;
+	public static double TOUCH_ZOOM_SPEED = 40;
 	/// <summary>
 	/// Multiplier for camera position fast movement
 	/// </summary>
 	[Export]
-	public double SHIFT_MULTIPLIER = 2.5;
+	public static double SHIFT_MULTIPLIER = 2.5;
 	/// <summary>
 	/// Multiplier for camera position slow movemnet
 	/// </summary>
 	[Export]
-	public double CTRL_MULTIPLIER = 0.4;
+	public static double CTRL_MULTIPLIER = 0.4;
 	/// <summary>
 	/// Acceleration multiplier for the freecam
 	/// </summary>
 	[Export]
-	public double FREECAM_ACCELERATION = 30;
+	public static double FREECAM_ACCELERATION = 30;
 	/// <summary>
 	/// Deceleration multiplier for the freecam
 	/// </summary>
 	[Export]
-	public double FREECAM_DECELERATION = -10;
+	public static double FREECAM_DECELERATION = -10;
 	/// <summary>
 	/// Velocity multiplier for the freecam
 	/// </summary>
 	[Export]
-	public double FREECAM_VELOCITY_MULTIPLIER = 4;
+	public static double FREECAM_VELOCITY_MULTIPLIER = 4;
 
 	//Common params
 	/// <summary>
@@ -88,27 +88,27 @@ public partial class ViewerCamera : Camera3D
 	/// Boolean to decide if camera should invert mouse vertical rotation 
 	/// </summary>
 	[Export]
-	public bool INVERT_MOUSE_VERTICAL_ROTATION = false;
+	public static bool INVERT_MOUSE_VERTICAL_ROTATION = false;
 	/// <summary>
 	/// Boolean to decide if camera should invert mouse horizontal rotation 
 	/// </summary>
 	[Export]
-	public bool INVERT_MOUSE_HORIZONTAL_ROTATION = false;
+	public static bool INVERT_MOUSE_HORIZONTAL_ROTATION = false;
 	/// <summary>
 	/// Boolean to decide if camera should invert gamepad vertical rotation 
 	/// </summary>
 	[Export]
-	public bool INVERT_GAMEPAD_VERTICAL_ROTATION = false;
+	public static bool INVERT_GAMEPAD_VERTICAL_ROTATION = false;
 	/// <summary>
 	/// Boolean to decide if camera should invert gamepad horizontal rotation 
 	/// </summary>
 	[Export]
-	public bool INVERT_GAMEPAD_HORIZONTAL_ROTATION = false;
+	public static bool INVERT_GAMEPAD_HORIZONTAL_ROTATION = false;
 	/// <summary>
 	/// Boolean to decide if camera should invert touch event rotation 
 	/// </summary>
 	[Export]
-	public bool INVERT_TOUCH_ROTATION = false;
+	public static bool INVERT_TOUCH_ROTATION = false;
 	/// <summary>
 	/// Target node
 	/// </summary>
@@ -257,11 +257,12 @@ public partial class ViewerCamera : Camera3D
 
 		// Computes the change in velocity due to desired direction and "drag"
 		// The "drag" is a constant acceleration on the camera to bring it's velocity to 0
-		var offset = freeCamDirection.Normalized() * (float)(FREECAM_ACCELERATION * FREECAM_VELOCITY_MULTIPLIER * delta) +
-			freeCamVelocity.Normalized() * (float)(FREECAM_DECELERATION * FREECAM_VELOCITY_MULTIPLIER * delta);
+		var offset = freeCamDirection.Normalized() * (float)(FREECAM_ACCELERATION * FREECAM_VELOCITY_MULTIPLIER * delta);
+		var drag = freeCamVelocity.Normalized() * (float)(FREECAM_DECELERATION * FREECAM_VELOCITY_MULTIPLIER * delta);
+		offset += drag;
 
-		// Mixes in speed multipliers
-		var ctrlMulti = Input.GetActionStrength("slow_down");
+        // Mixes in speed multipliers
+        var ctrlMulti = Input.GetActionStrength("slow_down");
 		var shiftMulti = Input.GetActionStrength("speed_up");
 
 		//Multiply by the result in case we're using an axis input

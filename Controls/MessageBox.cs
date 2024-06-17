@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using System;
 
-namespace User32
+namespace OverEasy.Controls
 {
     public static class MessageBox
     {
@@ -28,17 +28,17 @@ namespace User32
 
         public static MessageBoxResult Show(string text, string caption, MessageBoxButtons buttons, MessageBoxIcon icon)
         {
-            return (MessageBoxResult)MessageBoxA(IntPtr.Zero, text, caption, ((uint)buttons) | ((uint)icon));
+            return (MessageBoxResult)MessageBoxA(IntPtr.Zero, text, caption, (uint)buttons | (uint)icon);
         }
 
         public static MessageBoxResult Show(string text, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton button)
         {
-            return (MessageBoxResult)MessageBoxA(IntPtr.Zero, text, caption, ((uint)buttons) | ((uint)icon) | ((uint)button));
+            return (MessageBoxResult)MessageBoxA(IntPtr.Zero, text, caption, (uint)buttons | (uint)icon | (uint)button);
         }
 
         public static MessageBoxResult Show(string text, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton button, MessageBoxModal modal)
         {
-            return (MessageBoxResult)MessageBoxA(IntPtr.Zero, text, caption, ((uint)buttons) | ((uint)icon) | ((uint)button) | ((uint)modal));
+            return (MessageBoxResult)MessageBoxA(IntPtr.Zero, text, caption, (uint)buttons | (uint)icon | (uint)button | (uint)modal);
         }
     }
 

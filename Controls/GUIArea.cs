@@ -40,8 +40,7 @@ public partial class GUIArea : Area2D
                 }
             }
 		}
-
+        
         OverEasyGlobals.mouseInGuiArea = inside;
-        GD.Print(inside);
     }
 }
