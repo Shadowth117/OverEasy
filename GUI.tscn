@@ -505,6 +505,7 @@ script = ExtResource("20_bmy2d")
 [node name="Test" type="Node3D" parent="ModelRoot"]
 
 [node name="player" parent="ModelRoot/Test" instance=ExtResource("15_cvn4i")]
+visible = false
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="ModelRoot/Test"]
 root_node = NodePath("../player")

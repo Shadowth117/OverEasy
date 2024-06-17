@@ -1,6 +1,7 @@
 using AquaModelLibrary.Data.BillyHatcher;
 using AquaModelLibrary.Data.BillyHatcher.SetData;
 using AquaModelLibrary.Data.Ninja;
+using AquaModelLibrary.Data.PSO2.Aqua.AquaObjectData;
 using Godot;
 using OverEasy.Billy;
 using System;
@@ -39,9 +40,9 @@ namespace OverEasy
 		public static GameType gameType = GameType.None;
 		public static List<string> mapKeyOrderList = new List<string>();
 		public static Dictionary<string, string> mapNames = new Dictionary<string, string>();
-        public static bool allowedToUpdate = false;
+		public static bool allowedToUpdate = false;
 
-        public static bool mouseInGuiArea = false;
+		public static bool mouseInGuiArea = false;
 		public static SceneTree OESceneTree = null;
 		public static Viewport OEMainViewPort = null;
 		public static Tree setDataTree = null;
@@ -51,9 +52,9 @@ namespace OverEasy
 		public static ScrollContainer objectScrollContainer = null;
 		public static Button setDataTreeButton = null;
 		public static Button objectScrollContainerButton = null;
-        public static Dictionary<string, Container> activeObjectEditorObjects = new Dictionary<string, Container>();
+		public static Dictionary<string, Container> activeObjectEditorObjects = new Dictionary<string, Container>();
 
-        public static StageDef stgDef = null;
+		public static StageDef stgDef = null;
 		public static SetObjList loadedBillySetObjects = null;
 		public static SetObjList loadedBillySetDesignObjects = null;
 		public static Dictionary<int, SetObjDefinition> cachedBillySetObjDefinitions = new Dictionary<int, SetObjDefinition>();
@@ -147,16 +148,16 @@ namespace OverEasy
 		{
 			isDay = !isDay;
 
-            if (daySkybox != null)
-            {
-                daySkybox.Visible = isDay;
-            }
-            if (nightSkybox != null)
-            {
-                nightSkybox.Visible = !isDay;
-            }
-            ModelConversion.BillyModeNightToggle(modelRoot);
-        }
+			if (daySkybox != null)
+			{
+				daySkybox.Visible = isDay;
+			}
+			if (nightSkybox != null)
+			{
+				nightSkybox.Visible = !isDay;
+			}
+			ModelConversion.BillyModeNightToggle(modelRoot);
+		}
 
 		public static void CopyModFiles()
 		{
@@ -183,55 +184,55 @@ namespace OverEasy
 		/// Resets editor data when we try to load a new project to avoid shenanigans.
 		/// </summary>
 		public static void ResetLoadedData(string path)
-        {
-            modFolderLocation = null;
-            allowedToUpdate = false;
+		{
+			modFolderLocation = null;
+			allowedToUpdate = false;
 
-            currentObjectId = -1;
-            currentArchiveFileId = -1;
-            currentPRD = null;
-            currentArhiveFilename = null;
-            currentStageDefId = -1;
-            currentObjectTreeItem = null;
-            stgDef = null;
-            loadedBillySetObjects = null;
-            cachedBillySetObjDefinitions.Clear();
-            currentEditorType = EditingType.None;
-            var objDataContainer = (VBoxContainer)objectScrollContainer.GetChild(0);
-            foreach (var obj in activeObjectEditorObjects)
-            {
-                //Assume the object is in there. If it's not, we have some problems.
-                objDataContainer.RemoveChild(obj.Value);
-            }
-            activeObjectEditorObjects.Clear();
+			currentObjectId = -1;
+			currentArchiveFileId = -1;
+			currentPRD = null;
+			currentArhiveFilename = null;
+			currentStageDefId = -1;
+			currentObjectTreeItem = null;
+			stgDef = null;
+			loadedBillySetObjects = null;
+			cachedBillySetObjDefinitions.Clear();
+			currentEditorType = EditingType.None;
+			var objDataContainer = (VBoxContainer)objectScrollContainer.GetChild(0);
+			foreach (var obj in activeObjectEditorObjects)
+			{
+				//Assume the object is in there. If it's not, we have some problems.
+				objDataContainer.RemoveChild(obj.Value);
+			}
+			activeObjectEditorObjects.Clear();
 
-            if (setDataTree != null)
-            {
-                setDataTree.Clear();
-            }
+			if (setDataTree != null)
+			{
+				setDataTree.Clear();
+			}
 
-            ClearModelAndTextureData();
-        }
+			ClearModelAndTextureData();
+		}
 
-        private static void ClearModelAndTextureData()
-        {
-            globalTexturePool.Clear();
-            foreach (var set in orderedTextureArchivePools)
-            {
-                set.Value.Clear();
-            }
-            orderedTextureArchivePools.Clear();
-            foreach (var child in modelRoot.GetChildren())
-            {
-                modelRoot.RemoveChild(child);
-                child.QueueFree();
-            }
-        }
+		private static void ClearModelAndTextureData()
+		{
+			globalTexturePool.Clear();
+			foreach (var set in orderedTextureArchivePools)
+			{
+				set.Value.Clear();
+			}
+			orderedTextureArchivePools.Clear();
+			foreach (var child in modelRoot.GetChildren())
+			{
+				modelRoot.RemoveChild(child);
+				child.QueueFree();
+			}
+		}
 
-        /// <summary>
-        /// Actions for when the window size changes
-        /// </summary>
-        public static void OnWindowSizeChanged()
+		/// <summary>
+		/// Actions for when the window size changes
+		/// </summary>
+		public static void OnWindowSizeChanged()
 		{
 			var viewPortSize = OEMainViewPort.GetVisibleRect().Size;
 			setDataTree.Size = new Vector2(300, viewPortSize.Y - 31);
@@ -531,10 +532,10 @@ namespace OverEasy
 					if (setDesignId != -1)
 					{
 						currentPRD.files[setDesignId] = loadedBillySetDesignObjects.GetBytes();
-                    }
-                    //Make sure we have backups if they're not there already
-                    backupFileName = Path.Combine(backupFolderLocation, currentArhiveFilename);
-                    if (!File.Exists(backupFileName))
+					}
+					//Make sure we have backups if they're not there already
+					backupFileName = Path.Combine(backupFolderLocation, currentArhiveFilename);
+					if (!File.Exists(backupFileName))
 					{
 						File.Copy(Path.Combine(gameFolderLocation, currentArhiveFilename), backupFileName);
 					}
@@ -542,18 +543,18 @@ namespace OverEasy
 					break;
 				case GameType.BillyPC:
 					//Make sure we have backups if they're not there already
-                    backupFileName = Path.Combine(backupFolderLocation, setName);
-                    if (!File.Exists(backupFileName))
-                    {
-                        File.Copy(Path.Combine(gameFolderLocation, setName), backupFileName);
-                    }
-                    backupFileName = Path.Combine(backupFolderLocation, setDesignName);
-                    if (!File.Exists(backupFileName))
-                    {
-                        File.Copy(Path.Combine(gameFolderLocation, setDesignName), backupFileName);
-                    }
+					backupFileName = Path.Combine(backupFolderLocation, setName);
+					if (!File.Exists(backupFileName))
+					{
+						File.Copy(Path.Combine(gameFolderLocation, setName), backupFileName);
+					}
+					backupFileName = Path.Combine(backupFolderLocation, setDesignName);
+					if (!File.Exists(backupFileName))
+					{
+						File.Copy(Path.Combine(gameFolderLocation, setDesignName), backupFileName);
+					}
 
-                    File.WriteAllBytes(Path.Combine(modFolderLocation, setName), loadedBillySetObjects.GetBytes());
+					File.WriteAllBytes(Path.Combine(modFolderLocation, setName), loadedBillySetObjects.GetBytes());
 					File.WriteAllBytes(Path.Combine(modFolderLocation, setDesignName), loadedBillySetDesignObjects.GetBytes());
 					break;
 			}
@@ -568,14 +569,14 @@ namespace OverEasy
 			switch (gameType)
 			{
 				case GameType.BillyPC:
-                    daySkybox = null;
-                    nightSkybox = null;
-                    dayNightToggle.ButtonPressed = true;
-                    isDay = true;
-                    SetCameraSettingsBilly();
-                    ClearModelAndTextureData();
-                    //Load Set Design
-                    string setDesignFilePath = GetAssetPath(def.setDesignFilename);
+					daySkybox = null;
+					nightSkybox = null;
+					dayNightToggle.ButtonPressed = true;
+					isDay = true;
+					SetCameraSettingsBilly();
+					ClearModelAndTextureData();
+					//Load Set Design
+					string setDesignFilePath = GetAssetPath(def.setDesignFilename);
 					if (File.Exists(setDesignFilePath))
 					{
 						loadedBillySetDesignObjects = new SetObjList(File.ReadAllBytes(setDesignFilePath));
@@ -594,23 +595,23 @@ namespace OverEasy
 						modelRoot.AddChild(Billy.ModelConversion.LNDToGDModel(def.lndFilename, new LND(File.ReadAllBytes(lndPath))));
 					}
 
-                    if (daySkybox != null)
-                    {
-                        daySkybox.Visible = isDay;
-                    }
-                    if (nightSkybox != null)
-                    {
-                        nightSkybox.Visible = !isDay;
-                    }
-                    break;
+					if (daySkybox != null)
+					{
+						daySkybox.Visible = isDay;
+					}
+					if (nightSkybox != null)
+					{
+						nightSkybox.Visible = !isDay;
+					}
+					break;
 				case GameType.BillyGC:
-                    daySkybox = null;
-                    nightSkybox = null;
+					daySkybox = null;
+					nightSkybox = null;
 					dayNightToggle.ButtonPressed = true;
-                    isDay = true;
-                    SetCameraSettingsBilly();
-                    ClearModelAndTextureData();
-                    var prdMissionname = GetBillyMissionName(def.missionName);
+					isDay = true;
+					SetCameraSettingsBilly();
+					ClearModelAndTextureData();
+					var prdMissionname = GetBillyMissionName(def.missionName);
 					currentPRD = new PRD(File.ReadAllBytes(GetAssetPath($"k_{prdMissionname}.prd")));
 
 					for (int i = 0; i < currentPRD.files.Count; i++)
@@ -652,14 +653,14 @@ namespace OverEasy
 					if(daySkybox != null)
 					{
 						daySkybox.Visible = isDay;
-                    }
-                    if (nightSkybox != null)
-                    {
-                        nightSkybox.Visible = !isDay;
-                    }
+					}
+					if (nightSkybox != null)
+					{
+						nightSkybox.Visible = !isDay;
+					}
 
-                    //Load common object models, enemies, items. May want to do this in the initial load step
-                    break;
+					//Load common object models, enemies, items. May want to do this in the initial load step
+					break;
 			}
 		}
 
@@ -677,28 +678,28 @@ namespace OverEasy
 			ViewerCamera.FREECAM_ACCELERATION = 30;
 			ViewerCamera.FREECAM_DECELERATION = -10;
 			ViewerCamera.FREECAM_VELOCITY_MULTIPLIER = 4;
-        }
-        public static void SetCameraSettingsBilly()
-        {
-            ViewerCamera.SCROLL_SPEED = 1000;
-            ViewerCamera.ZOOM_SPEED = 500;
-            ViewerCamera.SPIN_SPEED = 10;
-            ViewerCamera.DEFAULT_DISTANCE = 2000;
-            ViewerCamera.ROTATE_SPEED_X = 40;
-            ViewerCamera.ROTATE_SPEED_Y = 40;
-            ViewerCamera.TOUCH_ZOOM_SPEED = 4000;
-            ViewerCamera.SHIFT_MULTIPLIER = 2.5;
-            ViewerCamera.CTRL_MULTIPLIER = 0.4;
-            ViewerCamera.FREECAM_ACCELERATION = 3000;
-            ViewerCamera.FREECAM_DECELERATION = -10;
-            ViewerCamera.FREECAM_VELOCITY_MULTIPLIER = 400;
-        }
+		}
+		public static void SetCameraSettingsBilly()
+		{
+			ViewerCamera.SCROLL_SPEED = 1000;
+			ViewerCamera.ZOOM_SPEED = 500;
+			ViewerCamera.SPIN_SPEED = 10;
+			ViewerCamera.DEFAULT_DISTANCE = 2000;
+			ViewerCamera.ROTATE_SPEED_X = 40;
+			ViewerCamera.ROTATE_SPEED_Y = 40;
+			ViewerCamera.TOUCH_ZOOM_SPEED = 4000;
+			ViewerCamera.SHIFT_MULTIPLIER = 2.5;
+			ViewerCamera.CTRL_MULTIPLIER = 0.4;
+			ViewerCamera.FREECAM_ACCELERATION = 3000;
+			ViewerCamera.FREECAM_DECELERATION = -10;
+			ViewerCamera.FREECAM_VELOCITY_MULTIPLIER = 400;
+		}
 
-        /// <summary>
-        /// For some reason this one mission doesn't correlate to the actual mission name.
-        /// Billy mission names are technically hardcoded, but in most cases we can infer them from the stagedef mission name anyways.
-        /// </summary>
-        private static string GetBillyMissionName(string missionName)
+		/// <summary>
+		/// For some reason this one mission doesn't correlate to the actual mission name.
+		/// Billy mission names are technically hardcoded, but in most cases we can infer them from the stagedef mission name anyways.
+		/// </summary>
+		private static string GetBillyMissionName(string missionName)
 		{
 			if (missionName == "last")
 			{
@@ -713,6 +714,10 @@ namespace OverEasy
 		/// </summary>
 		public static string GetAssetPath(string fileName)
 		{
+			if(fileName == "" || fileName == null)
+			{
+				return "";
+			}
 			var modPath = Path.Combine(modFolderLocation, fileName);
 			if (File.Exists(modPath))
 			{
@@ -848,8 +853,8 @@ namespace OverEasy
 			{
 				var objName = activeObjectEditorObjects["ObjectId"];
 				var objNameText = (RichTextLabel)objName.GetChild(0);
-				objNameText.Text = template?.ObjectName != "" && template.ObjectName != null ? template.ObjectName : $"Object {setObj.objectId}";
-				currentObjectTreeItem.SetText(0, template?.ObjectName != "" && template.ObjectName != null ? template.ObjectName : $"Object Type {setObj.objectId}");
+				objNameText.Text = template?.ObjectName != "" && template.ObjectName != null ? template.ObjectName : $"Object {setObj.objectId} 0x{setObj.objectId:X}";
+				currentObjectTreeItem.SetText(0, template?.ObjectName != "" && template.ObjectName != null ? template.ObjectName : $"Object Type {setObj.objectId} 0x{setObj.objectId:X}");
 			}
 
 			LoadVec3SchemaTemplateInfo("ObjectPosition", template.Position, "Position", template.PositionHint, template.PositionX, template.PositionY, template.PositionZ);
@@ -1169,54 +1174,61 @@ namespace OverEasy
 					GD.Print(activeNode.GetText(0) + $" {activeNode.GetIndex()}");
 
 					//Populate Set Objects
-					var temp = activeNode.CreateChild();
-					temp.SetText(0, "Set Objects");
-					temp.SetMetadata(0, 2);
-					for (int i = 0; i < loadedBillySetObjects.setObjs.Count; i++)
-					{
-						var obj = loadedBillySetObjects.setObjs[i];
-						var objNode = temp.CreateChild();
-						if (cachedBillySetObjDefinitions.ContainsKey(obj.objectId))
-						{
-							objNode.SetText(0, cachedBillySetObjDefinitions[obj.objectId].ObjectName);
-						}
-						else
-						{
-							objNode.SetText(0, $"Object Type {obj.objectId}");
-						}
+					TreeItem temp;
+					if(loadedBillySetObjects != null && loadedBillySetObjects?.setObjs?.Count != 0)
+                    {
+                        temp = activeNode.CreateChild();
+                        temp.SetText(0, "Set Objects");
+                        temp.SetMetadata(0, 2);
+                        for (int i = 0; i < loadedBillySetObjects.setObjs.Count; i++)
+                        {
+                            var obj = loadedBillySetObjects.setObjs[i];
+                            var objNode = temp.CreateChild();
+                            if (cachedBillySetObjDefinitions.ContainsKey(obj.objectId))
+                            {
+                                objNode.SetText(0, cachedBillySetObjDefinitions[obj.objectId].ObjectName);
+                            }
+                            else
+                            {
+                                objNode.SetText(0, $"Object Type {obj.objectId} 0x{obj.objectId:X}");
+                            }
 
-						//Node type
-						objNode.SetMetadata(0, 3);
-						//Node's original object id
-						objNode.SetMetadata(1, i);
-						//Node's object category
-						objNode.SetMetadata(2, 1);
-					}
-					temp.Collapsed = true;
+                            //Node type
+                            objNode.SetMetadata(0, 3);
+                            //Node's original object id
+                            objNode.SetMetadata(1, i);
+                            //Node's object category
+                            objNode.SetMetadata(2, 1);
+                        }
+                        temp.Collapsed = true;
+                    }
 
-					temp = activeNode.CreateChild();
-					temp.SetText(0, "Set Design Objects");
-					temp.SetMetadata(0, 2);
-					for (int i = 0; i < loadedBillySetDesignObjects.setObjs.Count; i++)
-					{
-						var obj = loadedBillySetDesignObjects.setObjs[i];
-						var objNode = temp.CreateChild();
-						if (cachedBillySetObjDefinitions.ContainsKey(obj.objectId))
-						{
-							objNode.SetText(0, cachedBillySetObjDefinitions[obj.objectId].ObjectName);
-						}
-						else
-						{
-							objNode.SetText(0, $"Object Type {obj.objectId}");
-						}
-						//Node type
-						objNode.SetMetadata(0, 3);
-						//Node's original object id
-						objNode.SetMetadata(1, i);
-						//Node's object category
-						objNode.SetMetadata(2, 2);
-					}
-					temp.Collapsed = true;
+					if(loadedBillySetDesignObjects?.setObjs?.Count != 0)
+                    {
+                        temp = activeNode.CreateChild();
+                        temp.SetText(0, "Set Design Objects");
+                        temp.SetMetadata(0, 2);
+                        for (int i = 0; i < loadedBillySetDesignObjects.setObjs.Count; i++)
+                        {
+                            var obj = loadedBillySetDesignObjects.setObjs[i];
+                            var objNode = temp.CreateChild();
+                            if (cachedBillySetObjDefinitions.ContainsKey(obj.objectId))
+                            {
+                                objNode.SetText(0, cachedBillySetObjDefinitions[obj.objectId].ObjectName);
+                            }
+                            else
+                            {
+                                objNode.SetText(0, $"Object Type {obj.objectId} 0x{obj.objectId:X}");
+                            }
+                            //Node type
+                            objNode.SetMetadata(0, 3);
+                            //Node's original object id
+                            objNode.SetMetadata(1, i);
+                            //Node's object category
+                            objNode.SetMetadata(2, 2);
+                        }
+                        temp.Collapsed = true;
+                    }
 					activeNode.Collapsed = false;
 					break;
 				//mission Node Data Type - SetObject, Camera, etc.
