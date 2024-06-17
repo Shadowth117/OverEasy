@@ -1,5 +1,6 @@
 using AquaModelLibrary.Data.BillyHatcher;
 using AquaModelLibrary.Data.BillyHatcher.LNDH;
+using AquaModelLibrary.Data.Ninja;
 using AquaModelLibrary.Data.PSO2.Aqua.AquaNodeData;
 using ArchiveLib;
 using Godot;
@@ -158,6 +159,26 @@ namespace OverEasy.Billy
 
                 //Add animated models
                 //These could technically contain multiple nodes per model, but they don't. Howver the nodes that are there do transform the model, unlike the static models
+                foreach (var modelSet in lnd.arcLndAnimatedMeshDataList)
+                {
+                    string modelName = $"{modelSet.GetHashCode()}_{modelSet.MPLAnimId}";
+                    Node3D node = new Node3D();
+                    node.Name = modelName;
+                    AddARCLNDModelData(lnd, modelSet.model, node, gvmTextures, gvrAlphaTypes);
+                    var bnd = modelSet.model.arcBoundingList[0];
+                    var pos = bnd.Position;
+                    var rot = bnd.GetRotation() * (float)NinjaConstants.FromRadiansToDegrees;
+                    var scl = bnd.Scale;
+                    node.Scale = new Vector3(scl.X, scl.Y, scl.Z);
+                    node.Rotation = new Vector3(rot.X, rot.Y, rot.Z);
+                    node.Position = new Vector3(pos.X, pos.Y, pos.Z);
+
+                    //Convert MPL animation to a Godot animation
+
+                    //Add animation and AnimationPlayer, set animation
+
+                    root.AddChild(node);
+                }
             }
             else
             {
