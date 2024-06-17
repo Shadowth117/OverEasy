@@ -507,6 +507,7 @@ namespace OverEasy
 			//When saving, because things are in archives, we try to save everything together.
 			var setName = stgDef.defs[currentStageDefId].setObjFilename;
 			var setDesignName = stgDef.defs[currentStageDefId].setDesignFilename;
+			string backupFileName;
 			switch (gameType)
 			{
 				case GameType.BillyGC:
@@ -530,11 +531,29 @@ namespace OverEasy
 					if (setDesignId != -1)
 					{
 						currentPRD.files[setDesignId] = loadedBillySetDesignObjects.GetBytes();
+                    }
+                    //Make sure we have backups if they're not there already
+                    backupFileName = Path.Combine(backupFolderLocation, currentArhiveFilename);
+                    if (!File.Exists(backupFileName))
+					{
+						File.Copy(Path.Combine(gameFolderLocation, currentArhiveFilename), backupFileName);
 					}
 					File.WriteAllBytes(Path.Combine(modFolderLocation, currentArhiveFilename), currentPRD.GetBytes());
 					break;
 				case GameType.BillyPC:
-					File.WriteAllBytes(Path.Combine(modFolderLocation, setName), loadedBillySetObjects.GetBytes());
+					//Make sure we have backups if they're not there already
+                    backupFileName = Path.Combine(backupFolderLocation, setName);
+                    if (!File.Exists(backupFileName))
+                    {
+                        File.Copy(Path.Combine(gameFolderLocation, setName), backupFileName);
+                    }
+                    backupFileName = Path.Combine(backupFolderLocation, setDesignName);
+                    if (!File.Exists(backupFileName))
+                    {
+                        File.Copy(Path.Combine(gameFolderLocation, setDesignName), backupFileName);
+                    }
+
+                    File.WriteAllBytes(Path.Combine(modFolderLocation, setName), loadedBillySetObjects.GetBytes());
 					File.WriteAllBytes(Path.Combine(modFolderLocation, setDesignName), loadedBillySetDesignObjects.GetBytes());
 					break;
 			}
