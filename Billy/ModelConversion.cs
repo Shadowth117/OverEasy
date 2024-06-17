@@ -1,7 +1,5 @@
 using AquaModelLibrary.Data.BillyHatcher;
 using AquaModelLibrary.Data.BillyHatcher.LNDH;
-using AquaModelLibrary.Data.Ninja;
-using AquaModelLibrary.Data.PSO2.Aqua.AquaNodeData;
 using ArchiveLib;
 using Godot;
 using System;
@@ -20,7 +18,7 @@ namespace OverEasy.Billy
                 BillyModeNightToggleMesh((ArrayMesh)((MeshInstance3D)parentNode).Mesh);
             }
             var nodes = parentNode.GetChildren();
-            foreach(var node in nodes)
+            foreach (var node in nodes)
             {
                 BillyModeNightToggle(node);
             }
@@ -37,9 +35,9 @@ namespace OverEasy.Billy
                 var meshArrs = mesh.SurfaceGetArrays(s);
                 var format = mesh.SurfaceGetFormat(s);
                 List<Mesh.ArrayFormat> formatList = new List<Mesh.ArrayFormat>();
-                foreach(var fmt in Enum.GetValues(typeof(Mesh.ArrayFormat)))
+                foreach (var fmt in Enum.GetValues(typeof(Mesh.ArrayFormat)))
                 {
-                    if((format & (Mesh.ArrayFormat)fmt) > 0)
+                    if ((format & (Mesh.ArrayFormat)fmt) > 0)
                     {
                         formatList.Add((Mesh.ArrayFormat)fmt);
                     }
@@ -95,7 +93,7 @@ namespace OverEasy.Billy
                 var entry = (GVMEntry)gvm.Entries[i];
                 var tex = new GvrTexture(entry.Data);
                 var texArray = tex.ToArray();
-                for(int t = 0; t < texArray.Length - 4; t+=4)
+                for (int t = 0; t < texArray.Length - 4; t += 4)
                 {
                     var temp = texArray[t + 2];
                     texArray[t + 2] = texArray[t];
@@ -145,7 +143,7 @@ namespace OverEasy.Billy
                     Node3D node = new Node3D();
                     node.Name = modelName;
                     AddARCLNDModelData(lnd, modelSet.model, node, gvmTextures, gvrAlphaTypes);
-                    if(node.Name.ToString().ToLower() == "sphere000")
+                    if (node.Name.ToString().ToLower() == "sphere000")
                     {
                         OverEasyGlobals.daySkybox = node;
                     }
@@ -167,7 +165,8 @@ namespace OverEasy.Billy
                     AddARCLNDModelData(lnd, modelSet.model, node, gvmTextures, gvrAlphaTypes);
                     var bnd = modelSet.model.arcBoundingList[0];
                     var pos = bnd.Position;
-                    var rot = bnd.GetRotation() * (float)NinjaConstants.FromRadiansToDegrees;
+                    //We want the radians, so we leave it like this
+                    var rot = bnd.GetRotation();
                     var scl = bnd.Scale;
                     node.Scale = new Vector3(scl.X, scl.Y, scl.Z);
                     node.Rotation = new Vector3(rot.X, rot.Y, rot.Z);
@@ -209,7 +208,6 @@ namespace OverEasy.Billy
                     //Set up and assign material to surface
                     StandardMaterial3D gdMaterial = new StandardMaterial3D();
                     gdMaterial.VertexColorUseAsAlbedo = true;
-                    gdMaterial.AlbedoTexture = gvmTextures[texId];
 
                     /*
                     if ((mat.entry.RenderFlags & (ARCLNDRenderFlags.EnableLighting)) == 0)
@@ -221,19 +219,23 @@ namespace OverEasy.Billy
                     {
                         gdMaterial.CullMode = BaseMaterial3D.CullModeEnum.Disabled;
                     }
-                    switch(gvrAlphaTypes[texId])
+                    if(texId != -1)
                     {
-                        case 0:
-                            gdMaterial.Transparency = BaseMaterial3D.TransparencyEnum.Disabled;
-                            break;
-                        case 1:
-                            gdMaterial.Transparency = BaseMaterial3D.TransparencyEnum.AlphaScissor;
-                            break;
-                        case 2:
-                            gdMaterial.Transparency = BaseMaterial3D.TransparencyEnum.Alpha;
-                            break;
+                        gdMaterial.AlbedoTexture = gvmTextures[texId];
+                        switch (gvrAlphaTypes[texId])
+                        {
+                            case 0:
+                                gdMaterial.Transparency = BaseMaterial3D.TransparencyEnum.Disabled;
+                                break;
+                            case 1:
+                                gdMaterial.Transparency = BaseMaterial3D.TransparencyEnum.AlphaScissor;
+                                break;
+                            case 2:
+                                gdMaterial.Transparency = BaseMaterial3D.TransparencyEnum.Alpha;
+                                break;
+                        }
                     }
-                    
+
                     meshInst.Mesh = meshData;
                     meshData.SurfaceSetMaterial(0, gdMaterial);
                     modelParent.AddChild(meshInst);
@@ -365,7 +367,7 @@ namespace OverEasy.Billy
             if ((flags & ArcLndVertType.UV1) > 0)
             {
                 var billyUv = mdl.arcVertDataSetList[0].UV1Data[faceIds[i]];
-                billyData.uvList.Add(new Vector2((float)(billyUv[0] / 255.0), (float)(billyUv[1] / 255.0)));
+                billyData.uvList.Add(new Vector2((float)(billyUv[0] / 256.0), (float)(billyUv[1] / 256.0)));
                 i++;
             }
         }
