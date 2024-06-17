@@ -506,7 +506,7 @@ namespace OverEasy
 		{
 			//When saving, because things are in archives, we try to save everything together.
 			var setName = stgDef.defs[currentStageDefId].setObjFilename;
-			var setDesignName = stgDef.defs[currentStageDefId].setObjFilename;
+			var setDesignName = stgDef.defs[currentStageDefId].setDesignFilename;
 			switch (gameType)
 			{
 				case GameType.BillyGC:
