@@ -1,5 +1,7 @@
 using AquaModelLibrary.Data.BillyHatcher;
 using AquaModelLibrary.Data.BillyHatcher.LNDH;
+using AquaModelLibrary.Data.Ninja;
+using AquaModelLibrary.Data.Ninja.Model;
 using ArchiveLib;
 using Godot;
 using System;
@@ -79,6 +81,64 @@ namespace OverEasy.Billy
             {
                 mesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, meshList[i], null, null, (Mesh.ArrayFormat)((int)Mesh.ArrayCustomFormat.RgbaFloat << (int)Mesh.ArrayFormat.FormatCustom0Shift));
                 mesh.SurfaceSetMaterial(i, matList[i]);
+            }
+        }
+
+        public static Node3D CreateDefaultObjectModel(string name, Color color)
+        {
+            Node3D root = new Node3D();
+            MeshInstance3D meshInst = new MeshInstance3D();
+            var sphere = new SphereMesh();
+            sphere.Radius = 10;
+            var mat = new StandardMaterial3D();
+            mat.AlbedoColor = color;
+
+            sphere.Material = mat;
+            meshInst.Mesh = sphere;
+            root.AddChild(meshInst);
+
+            return root;
+        }
+
+        public static Node3D NinjaToGDModelClone(Node3D modelNode)
+        {
+            Node3D root = new Node3D();
+            root.AddChild(modelNode.GetChild(0).Duplicate());
+            root.AddChild(modelNode.GetChild(1).Duplicate());
+
+            return root;
+        }
+
+        /// <summary>
+        /// Returns a Node3D containing a mesh instances with the model's arraymesh and a skeleton equivalent to the NJSObject nodes of the provided model.
+        /// </summary>
+        public static Node3D NinjaToGDModel(string name, NJSObject nj, NJTextureList texList)
+        {
+            Node3D root = new Node3D();
+            root.Name = name;
+
+            MeshInstance3D meshInst = new MeshInstance3D();
+            ArrayMesh mesh = new ArrayMesh();
+            
+            Skeleton3D skeleton = new Skeleton3D();
+            skeleton.RotationOrder = EulerOrder.Xyz;
+            skeleton.Name = name + "_skel";
+            
+            IterateNJSObject(nj, mesh, skeleton);
+            
+            meshInst.Mesh = mesh;
+            meshInst.Skeleton = skeleton.GetPath();
+            root.AddChild(meshInst);
+            root.AddChild(skeleton);
+            return root;
+        }
+
+
+        private static void IterateNJSObject(NJSObject nj, ArrayMesh mesh, Skeleton3D skel)
+        {
+            if (nj.mesh != null)
+            {
+
             }
         }
 

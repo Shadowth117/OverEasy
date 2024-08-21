@@ -2,6 +2,7 @@ using Godot;
 using Godot.Collections;
 using System.Linq;
 using OverEasy;
+using System.Diagnostics;
 
 public partial class ViewerCamera : Camera3D
 {
@@ -15,62 +16,62 @@ public partial class ViewerCamera : Camera3D
 	/// <summary>
 	/// Multiplier for zooming in and out with a mouse
 	/// </summary>
-	[Export]
+	
 	public static double SCROLL_SPEED = 10;
 	/// <summary>
 	/// Multiplier for zooming and out with a touch screen
 	/// </summary>
-	[Export]
+	
 	public static double ZOOM_SPEED = 5;
 	/// <summary>
 	/// Multiplier for spinning the camera on the roll axis
 	/// </summary>
-	[Export]
+	
 	public static double SPIN_SPEED = 10;
 	/// <summary>
 	/// Initial distance in meters the camera should distance itself from the target
 	/// </summary>
-	[Export]
+	
 	public static double DEFAULT_DISTANCE = 20;
 	/// <summary>
 	/// Multiplier for rotating the camera on the X axis
 	/// </summary>
-	[Export]
+	
 	public static double ROTATE_SPEED_X = 40;
 	/// <summary>
 	/// Multiplier for rotating the camera on the Y axis
 	/// </summary>
-	[Export]
+	
 	public static double ROTATE_SPEED_Y = 40;
 	/// <summary>
 	/// Multiplier for rotating the camera via touch screen dragging
 	/// </summary>
-	[Export]
+	
 	public static double TOUCH_ZOOM_SPEED = 40;
 	/// <summary>
 	/// Multiplier for camera position fast movement
 	/// </summary>
-	[Export]
+	
 	public static double SHIFT_MULTIPLIER = 2.5;
 	/// <summary>
 	/// Multiplier for camera position slow movemnet
 	/// </summary>
-	[Export]
+	
 	public static double CTRL_MULTIPLIER = 0.4;
 	/// <summary>
 	/// Acceleration multiplier for the freecam
 	/// </summary>
-	[Export]
+	
 	public static double FREECAM_ACCELERATION = 30;
 	/// <summary>
 	/// Deceleration multiplier for the freecam
 	/// </summary>
-	[Export]
+	
 	public static double FREECAM_DECELERATION = -10;
 	/// <summary>
 	/// Velocity multiplier for the freecam
 	/// </summary>
-	[Export]
+	
 	public static double FREECAM_VELOCITY_MULTIPLIER = 4;
 
 	//Common params
@@ -87,27 +88,27 @@ public partial class ViewerCamera : Camera3D
 	/// <summary>
 	/// Boolean to decide if camera should invert mouse vertical rotation 
 	/// </summary>
-	[Export]
+	
 	public static bool INVERT_MOUSE_VERTICAL_ROTATION = false;
 	/// <summary>
 	/// Boolean to decide if camera should invert mouse horizontal rotation 
 	/// </summary>
-	[Export]
+	
 	public static bool INVERT_MOUSE_HORIZONTAL_ROTATION = false;
 	/// <summary>
 	/// Boolean to decide if camera should invert gamepad vertical rotation 
 	/// </summary>
-	[Export]
+	
 	public static bool INVERT_GAMEPAD_VERTICAL_ROTATION = false;
 	/// <summary>
 	/// Boolean to decide if camera should invert gamepad horizontal rotation 
 	/// </summary>
-	[Export]
+	
 	public static bool INVERT_GAMEPAD_HORIZONTAL_ROTATION = false;
 	/// <summary>
 	/// Boolean to decide if camera should invert touch event rotation 
 	/// </summary>
-	[Export]
+	
 	public static bool INVERT_TOUCH_ROTATION = false;
 	/// <summary>
 	/// Target node
@@ -121,7 +122,11 @@ public partial class ViewerCamera : Camera3D
 	/// </summary>
 	public CameraMode cameraMode = CameraMode.Freecam;
 	/// <summary>
-	/// Current mouse movement speed
+	/// Current mouse movement speed during a right click
+	/// </summary>
+	public Vector2 mouseRightClickMoveSpeed = new Vector2();
+	/// <summary>
+	/// Current mouse movement speed 
 	/// </summary>
 	public Vector2 mouseMoveSpeed = new Vector2();
 	/// <summary>
@@ -189,15 +194,15 @@ public partial class ViewerCamera : Camera3D
 			}
 
 			//Reset mouseMoveSpeed so we don't repeat the previous movement info
-			mouseMoveSpeed = new Vector2();
+			mouseRightClickMoveSpeed = new Vector2();
 		}
 	}
 
 	public void _ProcessOrbit(double delta)
 	{
 		// Update rotation
-		_orbitRotation.X += (float)(-mouseMoveSpeed.Y * delta * ROTATE_SPEED_X * sensitivityX);
-		_orbitRotation.Y += (float)(-mouseMoveSpeed.X * delta * ROTATE_SPEED_Y * sensitivityY);
+		_orbitRotation.X += (float)(-mouseRightClickMoveSpeed.Y * delta * ROTATE_SPEED_X * sensitivityX);
+		_orbitRotation.Y += (float)(-mouseRightClickMoveSpeed.X * delta * ROTATE_SPEED_Y * sensitivityY);
 
 		//_rotation.z += _spin_speed * delta
 
@@ -211,7 +216,7 @@ public partial class ViewerCamera : Camera3D
 			_orbitRotation.X = Mathf.Pi / 2;
 		}
 
-		mouseMoveSpeed = new Vector2();
+		mouseRightClickMoveSpeed = new Vector2();
 
 		// Update distance
 		_distance += scrollSpeed * delta;
@@ -236,8 +241,8 @@ public partial class ViewerCamera : Camera3D
 	public void _ProcessFreecam(double delta)
 	{
 		//Update Mouse Info
-		var yaw = mouseMoveSpeed.X * sensitivityX;
-		var pitch = mouseMoveSpeed.Y * sensitivityY;
+		var yaw = mouseRightClickMoveSpeed.X * sensitivityX;
+		var pitch = mouseRightClickMoveSpeed.Y * sensitivityY;
 
 		pitch = Mathf.Clamp(pitch, -90 - freecamTotalPitch, 90 - freecamTotalPitch);
 		freecamTotalPitch += pitch;
@@ -261,8 +266,8 @@ public partial class ViewerCamera : Camera3D
 		var drag = freeCamVelocity.Normalized() * (float)(FREECAM_DECELERATION * FREECAM_VELOCITY_MULTIPLIER * delta);
 		offset += drag;
 
-        // Mixes in speed multipliers
-        var ctrlMulti = Input.GetActionStrength("slow_down");
+		// Mixes in speed multipliers
+		var ctrlMulti = Input.GetActionStrength("slow_down");
 		var shiftMulti = Input.GetActionStrength("speed_up");
 
 		//Multiply by the result in case we're using an axis input
@@ -288,16 +293,16 @@ public partial class ViewerCamera : Camera3D
 		switch (@event)
 		{
 			case InputEventMouseMotion iemmEvent:
-				_ProcessMouseRotationEvent(iemmEvent);
+				_ProcessMouseMovementEvent(iemmEvent);
 				break;
 			case InputEventMouseButton iembEvent:
-				_ProcessMouseScrollEvent(iembEvent);
+				_ProcessMouseButtonEvent(iembEvent);
 				break;
 			case InputEventScreenTouch iestEvent:
 				_ProcessTouchZoomEvent(iestEvent);
 				break;
 			case InputEventScreenDrag iesdEvent:
-				_ProcessTouchRotationEvent(iesdEvent);
+				_ProcessTouchMovementEvent(iesdEvent);
 				break;
 			case InputEventKey iekEvent:
 				//Placeholder
@@ -335,15 +340,42 @@ public partial class ViewerCamera : Camera3D
 		}
 	}
 
-	public void _ProcessMouseRotationEvent(InputEventMouseMotion e)
-	{
+	public void _ProcessMouseMovementEvent(InputEventMouseMotion e)
+	{                
+		//Check for if we're hovering over a gizmo piece. This is for highlighting them as well as handling them as 'selected'.
+		var start = ProjectRayOrigin(e.Position);
+		var end = ProjectPosition(e.Position, 2000);
+		var spaceState = GetWorld3D().DirectSpaceState;
+
+		//Check for a collision with a transform gizmo piece
+		var gizmoQuery = PhysicsRayQueryParameters3D.Create(start, end, 2);
+		var gizmoResult = spaceState.IntersectRay(gizmoQuery);
+
+		//If we hit a Gizmo piece, we should highlight it
+		if(gizmoResult.Count > 0)
+		{
+			OverEasyGlobals.TransformGizmo.SetHover((StaticBody3D)gizmoResult["collider"]);
+		} else
+		{
+			OverEasyGlobals.TransformGizmo.SetHover(null);
+		}
+
+		//Reset the selection point if the mouse moves too far from it
+		if (e.Position.X > OverEasyGlobals.PreviousMouseSelectionPoint.X + OverEasyGlobals.MouseNotMovedThresholdX || e.Position.X < OverEasyGlobals.PreviousMouseSelectionPoint.X - OverEasyGlobals.MouseNotMovedThresholdX ||
+			e.Position.Y > OverEasyGlobals.PreviousMouseSelectionPoint.Y + OverEasyGlobals.MouseNotMovedThresholdY || e.Position.Y < OverEasyGlobals.PreviousMouseSelectionPoint.Y - OverEasyGlobals.MouseNotMovedThresholdY)
+		{
+			OverEasyGlobals.ClearPreviousMouseSelectionCache();
+		}
+
+		//Get mouse movement speed for camera rotation
 		if (Input.IsMouseButtonPressed(MouseButton.Right))
 		{
-			mouseMoveSpeed = e.Relative;
+			mouseRightClickMoveSpeed = e.Relative;
 		}
+		mouseMoveSpeed = e.Relative;
 	}
 
-	public void _ProcessMouseScrollEvent(InputEventMouseButton e)
+	public void _ProcessMouseButtonEvent(InputEventMouseButton e)
 	{
 		switch (e.ButtonIndex)
 		{
@@ -355,10 +387,28 @@ public partial class ViewerCamera : Camera3D
 				break;
 			case MouseButton.Middle:
 				break;
+			case MouseButton.Left: 
+				if(e.IsReleased() && OverEasyGlobals.CanMove3dCamera)
+				{
+					var start = ProjectRayOrigin(e.Position);
+					var end = ProjectPosition(e.Position, 1000000000000);
+					var spaceState = GetWorld3D().DirectSpaceState;
+
+					PhysicsRayQueryParameters3D query = PhysicsRayQueryParameters3D.Create(start, end, 1, new Godot.Collections.Array<Rid> { });
+					var result = spaceState.IntersectRay(query);
+					if (result.Count == 0)
+					{
+						OverEasyGlobals.ClearPreviousMouseSelectionCache();
+						query = PhysicsRayQueryParameters3D.Create(start, end, 1, new Godot.Collections.Array<Rid> { });
+						result = spaceState.IntersectRay(query);
+					}
+				}
+				OverEasyGlobals.PreviousMouseSelectionPoint = e.Position;
+				break;
 		}
 	}
 
-	public void _ProcessTouchRotationEvent(InputEventScreenDrag e)
+	public void _ProcessTouchMovementEvent(InputEventScreenDrag e)
 	{
 		if (touchDictionary.ContainsKey(e.Index))
 		{
@@ -383,7 +433,7 @@ public partial class ViewerCamera : Camera3D
 		else if (touchDictionary.Count < 2)
 		{
 			oldTouchDistance = -1;
-			mouseMoveSpeed = e.Relative;
+			mouseRightClickMoveSpeed = e.Relative;
 		}
 	}
 
