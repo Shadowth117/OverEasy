@@ -2,7 +2,6 @@ using Godot;
 using Godot.Collections;
 using System.Linq;
 using OverEasy;
-using System.Diagnostics;
 
 public partial class ViewerCamera : Camera3D
 {
@@ -166,6 +165,11 @@ public partial class ViewerCamera : Camera3D
 	/// </summary>
 	public double _distance = 0;
 
+	/// <summary>
+	/// Base value for scaling the transformation gizmo
+	/// </summary>
+	public float FixedGizmoSize = .0025f;
+
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
@@ -176,10 +180,18 @@ public partial class ViewerCamera : Camera3D
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
+		_ProcessGizmoSize();
 		_ProcessTransformation(delta);
 	}
 
-	public void _ProcessTransformation(double delta)
+	private void _ProcessGizmoSize()
+	{
+		var gizmoDistance = (this.GlobalPosition - OverEasyGlobals.TransformGizmo.GlobalPosition).Length();
+		var size = gizmoDistance * FixedGizmoSize * this.Fov;
+		OverEasyGlobals.TransformGizmo.Scale = Vector3.One * size;
+	}
+
+	private void _ProcessTransformation(double delta)
 	{
 		if(OverEasyGlobals.CanAccess3d)
 		{
@@ -388,6 +400,13 @@ public partial class ViewerCamera : Camera3D
 			case MouseButton.Middle:
 				break;
 			case MouseButton.Left:
+				if(e.IsPressed() && OverEasyGlobals.CanAccess3d)
+				{
+					if(OverEasyGlobals.TransformGizmo.currentHover != OverEasy.Editor.Gizmo.SelectionRegion.None)
+					{
+
+					}
+				}
 				if(e.IsReleased() && OverEasyGlobals.CanAccess3d)
 				{
 					var start = ProjectRayOrigin(e.Position);

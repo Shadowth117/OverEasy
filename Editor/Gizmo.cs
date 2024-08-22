@@ -23,13 +23,13 @@ namespace OverEasy.Editor
 		public Color YActiveColor = Color.Color8(0, 245, 99);
 		public Color ZActiveColor = Color.Color8(90, 160, 255);
 		public Color XYActiveColor = Color.Color8(90, 160, 255);
-        public Color XZActiveColor = Color.Color8(0, 245, 99);
+		public Color XZActiveColor = Color.Color8(0, 245, 99);
 		public Color YZActiveColor = Color.Color8(250, 127, 118);
 		public Color XInactiveColor = Color.Color8(229, 59, 59);
 		public Color YInactiveColor = Color.Color8(0, 178, 70);
 		public Color ZInactiveColor = Color.Color8(0, 122, 246);
 		public Color XYInactiveColor = Color.Color8(0, 122, 246);
-        public Color XZInactiveColor = Color.Color8(0, 178, 70); 
+		public Color XZInactiveColor = Color.Color8(0, 178, 70); 
 		public Color YZInactiveColor = Color.Color8(229, 59, 59);
 
 		public SelectionRegion currentHover = SelectionRegion.None;
@@ -76,6 +76,8 @@ namespace OverEasy.Editor
 		public override void _Ready()
 		{
 			OverEasyGlobals.TransformGizmo = this;
+			SetCurrentTransformType(TransformType.Translation);
+
 			XMeshInstList.Add((MeshInstance3D)GetNode("Translation/ArrowTipX"));
 			XMeshInstList.Add((MeshInstance3D)GetNode("Translation/ArrowX"));
 			XMeshInstList.Add((MeshInstance3D)GetNode("Rotation/RingXCollisionBody/RingX"));
@@ -107,58 +109,58 @@ namespace OverEasy.Editor
 		public void SetCurrentTransformType(TransformType tfmType)
 		{
 			transformType = tfmType;
-            var baseNode = (Node3D)GetNode("Basic");
-            var transNode = (Node3D)GetNode("Translation");
-            var rotNode = (Node3D)GetNode("Rotation");
-            var scaleNode = (Node3D)GetNode("Scale");
+			var baseNode = (Node3D)GetNode("Basic");
+			var transNode = (Node3D)GetNode("Translation");
+			var rotNode = (Node3D)GetNode("Rotation");
+			var scaleNode = (Node3D)GetNode("Scale");
 
-            switch (tfmType)
-            {
-                case TransformType.None:
-                    baseNode.Visible = false;
-                    transNode.Visible = false;
-                    rotNode.Visible = false;
-                    scaleNode.Visible = false;
-                    SetCollideableState(transNode, false);
-                    SetCollideableState(rotNode, false);
-                    SetCollideableState(scaleNode, false);
-                    break;
-                case TransformType.Basic:
-					baseNode.Visible = true;
-                    transNode.Visible = false;
+			switch (tfmType)
+			{
+				case TransformType.None:
+					baseNode.Visible = false;
+					transNode.Visible = false;
 					rotNode.Visible = false;
 					scaleNode.Visible = false;
 					SetCollideableState(transNode, false);
 					SetCollideableState(rotNode, false);
 					SetCollideableState(scaleNode, false);
-                    break;
+					break;
+				case TransformType.Basic:
+					baseNode.Visible = true;
+					transNode.Visible = false;
+					rotNode.Visible = false;
+					scaleNode.Visible = false;
+					SetCollideableState(transNode, false);
+					SetCollideableState(rotNode, false);
+					SetCollideableState(scaleNode, false);
+					break;
 				case TransformType.Translation:
-                    baseNode.Visible = false;
-                    transNode.Visible = true;
-                    rotNode.Visible = false;
-                    scaleNode.Visible = false;
-                    SetCollideableState(transNode, true);
-                    SetCollideableState(rotNode, false);
-                    SetCollideableState(scaleNode, false);
-                    break;
+					baseNode.Visible = false;
+					transNode.Visible = true;
+					rotNode.Visible = false;
+					scaleNode.Visible = false;
+					SetCollideableState(transNode, true);
+					SetCollideableState(rotNode, false);
+					SetCollideableState(scaleNode, false);
+					break;
 				case TransformType.Rotation:
-                    baseNode.Visible = false;
-                    transNode.Visible = false;
-                    rotNode.Visible = true;
-                    scaleNode.Visible = false;
-                    SetCollideableState(transNode, false);
-                    SetCollideableState(rotNode, true);
-                    SetCollideableState(scaleNode, false);
-                    break;
+					baseNode.Visible = false;
+					transNode.Visible = false;
+					rotNode.Visible = true;
+					scaleNode.Visible = false;
+					SetCollideableState(transNode, false);
+					SetCollideableState(rotNode, true);
+					SetCollideableState(scaleNode, false);
+					break;
 				case TransformType.Scale:
-                    baseNode.Visible = false;
-                    transNode.Visible = false;
-                    rotNode.Visible = false;
+					baseNode.Visible = false;
+					transNode.Visible = false;
+					rotNode.Visible = false;
 					scaleNode.Visible = true;
-                    SetCollideableState(transNode, false);
-                    SetCollideableState(rotNode, false);
-                    SetCollideableState(scaleNode, true);
-                    break;
+					SetCollideableState(transNode, false);
+					SetCollideableState(rotNode, false);
+					SetCollideableState(scaleNode, true);
+					break;
 			}
 		}
 
@@ -167,19 +169,19 @@ namespace OverEasy.Editor
 			switch(@node)
 			{
 				case CollisionPolygon3D cs3d:
-                    cs3d.Disabled = !enable;
-                    break;
+					cs3d.Disabled = !enable;
+					break;
 				case CollisionShape3D cs3d:
 					cs3d.Disabled = !enable;
 					break;
-                case CsgPrimitive3D cs3d:
-                    cs3d.UseCollision = enable;
-                    break;
-            }
+				case CsgPrimitive3D cs3d:
+					cs3d.UseCollision = enable;
+					break;
+			}
 			foreach(var childNode in node.GetChildren())
 			{
 				SetCollideableState((Node3D)childNode, enable);
-            }
+			}
 		}
 
 		/// <summary>

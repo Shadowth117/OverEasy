@@ -18,21 +18,27 @@ height = 0.2
 [sub_resource type="PlaneMesh" id="PlaneMesh_0yysq"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_k0x7d"]
+render_priority = -100
 cull_mode = 2
+no_depth_test = true
 shading_mode = 0
 albedo_color = Color(1.05888e-06, 0.699969, 0.273116, 1)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_pi78s"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_e8arp"]
+render_priority = -100
 cull_mode = 2
+no_depth_test = true
 shading_mode = 0
 albedo_color = Color(0, 0.477896, 0.966091, 1)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_wfesm"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_oqdyy"]
+render_priority = -100
 cull_mode = 2
+no_depth_test = true
 shading_mode = 0
 albedo_color = Color(0.89848, 0.232431, 0.230883, 1)
 
@@ -85,17 +91,23 @@ size = Vector3(0.3, 0.3, 0.3)
 size = Vector3(0.3, 0.3, 0.3)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rftu0"]
+render_priority = -100
 cull_mode = 2
+no_depth_test = true
 shading_mode = 0
 albedo_color = Color(1.05888e-06, 0.699969, 0.273116, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_obw15"]
+render_priority = -100
 cull_mode = 2
+no_depth_test = true
 shading_mode = 0
 albedo_color = Color(0, 0.477896, 0.966091, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_63cud"]
+render_priority = -100
 cull_mode = 2
+no_depth_test = true
 shading_mode = 0
 albedo_color = Color(0.89848, 0.232431, 0.230883, 1)
 

@@ -498,10 +498,10 @@ script = ExtResource("5_nw6mg")
 [node name="ViewerCameraTarget" parent="." instance=ExtResource("16_wiw1n")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 5)
 
+[node name="TransformGizmo" parent="." instance=ExtResource("24_wphnq")]
+
 [node name="ModelRoot" type="Node3D" parent="."]
 script = ExtResource("20_bmy2d")
-
-[node name="TransformGizmo" parent="ModelRoot" instance=ExtResource("24_wphnq")]
 
 [node name="Test" type="Node3D" parent="ModelRoot"]
 
