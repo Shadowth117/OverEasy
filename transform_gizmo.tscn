@@ -5,15 +5,15 @@
 [ext_resource type="Material" uid="uid://14jypih1jd8a" path="res://tfmY_unselected.tres" id="2_r2erp"]
 [ext_resource type="Material" uid="uid://mqviwaadgd8w" path="res://tfmZ_unselected.tres" id="3_41po7"]
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_gapfu"]
-top_radius = 0.0
-bottom_radius = 0.05
-height = 0.2
-
 [sub_resource type="CylinderMesh" id="CylinderMesh_twvw3"]
 top_radius = 0.025
 bottom_radius = 0.025
 height = 1.0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_gapfu"]
+top_radius = 0.0
+bottom_radius = 0.05
+height = 0.2
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_0yysq"]
 
@@ -120,7 +120,25 @@ size = Vector3(0.5, 0.5, 0.5)
 [node name="TransformGizmo" type="Node3D"]
 script = ExtResource("1_rjj82")
 
+[node name="Basic" type="Node3D" parent="."]
+
+[node name="ArrowX" type="MeshInstance3D" parent="Basic"]
+transform = Transform3D(3.86922e-05, 1, 2.25193e-05, -1, 3.86922e-05, -7.48856e-05, -7.48856e-05, -2.25193e-05, 1, 0.500004, 2.89679e-05, -2.52128e-05)
+mesh = SubResource("CylinderMesh_twvw3")
+surface_material_override/0 = ExtResource("1_2ph7a")
+
+[node name="ArrowY" type="MeshInstance3D" parent="Basic"]
+transform = Transform3D(-2.25193e-05, -3.87796e-05, 1, 7.48856e-05, 1, 3.87796e-05, -1, 7.48856e-05, -2.25193e-05, -1.50204e-05, 0.50001, 2.34842e-05)
+mesh = SubResource("CylinderMesh_twvw3")
+surface_material_override/0 = ExtResource("2_r2erp")
+
+[node name="ArrowZ" type="MeshInstance3D" parent="Basic"]
+transform = Transform3D(-3.87359e-05, 2.24756e-05, 1, 1, -7.49293e-05, 3.87359e-05, 7.49293e-05, 1, -2.24756e-05, 1.55866e-05, -2.78354e-05, 0.499986)
+mesh = SubResource("CylinderMesh_twvw3")
+surface_material_override/0 = ExtResource("3_41po7")
+
 [node name="Translation" type="Node3D" parent="."]
+visible = false
 
 [node name="ArrowTipX" type="MeshInstance3D" parent="Translation"]
 transform = Transform3D(3.86922e-05, 1, 2.25193e-05, -1, 3.86922e-05, -7.48856e-05, -7.48856e-05, -2.25193e-05, 1, 1.1, 5.22137e-05, -3.8743e-05)
@@ -284,6 +302,7 @@ shape = SubResource("ConcavePolygonShape3D_1jawf")
 disabled = true
 
 [node name="Scale" type="Node3D" parent="."]
+visible = false
 
 [node name="ArrowTipX" type="MeshInstance3D" parent="Scale"]
 transform = Transform3D(3.86922e-05, 1, 2.25193e-05, -1, 3.86922e-05, -7.48856e-05, -7.48856e-05, -2.25193e-05, 1, 1.1, 5.22137e-05, -3.8743e-05)

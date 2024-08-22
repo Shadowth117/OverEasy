@@ -85,7 +85,7 @@ namespace OverEasy
         public static Godot.Collections.Array<Rid> PreviousMouseSelectionPointRidCache = new Godot.Collections.Array<Rid>();
         public static Vector2 PreviousMouseSelectionPoint = new Vector2(-MouseNotMovedThresholdX - 1, -MouseNotMovedThresholdY - 1);
 
-        public static bool CanMove3dCamera
+        public static bool CanAccess3d
         {
             get
             {

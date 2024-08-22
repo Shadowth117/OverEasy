@@ -181,7 +181,7 @@ public partial class ViewerCamera : Camera3D
 
 	public void _ProcessTransformation(double delta)
 	{
-		if(OverEasyGlobals.CanMove3dCamera)
+		if(OverEasyGlobals.CanAccess3d)
 		{
 			switch (cameraMode)
 			{
@@ -387,8 +387,8 @@ public partial class ViewerCamera : Camera3D
 				break;
 			case MouseButton.Middle:
 				break;
-			case MouseButton.Left: 
-				if(e.IsReleased() && OverEasyGlobals.CanMove3dCamera)
+			case MouseButton.Left:
+				if(e.IsReleased() && OverEasyGlobals.CanAccess3d)
 				{
 					var start = ProjectRayOrigin(e.Position);
 					var end = ProjectPosition(e.Position, 1000000000000);
