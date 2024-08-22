@@ -12,6 +12,9 @@ public partial class SetDataTree : Tree
 		this.Modulate = new Color(0.7f, 0.7f, 0.7f, 0.4f);
 		OverEasyGlobals.setDataTree = this;
 		this.Columns = 3;
+		this.SetColumnExpand(0, true);
+		this.SetColumnExpand(1, false);
+		this.SetColumnExpand(2, false);
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
