@@ -90,6 +90,7 @@ namespace OverEasy.Billy
             MeshInstance3D meshInst = new MeshInstance3D();
             var sphere = new SphereMesh();
             sphere.Radius = 10;
+            sphere.Height = 20;
             var mat = new StandardMaterial3D();
             mat.AlbedoColor = color;
 
@@ -100,11 +101,13 @@ namespace OverEasy.Billy
             return root;
         }
 
-        public static Node3D NinjaToGDModelClone(Node3D modelNode)
+        public static Node3D GDModelClone(Node3D modelNode)
         {
             Node3D root = new Node3D();
-            root.AddChild(modelNode.GetChild(0).Duplicate());
-            root.AddChild(modelNode.GetChild(1).Duplicate());
+            foreach(var child in modelNode.GetChildren())
+            {
+                root.AddChild(child.Duplicate());
+            }
 
             return root;
         }

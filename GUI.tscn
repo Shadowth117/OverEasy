@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://e6mmj1a8sstd"]
+[gd_scene load_steps=30 format=3 uid="uid://e6mmj1a8sstd"]
 
 [ext_resource type="Script" path="res://OverEasyMaster.cs" id="1_pe8jw"]
 [ext_resource type="Script" path="res://Controls/FileButton.cs" id="1_w33wv"]
@@ -20,7 +20,6 @@
 [ext_resource type="Script" path="res://ObjectEditors/Vector3Schema.cs" id="10_txxg7"]
 [ext_resource type="Script" path="res://ObjectEditors/Vector4Schema.cs" id="11_4sjmf"]
 [ext_resource type="Script" path="res://ObjectEditors/LabelSchema.cs" id="12_vva3x"]
-[ext_resource type="PackedScene" uid="uid://bjwcv22xkffj0" path="res://player.glb" id="15_cvn4i"]
 [ext_resource type="PackedScene" uid="uid://bp17fc5qsd0m8" path="res://ViewerCamera.tscn" id="16_wiw1n"]
 [ext_resource type="Script" path="res://Controls/GUIArea.cs" id="17_7fdyu"]
 [ext_resource type="Script" path="res://Controls/ModelRoot.cs" id="20_bmy2d"]
@@ -102,8 +101,10 @@ layout_mode = 2
 text = "File"
 item_count = 5
 popup/item_0/text = "Open/Create Project"
+popup/item_0/id = 0
 popup/item_1/text = "Save Edits To Project Folder"
 popup/item_1/id = 1
+popup/item_2/text = ""
 popup/item_2/id = 4
 popup/item_2/separator = true
 popup/item_3/text = "Apply Project Files To Game Folder"
@@ -502,11 +503,3 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 5)
 
 [node name="ModelRoot" type="Node3D" parent="."]
 script = ExtResource("20_bmy2d")
-
-[node name="Test" type="Node3D" parent="ModelRoot"]
-
-[node name="player" parent="ModelRoot/Test" instance=ExtResource("15_cvn4i")]
-visible = false
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="ModelRoot/Test"]
-root_node = NodePath("../player")

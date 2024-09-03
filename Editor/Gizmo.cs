@@ -76,7 +76,7 @@ namespace OverEasy.Editor
 		public override void _Ready()
 		{
 			OverEasyGlobals.TransformGizmo = this;
-			SetCurrentTransformType(TransformType.Translation);
+			SetCurrentTransformType(TransformType.Rotation);
 
 			XMeshInstList.Add((MeshInstance3D)GetNode("Translation/ArrowTipX"));
 			XMeshInstList.Add((MeshInstance3D)GetNode("Translation/ArrowX"));
@@ -104,7 +104,7 @@ namespace OverEasy.Editor
 
 			YZMeshInstList.Add((MeshInstance3D)GetNode("Translation/YZPlane"));
 			YZMeshInstList.Add((MeshInstance3D)GetNode("Scale/YZPlane"));
-		}
+        }
 
 		public void SetCurrentTransformType(TransformType tfmType)
 		{

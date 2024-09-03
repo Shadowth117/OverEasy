@@ -2,6 +2,7 @@ using Godot;
 using Godot.Collections;
 using System.Linq;
 using OverEasy;
+using System.Diagnostics;
 
 public partial class ViewerCamera : Camera3D
 {
@@ -11,7 +12,6 @@ public partial class ViewerCamera : Camera3D
 		Freecam = 1,
 	}
 
-	//External params
 	/// <summary>
 	/// Multiplier for zooming in and out with a mouse
 	/// </summary>
@@ -166,12 +166,22 @@ public partial class ViewerCamera : Camera3D
 	public double _distance = 0;
 
 	/// <summary>
+	/// A determinant for if we're currently draggging anitem with the mouse, such as a transform gizmo
+	/// </summary>
+	public bool isDragging = false;
+
+	/// <summary>
 	/// Base value for scaling the transformation gizmo
 	/// </summary>
 	public float FixedGizmoSize = .0025f;
 
-	// Called when the node enters the scene tree for the first time.
-	public override void _Ready()
+	/// <summary>
+	/// Making this much higher causes odd consistency issues and overall problems
+	/// </summary>
+	public const int MouseRayCastLength = 100000;
+
+    // Called when the node enters the scene tree for the first time.
+    public override void _Ready()
 	{
 		_distance = DEFAULT_DISTANCE;
 		_orbitRotation = targetNode.Transform.Basis.GetRotationQuaternion().GetEuler();
@@ -356,7 +366,7 @@ public partial class ViewerCamera : Camera3D
 	{                
 		//Check for if we're hovering over a gizmo piece. This is for highlighting them as well as handling them as 'selected'.
 		var start = ProjectRayOrigin(e.Position);
-		var end = ProjectPosition(e.Position, 2000);
+		var end = ProjectPosition(e.Position, MouseRayCastLength);
 		var spaceState = GetWorld3D().DirectSpaceState;
 
 		//Check for a collision with a transform gizmo piece
@@ -404,23 +414,37 @@ public partial class ViewerCamera : Camera3D
 				{
 					if(OverEasyGlobals.TransformGizmo.currentHover != OverEasy.Editor.Gizmo.SelectionRegion.None)
 					{
-
+						isDragging = true;
 					}
 				}
 				if(e.IsReleased() && OverEasyGlobals.CanAccess3d)
 				{
-					var start = ProjectRayOrigin(e.Position);
-					var end = ProjectPosition(e.Position, 1000000000000);
-					var spaceState = GetWorld3D().DirectSpaceState;
-
-					PhysicsRayQueryParameters3D query = PhysicsRayQueryParameters3D.Create(start, end, 1, new Godot.Collections.Array<Rid> { });
-					var result = spaceState.IntersectRay(query);
-					if (result.Count == 0)
+					//If we're dragging a transform, we don't want to select a new object
+					if(isDragging == false)
 					{
-						OverEasyGlobals.ClearPreviousMouseSelectionCache();
-						query = PhysicsRayQueryParameters3D.Create(start, end, 1, new Godot.Collections.Array<Rid> { });
-						result = spaceState.IntersectRay(query);
+						var start = ProjectRayOrigin(e.Position);
+						var end = ProjectPosition(e.Position, MouseRayCastLength);
+						var spaceState = GetWorld3D().DirectSpaceState;
+						uint objCollisionMask = 1;
+
+						PhysicsRayQueryParameters3D query = PhysicsRayQueryParameters3D.Create(start, end, objCollisionMask, OverEasyGlobals.PreviousMouseSelectionPointRidCache);
+						var result = spaceState.IntersectRay(query);
+						if (result.Count == 0)
+						{
+							OverEasyGlobals.ClearPreviousMouseSelectionCache();
+							query = PhysicsRayQueryParameters3D.Create(start, end, objCollisionMask, new Godot.Collections.Array<Rid> { });
+							result = spaceState.IntersectRay(query);
+						}
+
+						//We want to check this separately again and NOT tie it with an else since we may fill 'result' in the previous block 
+						if (result.Count != 0)
+                        {
+                            OverEasyGlobals.PreviousMouseSelectionPointRidCache.Add((Godot.Rid)result["rid"]);
+							OverEasyGlobals.TransformGizmo.Reparent(((Node3D)result["collider"]).GetParent().GetParent(), false);
+							OverEasyGlobals.TransformGizmo.SetCurrentTransformType(OverEasy.Editor.Gizmo.TransformType.Translation);
+						}
 					}
+					isDragging = false;
 				}
 				OverEasyGlobals.PreviousMouseSelectionPoint = e.Position;
 				break;
