@@ -166,14 +166,29 @@ public partial class ViewerCamera : Camera3D
 	public double _distance = 0;
 
 	/// <summary>
-	/// A determinant for if we're currently draggging anitem with the mouse, such as a transform gizmo
+	/// A determinant for if we're currently draggging an item with the mouse, such as a transform gizmo
 	/// </summary>
 	public bool isDragging = false;
 
 	/// <summary>
-	/// Base value for scaling the transformation gizmo
+	/// A tracker for if we've started attempting to drag by holding the mouse.
 	/// </summary>
-	public float FixedGizmoSize = .0025f;
+    public bool startedDragging = false;
+
+	/// <summary>
+	/// A holding object for tracking where the drag area began
+	/// </summary>
+	public Vector2 dragStart = new Vector2(-1, -1);
+
+	/// <summary>
+	/// Default value for drag start
+	/// </summary>
+	public Vector2 DragStartDefault = new Vector2(-1, -1);
+
+    /// <summary>
+    /// Base value for scaling the transformation gizmo
+    /// </summary>
+    public float FixedGizmoSize = .0025f;
 
 	/// <summary>
 	/// Making this much higher causes odd consistency issues and overall problems
@@ -414,7 +429,14 @@ public partial class ViewerCamera : Camera3D
 				{
 					if(OverEasyGlobals.TransformGizmo.currentHover != OverEasy.Editor.Gizmo.SelectionRegion.None)
 					{
-						isDragging = true;
+						startedDragging = true;
+						if(dragStart.IsEqualApprox(DragStartDefault))
+						{
+							dragStart = e.Position;
+						} else if(!e.Position.IsEqualApprox(dragStart))
+                        {
+                            isDragging = true;
+                        }
 					}
 				}
 				if(e.IsReleased() && OverEasyGlobals.CanAccess3d)
@@ -444,8 +466,10 @@ public partial class ViewerCamera : Camera3D
 							OverEasyGlobals.TransformGizmo.SetCurrentTransformType(OverEasy.Editor.Gizmo.TransformType.Translation);
 						}
 					}
-					isDragging = false;
-				}
+					startedDragging = false;
+                    isDragging = false;
+                    dragStart = new Vector2(-1, -1);
+                }
 				OverEasyGlobals.PreviousMouseSelectionPoint = e.Position;
 				break;
 		}
