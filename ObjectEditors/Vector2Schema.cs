@@ -7,7 +7,7 @@ public partial class Vector2Schema : VBoxContainer
     public RichTextLabel text = null;
     public SpinBox xInput = null;
     public SpinBox yInput = null;
-    public string icon = "[img]res://addons/datatable_godot/icons/Float.svg[/img]";
+    public string icon = "";
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()

@@ -188,7 +188,7 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.4
 tooltip_text = "String type"
 bbcode_enabled = true
-text = "[img]res://addons/datatable_godot/icons/String.svg[/img] String Name"
+text = "String Name"
 fit_content = true
 
 [node name="LineEdit" type="LineEdit" parent="ObjectScrollContainer/ObjectDataContainer/string_schema"]
@@ -206,7 +206,7 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.4
 tooltip_text = "String type"
 bbcode_enabled = true
-text = "[img]res://addons/datatable_godot/icons/Int.svg[/img] String Name"
+text = "String Name"
 fit_content = true
 
 [node name="SpinBox" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/int_schema"]
@@ -223,7 +223,7 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.4
 tooltip_text = "String type"
 bbcode_enabled = true
-text = "[img]res://addons/datatable_godot/icons/Float.svg[/img] String Name"
+text = "String Name"
 fit_content = true
 
 [node name="SpinBox" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/float_schema"]
@@ -240,7 +240,7 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.4
 tooltip_text = "String type"
 bbcode_enabled = true
-text = "[img]res://addons/datatable_godot/icons/Color.svg[/img] String Name"
+text = "String Name"
 fit_content = true
 
 [node name="ParamValue" type="ColorPickerButton" parent="ObjectScrollContainer/ObjectDataContainer/color_schema"]
@@ -258,7 +258,7 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.4
 tooltip_text = "Vector2 type"
 bbcode_enabled = true
-text = "[img]res://addons/datatable_godot/icons/Vector2.svg[/img] Vec2 Name"
+text = "Vec2 Name"
 fit_content = true
 
 [node name="paramValue" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec2_schema"]
@@ -314,7 +314,7 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.4
 tooltip_text = "Vector3 type"
 bbcode_enabled = true
-text = "[img]res://addons/datatable_godot/icons/Vector3.svg[/img] Vec3 Name"
+text = "Vec3 Name"
 fit_content = true
 
 [node name="paramValue" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema"]
@@ -389,7 +389,7 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.4
 tooltip_text = "Vector4 type"
 bbcode_enabled = true
-text = "[img]res://addons/datatable_godot/icons/Vector4.svg[/img] Vec4 Name"
+text = "Vec4 Name"
 fit_content = true
 
 [node name="paramValue" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema"]

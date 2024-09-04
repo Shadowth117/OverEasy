@@ -216,7 +216,7 @@ namespace OverEasy
                     break;
             }
 
-            objText.Text = $"[img]res://addons/datatable_godot/icons/Vector{vecSize}.svg[/img] {objTextText}";
+            objText.Text = $"{objTextText}";
 
             if (vecSize >= 1)
             {
