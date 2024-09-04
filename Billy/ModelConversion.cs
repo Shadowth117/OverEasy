@@ -167,13 +167,13 @@ namespace OverEasy.Billy
                     case GvrDataFormat.Intensity4:
                     case GvrDataFormat.Intensity8:
                     case GvrDataFormat.Rgb565:
-                    case GvrDataFormat.Rgb5a3:
                     case GvrDataFormat.Index4:
                     case GvrDataFormat.Index8:
                     case GvrDataFormat.Unknown:
                         gvrAlphaTypes.Add(0);
                         break;
                     case GvrDataFormat.Dxt1:
+                    case GvrDataFormat.Rgb5a3:
                         gvrAlphaTypes.Add(1);
                         break;
                     case GvrDataFormat.IntensityA4:
