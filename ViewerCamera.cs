@@ -430,6 +430,8 @@ public partial class ViewerCamera : Camera3D
 					if(OverEasyGlobals.TransformGizmo.currentHover != OverEasy.Editor.Gizmo.SelectionRegion.None)
 					{
 						startedDragging = true;
+						//When dragging, we want to check on subsequent frames if we're actually moving the gizmo or not.
+						//If not, we want the user to still be able to select what's under the gizmo later.
 						if(dragStart.IsEqualApprox(DragStartDefault))
 						{
 							dragStart = e.Position;
