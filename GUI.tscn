@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3 uid="uid://e6mmj1a8sstd"]
+[gd_scene load_steps=31 format=3 uid="uid://e6mmj1a8sstd"]
 
 [ext_resource type="Script" path="res://OverEasyMaster.cs" id="1_pe8jw"]
 [ext_resource type="Script" path="res://Controls/FileButton.cs" id="1_w33wv"]
@@ -19,6 +19,7 @@
 [ext_resource type="Script" path="res://Controls/DayNightToggle.cs" id="9_y4wsg"]
 [ext_resource type="Script" path="res://ObjectEditors/Vector3Schema.cs" id="10_txxg7"]
 [ext_resource type="Script" path="res://ObjectEditors/Vector4Schema.cs" id="11_4sjmf"]
+[ext_resource type="Script" path="res://Controls/DummyTree.cs" id="12_uhepu"]
 [ext_resource type="Script" path="res://ObjectEditors/LabelSchema.cs" id="12_vva3x"]
 [ext_resource type="PackedScene" uid="uid://bp17fc5qsd0m8" path="res://ViewerCamera.tscn" id="16_wiw1n"]
 [ext_resource type="Script" path="res://Controls/GUIArea.cs" id="17_7fdyu"]
@@ -35,7 +36,7 @@ size = Vector2(300, 869)
 size = Vector2(23, 869)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tl7e2"]
-size = Vector2(249, 868)
+size = Vector2(262, 868)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_uxe8r"]
 size = Vector2(21, 869)
@@ -78,7 +79,7 @@ shape = SubResource("RectangleShape2D_jjxky")
 script = ExtResource("5_k45em")
 
 [node name="ObjectPanelCollision" type="CollisionShape2D" parent="GUIArea"]
-position = Vector2(1457.5, 465.5)
+position = Vector2(1451, 465.5)
 shape = SubResource("RectangleShape2D_tl7e2")
 script = ExtResource("6_1cerq")
 
@@ -160,6 +161,22 @@ focus_next = NodePath("../SetDataTree")
 focus_previous = NodePath("../GridContainer/MenuGrid")
 text = ">"
 script = ExtResource("4_6llyt")
+
+[node name="DummyTree" type="Tree" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -280.0
+offset_top = 31.0
+offset_right = -18.0
+offset_bottom = 900.0
+focus_neighbor_left = NodePath("../SetDataTreeButton")
+focus_neighbor_top = NodePath("../GridContainer/MenuGrid")
+focus_previous = NodePath("../SetDataTreeButton")
+focus_mode = 0
+theme_override_font_sizes/font_size = 12
+script = ExtResource("12_uhepu")
 
 [node name="ObjectScrollContainer" type="ScrollContainer" parent="."]
 layout_mode = 1
@@ -500,6 +517,7 @@ script = ExtResource("5_nw6mg")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 5)
 
 [node name="TransformGizmo" parent="." instance=ExtResource("24_wphnq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -8.00742, 0)
 
 [node name="ModelRoot" type="Node3D" parent="."]
 script = ExtResource("20_bmy2d")

@@ -55,6 +55,7 @@ namespace OverEasy
 		public static SceneTree OESceneTree = null;
 		public static Viewport OEMainViewPort = null;
 		public static Tree setDataTree = null;
+		public static Tree dummyTree = null;
 		public static Node3D modelRoot = null;
 
 		public static bool setDataTreeItemActivatedSet = false;
@@ -223,7 +224,8 @@ namespace OverEasy
 			var viewPortSize = OEMainViewPort.GetVisibleRect().Size;
 			setDataTree.Size = new Vector2(300, viewPortSize.Y - 31);
 			setDataTreeButton.Size = new Vector2(setDataTreeButton.Size.X, viewPortSize.Y - 31);
-			objectScrollContainer.Size = new Vector2(objectScrollContainer.Size.X, viewPortSize.Y - 31);
+            dummyTree.Size = new Vector2(objectScrollContainer.Size.X, viewPortSize.Y - 31);
+            objectScrollContainer.Size = new Vector2(objectScrollContainer.Size.X, viewPortSize.Y - 31);
 			objectScrollContainerButton.Size = new Vector2(objectScrollContainerButton.Size.X, viewPortSize.Y - 31);
 
 			setDataTreeCollision.GlobalPosition = new Vector2(setDataTreeCollision.GlobalPosition.X, 31 + (viewPortSize.Y - 31) / 2);
@@ -250,7 +252,7 @@ namespace OverEasy
 			}
 			objectPanelCollision.Shape = objPanelShape;
 
-			setDataTreeButtonCollision.GlobalPosition = new Vector2(setDataTreeButtonCollision.GlobalPosition.X, 31 + (viewPortSize.Y - 31) / 2);
+            setDataTreeButtonCollision.GlobalPosition = new Vector2(setDataTreeButtonCollision.GlobalPosition.X, 31 + (viewPortSize.Y - 31) / 2);
 			var setDataTreeButtonShape = (RectangleShape2D)setDataTreeButtonCollision.Shape;
 			setDataTreeButtonShape.Size = new Vector2(setDataTreeButtonShape.Size.X, (viewPortSize.Y - 31));
 			setDataTreeButtonCollision.Shape = setDataTreeButtonShape;
@@ -287,16 +289,17 @@ namespace OverEasy
 		/// Method for handling the result of clicking the Show/Hide button for the object data panel
 		/// </summary>
 		public static void OnObjectScrollContainerButtonReleased()
-		{
-			if (activeObjectEditorObjects.Count == 0)
+        {
+            var currentVisibility = !objectScrollContainer.Visible;
+            if (activeObjectEditorObjects.Count == 0)
 			{
 				return;
 			}
-			var currentVisibility = !objectScrollContainer.Visible;
 			objectScrollContainer.Visible = currentVisibility;
 			objectScrollContainer.SetProcessInput(currentVisibility);
+            dummyTree.Visible = currentVisibility;
 
-			foreach (var objSet in activeObjectEditorObjects)
+            foreach (var objSet in activeObjectEditorObjects)
 			{
 				objSet.Value.Visible = currentVisibility;
 			}
@@ -473,7 +476,8 @@ namespace OverEasy
 			//Don't readd this method if it's already there
 			if (setDataTreeItemActivatedSet == false)
 			{
-				setDataTree.ItemActivated += HandleSetNodeExpand;
+				setDataTree.ItemActivated += HandleTreeNodeActivate;
+				setDataTree.CellSelected += HandleTreeNodeSelected;
 				setDataTreeItemActivatedSet = true;
 			}
 		}
@@ -521,8 +525,9 @@ namespace OverEasy
 			if (objectScrollContainer.Visible == false)
 			{
 				OnObjectScrollContainerButtonReleased();
-			}
-			switch (currentEditorType)
+            }
+            dummyTree.Visible = true;
+            switch (currentEditorType)
 			{
 				case EditingType.BillySetObj:
 					LoadBillySetObject(loadedBillySetObjects);
@@ -533,7 +538,7 @@ namespace OverEasy
 			}
 		}
 
-		public static void HandleSetNodeExpand()
+		public static void HandleTreeNodeActivate()
 		{
 			var activeNode = setDataTree.GetSelected();
 			switch (activeNode.GetMetadata(0).AsInt32())
@@ -581,18 +586,39 @@ namespace OverEasy
 					break;
 				//Object Node
 				case 3:
-					currentObjectId = activeNode.GetMetadata(1).AsInt32();
-					currentEditorType = (EditingType)(activeNode.GetMetadata(2).AsInt32());
-					currentObjectTreeItem = activeNode;
-					LoadSetObject();
-					break;
+                    break;
 			}
-		}
+        }
 
-		/// <summary>
-		/// Method for lazy loading area data. Should be called upon expansion of a node.
-		/// </summary>
-		public static void LazyLoadAreaData()
+        public static void HandleTreeNodeSelected()
+        {
+            var activeNode = setDataTree.GetSelected();
+			var parentNode = activeNode.GetParent();
+
+            switch (activeNode.GetMetadata(0).AsInt32())
+            {
+                //Mission Node
+                case 1:
+                //mission Node Data Type - SetObject, Camera, etc.
+                case 2:
+                    break;
+                //Object Node
+                case 3:
+                    currentObjectId = activeNode.GetMetadata(1).AsInt32();
+                    currentEditorType = (EditingType)(activeNode.GetMetadata(2).AsInt32());
+                    currentObjectTreeItem = activeNode;
+                    TransformGizmo.Reparent((Node3D)activeNode.GetMetadata(3), false);
+                    TransformGizmo.SetCurrentTransformType(OverEasy.Editor.Gizmo.TransformType.Translation);
+                    LoadSetObject();
+                    setDataTree.ScrollToItem(activeNode);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Method for lazy loading area data. Should be called upon expansion of a node.
+        /// </summary>
+        public static void LazyLoadAreaData()
 		{
 			switch (gameType)
 			{

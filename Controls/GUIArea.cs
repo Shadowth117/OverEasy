@@ -13,6 +13,7 @@ public partial class GUIArea : Area2D
     {
         OverEasyGlobals.setDataTree.Modulate = new Color(0.7f, 0.7f, 0.7f, 0.4f);
         OverEasyGlobals.objectScrollContainer.Modulate = new Color(0.7f, 0.7f, 0.7f, 0.4f);
+        OverEasyGlobals.dummyTree.Modulate = new Color(0.7f, 0.7f, 0.7f, 0.4f);
         
         bool inside = false;
 		var mousePos = GetGlobalMousePosition();
@@ -34,6 +35,7 @@ public partial class GUIArea : Area2D
                     } else if (child == OverEasyGlobals.objectPanelCollision)
                     {
                         OverEasyGlobals.objectScrollContainer.Modulate = new Color(0.7f, 0.7f, 0.7f, 1);
+                        OverEasyGlobals.dummyTree.Modulate = new Color(0.7f, 0.7f, 0.7f, 1f);
                     }
                     inside = true;
                     break;
