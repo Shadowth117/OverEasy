@@ -1,8 +1,10 @@
 using AquaModelLibrary.Data.BillyHatcher;
 using AquaModelLibrary.Data.BillyHatcher.SetData;
 using AquaModelLibrary.Data.Ninja;
+using AquaModelLibrary.Data.PSO2.Aqua.AquaObjectData;
 using Godot;
 using OverEasy.Billy;
+using OverEasy.TextInfo;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -246,8 +248,8 @@ namespace OverEasy
             {
                 var objName = activeObjectEditorObjects["ObjectId"];
                 var objNameText = (RichTextLabel)objName.GetChild(0);
-                objNameText.Text = template?.ObjectName != "" && template.ObjectName != null ? template.ObjectName : $"Object {setObj.objectId} 0x{setObj.objectId:X}";
-                currentObjectTreeItem.SetText(0, template?.ObjectName != "" && template.ObjectName != null ? template.ObjectName : $"Object Type {setObj.objectId} 0x{setObj.objectId:X}");
+                objNameText.Text = GetObjectName(false, setObj);
+                currentObjectTreeItem.SetText(0, GetObjectName(true, setObj));
             }
 
             LoadVec3SchemaTemplateInfo("ObjectPosition", template.Position, "Position", template.PositionHint, template.PositionX, template.PositionY, template.PositionZ);
@@ -432,14 +434,7 @@ namespace OverEasy
                 {
                     var obj = loadedBillySetObjects.setObjs[i];
                     var objNode = temp.CreateChild();
-                    if (cachedBillySetObjDefinitions.ContainsKey(obj.objectId))
-                    {
-                        objNode.SetText(0, cachedBillySetObjDefinitions[obj.objectId].ObjectName);
-                    }
-                    else
-                    {
-                        objNode.SetText(0, $"Object Type {obj.objectId} 0x{obj.objectId:X}");
-                    }
+                    objNode.SetText(0, GetObjectName(true, obj));
 
                     //Node type
                     objNode.SetMetadata(0, 3);
@@ -449,6 +444,7 @@ namespace OverEasy
                     objNode.SetMetadata(2, 1);
                     //Attach a model instance
                     var modelNode = LoadBillyObjectModel(obj, false);
+                    modelNode.SetMeta("treeItem", objNode);
                     objNode.SetMetadata(3, modelNode);
 
                     modelNode.Rotation = new Vector3((float)(NinjaConstants.FromBAMSValueToDegrees * obj.BAMSRotation.X), (float)(NinjaConstants.FromBAMSValueToDegrees * obj.BAMSRotation.Y), (float)(NinjaConstants.FromBAMSValueToDegrees * obj.BAMSRotation.Z));
@@ -467,14 +463,8 @@ namespace OverEasy
                 {
                     var obj = loadedBillySetDesignObjects.setObjs[i];
                     var objNode = temp.CreateChild();
-                    if (cachedBillySetObjDefinitions.ContainsKey(obj.objectId))
-                    {
-                        objNode.SetText(0, cachedBillySetObjDefinitions[obj.objectId].ObjectName);
-                    }
-                    else
-                    {
-                        objNode.SetText(0, $"Object Type {obj.objectId} 0x{obj.objectId:X}");
-                    }
+                    objNode.SetText(0, GetObjectName(true, obj));
+
                     //Node type
                     objNode.SetMetadata(0, 3);
                     //Node's original object id
@@ -483,6 +473,7 @@ namespace OverEasy
                     objNode.SetMetadata(2, 2);
                     //Attach a model instance
                     var modelNode = LoadBillyObjectModel(obj, true);
+                    modelNode.SetMeta("treeItem", objNode);
                     objNode.SetMetadata(3, modelNode);
 
                     modelNode.Rotation = new Vector3((float)(NinjaConstants.FromBAMSValueToDegrees * obj.BAMSRotation.X), (float)(NinjaConstants.FromBAMSValueToDegrees * obj.BAMSRotation.Y), (float)(NinjaConstants.FromBAMSValueToDegrees * obj.BAMSRotation.Z));
@@ -521,6 +512,44 @@ namespace OverEasy
             }
 
             return modelNode;
+        }
+
+        public static string GetObjectName(bool isNode, SetObj obj)
+        {
+            string nodeAddition = "";
+            if (isNode)
+            {
+                nodeAddition = "Type ";
+            }
+
+            if (obj.objectId == 0xB)
+            {
+                string fruit;
+                switch(obj.intProperty1)
+                {
+                    case 0:
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                        fruit = ObjectVariants.fruits[obj.intProperty1];
+                        break;
+                    default:
+                        fruit = ObjectVariants.fruits[6];
+                        break;
+                }
+                return cachedBillySetObjDefinitions[obj.objectId].ObjectName + $" {fruit}";
+            }
+            else if (cachedBillySetObjDefinitions.ContainsKey(obj.objectId))
+            {
+                return cachedBillySetObjDefinitions[obj.objectId].ObjectName;
+            }
+            else
+            {
+                return $"Object {nodeAddition}{obj.objectId} 0x{obj.objectId:X}";
+            }
         }
     }
 }
