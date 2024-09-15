@@ -264,82 +264,116 @@ namespace OverEasy.Editor
 			}
 		}
 
-		/*
-		// Code referenced from
-		// https://github.com/nem0/LumixEngine/blob/master/src/editor/gizmo.cpp
-		private Vector3 GetSingleAxisProjection(Ray ray, Transform t, Axis axis)
+        // Code referenced from
+        // https://github.com/nem0/LumixEngine/blob/master/src/editor/gizmo.cpp
+        // https://github.com/soulsmods/DSMapStudio/blob/master/src/StudioCore/MsbEditor/Gizmos.cs
+        public static Vector3 GetSingleAxisProjection(Vector3 rayOrigin, Vector3 rayDirection, Node3D t, SelectionRegion axis)
 		{
 			Vector3 axisvec = Vector3.Zero;
-			switch (axis)
+			var tPos = t.GlobalPosition;
+            var tQuat = t.Quaternion;
+			if(OverEasyGlobals.TransformGizmoWorld == true)
 			{
-				case Axis.PosX:
-					axisvec = Vector3.Transform(new Vector3(1.0f, 0.0f, 0.0f), t.Rotation);
+				tQuat = new Quaternion();
+			}
+            switch (axis)
+			{
+				case SelectionRegion.PositionX:
+				case SelectionRegion.ScaleX:
+					axisvec = Vector3.Transform(new Vector3(1.0f, 0.0f, 0.0f), new System.Numerics.Quaternion(tQuat.X, tQuat.Y, tQuat.Z, tQuat.W));
 					break;
-				case Axis.PosY:
-					axisvec = Vector3.Transform(new Vector3(0.0f, 1.0f, 0.0f), t.Rotation);
-					break;
-				case Axis.PosZ:
-					axisvec = Vector3.Transform(new Vector3(0.0f, 0.0f, 1.0f), t.Rotation);
-					break;
+                case SelectionRegion.PositionY:
+                case SelectionRegion.ScaleY:
+                    axisvec = Vector3.Transform(new Vector3(0.0f, 1.0f, 0.0f), new System.Numerics.Quaternion(tQuat.X, tQuat.Y, tQuat.Z, tQuat.W));
+                    break;
+                case SelectionRegion.PositionZ:
+                case SelectionRegion.ScaleZ:
+                    axisvec = Vector3.Transform(new Vector3(0.0f, 0.0f, 1.0f), new System.Numerics.Quaternion(tQuat.X, tQuat.Y, tQuat.Z, tQuat.W));
+                    break;
 			}
 
-			Vector3 pos = t.Position;
-			Vector3 normal = Vector3.Cross(Vector3.Cross(ray.Direction, axisvec), ray.Direction);
-			var d = Vector3.Dot(ray.Origin - pos, normal) / Vector3.Dot(axisvec, normal);
+			Vector3 pos = new Vector3(tPos.X, tPos.Y, tPos.Z);
+			Vector3 normal = Vector3.Cross(Vector3.Cross(rayDirection, axisvec), rayDirection);
+			var d = Vector3.Dot(rayOrigin - pos, normal) / Vector3.Dot(axisvec, normal);
 			return pos + (axisvec * d);
 		}
 
-		private Vector3 GetDoubleAxisProjection(Ray ray, Transform t, Axis axis)
+        public static Vector3 GetDoubleAxisProjection(Vector3 rayOrigin, Vector3 rayDirection, Node3D t, SelectionRegion axis)
 		{
 			Vector3 planeNormal = Vector3.Zero;
-			switch (axis)
+            var tPos = t.Position;
+            var tQuat = t.Quaternion;
+            switch (axis)
 			{
-				case Axis.PosXY:
-					planeNormal = Vector3.Transform(new Vector3(0.0f, 0.0f, 1.0f), t.Rotation);
-					break;
-				case Axis.PosYZ:
-					planeNormal = Vector3.Transform(new Vector3(1.0f, 0.0f, 0.0f), t.Rotation);
-					break;
-				case Axis.PosXZ:
-					planeNormal = Vector3.Transform(new Vector3(0.0f, 1.0f, 0.0f), t.Rotation);
-					break;
+				case SelectionRegion.PositionXY:
+				case SelectionRegion.ScaleXY:
+					planeNormal = Vector3.Transform(new Vector3(0.0f, 0.0f, 1.0f), new System.Numerics.Quaternion(tQuat.X, tQuat.Y, tQuat.Z, tQuat.W));
+                    break;
+                case SelectionRegion.PositionYZ:
+                case SelectionRegion.ScaleYZ:
+                    planeNormal = Vector3.Transform(new Vector3(1.0f, 0.0f, 0.0f), new System.Numerics.Quaternion(tQuat.X, tQuat.Y, tQuat.Z, tQuat.W));
+                    break;
+                case SelectionRegion.PositionXZ:
+                case SelectionRegion.ScaleXZ:
+                    planeNormal = Vector3.Transform(new Vector3(0.0f, 1.0f, 0.0f), new System.Numerics.Quaternion(tQuat.X, tQuat.Y, tQuat.Z, tQuat.W));
+                    break;
 			}
 
 			float dist;
-			Vector3 relorigin = ray.Origin - t.Position;
-			if (Utils.RayPlaneIntersection(relorigin, ray.Direction, Vector3.Zero, planeNormal, out dist))
+            Vector3 pos = new Vector3(tPos.X, tPos.Y, tPos.Z);
+            Vector3 relorigin = rayOrigin - pos;
+			if (RayPlaneIntersection(relorigin, rayDirection, Vector3.Zero, planeNormal, out dist))
 			{
-				return ray.Origin + (ray.Direction * dist);
+				return rayOrigin + (rayDirection * dist);
 			}
 
-			return ray.Origin;
+			return rayOrigin;
 		}
 
-		private Vector3 GetAxisPlaneProjection(Ray ray, Transform t, Axis axis)
+        public static Vector3 GetAxisPlaneProjection(Vector3 rayOrigin, Vector3 rayDirection, Node3D t, SelectionRegion axis)
 		{
 			Vector3 planeNormal = Vector3.Zero;
-			switch (axis)
+            var tPos = t.Position;
+            var tQuat = t.Quaternion;
+            switch (axis)
 			{
-				case Axis.PosX:
-					planeNormal = Vector3.Transform(new Vector3(1.0f, 0.0f, 0.0f), t.Rotation);
-					break;
-				case Axis.PosY:
-					planeNormal = Vector3.Transform(new Vector3(0.0f, 1.0f, 0.0f), t.Rotation);
-					break;
-				case Axis.PosZ:
-					planeNormal = Vector3.Transform(new Vector3(0.0f, 0.0f, 1.0f), t.Rotation);
-					break;
+				case SelectionRegion.RotationX:
+					planeNormal = Vector3.Transform(new Vector3(1.0f, 0.0f, 0.0f), new System.Numerics.Quaternion(tQuat.X, tQuat.Y, tQuat.Z, tQuat.W));
+                    break;
+				case SelectionRegion.RotationY:
+					planeNormal = Vector3.Transform(new Vector3(0.0f, 1.0f, 0.0f), new System.Numerics.Quaternion(tQuat.X, tQuat.Y, tQuat.Z, tQuat.W));
+                    break;
+				case SelectionRegion.RotationZ:
+					planeNormal = Vector3.Transform(new Vector3(0.0f, 0.0f, 1.0f), new System.Numerics.Quaternion(tQuat.X, tQuat.Y, tQuat.Z, tQuat.W));
+                    break;
 			}
 
 			float dist;
-			Vector3 relorigin = ray.Origin - t.Position;
-			if (Utils.RayPlaneIntersection(relorigin, ray.Direction, Vector3.Zero, planeNormal, out dist))
+            Vector3 pos = new Vector3(tPos.X, tPos.Y, tPos.Z);
+			Vector3 relorigin = rayOrigin - pos;
+			if (RayPlaneIntersection(relorigin, rayDirection, Vector3.Zero, planeNormal, out dist))
 			{
-				return ray.Origin + (ray.Direction * dist);
+				return rayOrigin + (rayDirection * dist);
 			}
 
-			return ray.Origin;
+			return rayOrigin;
 		}
-		*/
-	}
+
+        public static bool RayPlaneIntersection(Vector3 origin,
+            Vector3 direction,
+            Vector3 planePoint,
+            Vector3 normal,
+            out float dist)
+        {
+            var d = Vector3.Dot(direction, normal);
+            if (d == 0)
+            {
+                dist = float.PositiveInfinity;
+                return false;
+            }
+
+            dist = Vector3.Dot(planePoint - origin, normal) / d;
+            return true;
+        }
+    }
 }

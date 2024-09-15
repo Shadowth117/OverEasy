@@ -245,6 +245,9 @@ fit_content = true
 
 [node name="SpinBox" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/float_schema"]
 layout_mode = 2
+step = 0.01
+allow_greater = true
+allow_lesser = true
 
 [node name="color_schema" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer"]
 visible = false
@@ -446,6 +449,7 @@ fit_content = true
 [node name="y_value" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue/y_box"]
 layout_mode = 2
 size_flags_horizontal = 3
+max_value = 9.22337e+18
 step = 0.0
 allow_greater = true
 allow_lesser = true

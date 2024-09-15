@@ -157,6 +157,18 @@ namespace OverEasy
             return new System.Numerics.Vector4((float)boxX.Value, (float)boxY.Value, (float)boxZ.Value, (float)boxW.Value);
         }
 
+        public static void SetVec3SchemaValues(string key, Godot.Vector3 vec3)
+        {
+            var vecObj = activeObjectEditorObjects[key];
+            var boxX = (SpinBox)vecObj.GetChild(1).GetChild(0).GetChild(1);
+            var boxY = (SpinBox)vecObj.GetChild(1).GetChild(1).GetChild(1);
+            var boxZ = (SpinBox)vecObj.GetChild(1).GetChild(2).GetChild(1);
+
+            boxX.Value = vec3.X;
+            boxY.Value = vec3.Y;
+            boxZ.Value = vec3.Z;
+        }
+
         public static void LoadVec2SchemaTemplateInfo(string key, string objName, string objNameDefault, string objHint, string xName, string yName)
         {
             LoadVecSchemaTemplateInfo(key, objName, objNameDefault, objHint, xName, yName, "", "");

@@ -2,7 +2,7 @@ using Godot;
 using Godot.Collections;
 using System.Linq;
 using OverEasy;
-using System.Diagnostics;
+using OverEasy.Util;
 
 public partial class ViewerCamera : Camera3D
 {
@@ -195,9 +195,20 @@ public partial class ViewerCamera : Camera3D
 	/// </summary>
 	public const int MouseRayCastLength = 100000;
 
-	public bool mouseLeftClickedIn3d = false;
+    /// <summary>
+    /// Records if the left mouse button is clicked while in 3d space to bypass CanAccess3d if we're holding it already
+    /// </summary>
+    public bool mouseLeftClickedIn3d = false;
 
+	/// <summary>
+	/// Records if the right mouse buttton is clicked while in 3d space to bypass CanAccess3d if we're holding it already
+	/// </summary>
 	public bool mouseRightClickedIn3d = false;
+
+	/// <summary>
+	/// For locking a transformation type on the gizmo while manipulating it
+	/// </summary>
+    public bool transformLocked = false;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -383,23 +394,27 @@ public partial class ViewerCamera : Camera3D
 
 	public void _ProcessMouseMovementEvent(InputEventMouseMotion e)
 	{                
-		//Check for if we're hovering over a gizmo piece. This is for highlighting them as well as handling them as 'selected'.
-		var start = ProjectRayOrigin(e.Position);
-		var end = ProjectPosition(e.Position, MouseRayCastLength);
-		var spaceState = GetWorld3D().DirectSpaceState;
+		if(transformLocked == false)
+        {
+            //Check for if we're hovering over a gizmo piece. This is for highlighting them as well as handling them as 'selected'.
+            var start = ProjectRayOrigin(e.Position);
+            var end = ProjectPosition(e.Position, MouseRayCastLength);
+            var spaceState = GetWorld3D().DirectSpaceState;
 
-		//Check for a collision with a transform gizmo piece
-		var gizmoQuery = PhysicsRayQueryParameters3D.Create(start, end, 2);
-		var gizmoResult = spaceState.IntersectRay(gizmoQuery);
+            //Check for a collision with a transform gizmo piece
+            var gizmoQuery = PhysicsRayQueryParameters3D.Create(start, end, 2);
+            var gizmoResult = spaceState.IntersectRay(gizmoQuery);
 
-		//If we hit a Gizmo piece, we should highlight it
-		if(gizmoResult.Count > 0)
-		{
-			OverEasyGlobals.TransformGizmo.SetHover((StaticBody3D)gizmoResult["collider"]);
-		} else
-		{
-			OverEasyGlobals.TransformGizmo.SetHover(null);
-		}
+            //If we hit a Gizmo piece, we should highlight it
+            if (gizmoResult.Count > 0)
+            {
+                OverEasyGlobals.TransformGizmo.SetHover((StaticBody3D)gizmoResult["collider"]);
+            }
+            else
+            {
+                OverEasyGlobals.TransformGizmo.SetHover(null);
+            }
+        }
 
 		//Reset the selection point if the mouse moves too far from it
 		if (e.Position.X > OverEasyGlobals.PreviousMouseSelectionPoint.X + OverEasyGlobals.MouseNotMovedThresholdX || e.Position.X < OverEasyGlobals.PreviousMouseSelectionPoint.X - OverEasyGlobals.MouseNotMovedThresholdX ||
@@ -416,7 +431,7 @@ public partial class ViewerCamera : Camera3D
 		mouseMoveSpeed = e.Relative;
 	}
 
-	public void _ProcessMouseButtonEvent(InputEventMouseButton e)
+    public void _ProcessMouseButtonEvent(InputEventMouseButton e)
 	{
 		switch (e.ButtonIndex)
 		{
@@ -439,7 +454,8 @@ public partial class ViewerCamera : Camera3D
                 }
 				break;
 			case MouseButton.Left:
-				if(e.IsPressed() && OverEasyGlobals.CanAccess3d)
+                var start = ProjectRayOrigin(e.Position);
+                if (e.IsPressed() && OverEasyGlobals.CanAccess3d)
                 {
                     mouseLeftClickedIn3d = true;
                     if (OverEasyGlobals.TransformGizmo.currentHover != OverEasy.Editor.Gizmo.SelectionRegion.None)
@@ -454,6 +470,42 @@ public partial class ViewerCamera : Camera3D
                         {
                             isDragging = true;
                         }
+						transformLocked = true;
+
+                        var end = ProjectPosition(e.Position, 1);
+                        Vector3? pos = null;
+						Quaternion? rot = null;
+						Vector3? scale = null;
+						switch(OverEasyGlobals.TransformGizmo.currentHover)
+						{
+							case OverEasy.Editor.Gizmo.SelectionRegion.PositionX:
+							case OverEasy.Editor.Gizmo.SelectionRegion.PositionY:
+							case OverEasy.Editor.Gizmo.SelectionRegion.PositionZ:
+								pos = OverEasy.Editor.Gizmo.GetSingleAxisProjection(start.ToSNVec3(), end.ToSNVec3(), OverEasyGlobals.TransformGizmo, OverEasyGlobals.TransformGizmo.currentHover).ToGVec3();
+                                break;
+							case OverEasy.Editor.Gizmo.SelectionRegion.PositionXY:
+							case OverEasy.Editor.Gizmo.SelectionRegion.PositionXZ:
+							case OverEasy.Editor.Gizmo.SelectionRegion.PositionYZ:
+                                pos = OverEasy.Editor.Gizmo.GetDoubleAxisProjection(start.ToSNVec3(), end.ToSNVec3(), OverEasyGlobals.TransformGizmo, OverEasyGlobals.TransformGizmo.currentHover).ToGVec3();
+                                break;
+							case OverEasy.Editor.Gizmo.SelectionRegion.RotationX:
+							case OverEasy.Editor.Gizmo.SelectionRegion.RotationY:
+							case OverEasy.Editor.Gizmo.SelectionRegion.RotationZ:
+                                break;
+							case OverEasy.Editor.Gizmo.SelectionRegion.ScaleX:
+							case OverEasy.Editor.Gizmo.SelectionRegion.ScaleY:
+							case OverEasy.Editor.Gizmo.SelectionRegion.ScaleZ:
+								break;
+							case OverEasy.Editor.Gizmo.SelectionRegion.ScaleXY:
+							case OverEasy.Editor.Gizmo.SelectionRegion.ScaleXZ:
+							case OverEasy.Editor.Gizmo.SelectionRegion.ScaleYZ:
+								break;
+							case OverEasy.Editor.Gizmo.SelectionRegion.None:
+							default:
+								//Shouldn't happen, but who knows
+								break;
+						}
+						OverEasyGlobals.TransformFromGizmo(pos, rot, scale);
 					}
 				}
 				if(e.IsReleased())
@@ -463,7 +515,6 @@ public partial class ViewerCamera : Camera3D
                         //If we're dragging a transform, we don't want to select a new object
                         if (isDragging == false)
                         {
-                            var start = ProjectRayOrigin(e.Position);
                             var end = ProjectPosition(e.Position, MouseRayCastLength);
                             var spaceState = GetWorld3D().DirectSpaceState;
                             uint objCollisionMask = 1;
@@ -497,6 +548,7 @@ public partial class ViewerCamera : Camera3D
                     isDragging = false;
                     dragStart = new Vector2(-1, -1);
 					mouseLeftClickedIn3d = false;
+					transformLocked = false;
                 }
 				OverEasyGlobals.PreviousMouseSelectionPoint = e.Position;
 				break;

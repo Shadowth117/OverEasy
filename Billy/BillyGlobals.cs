@@ -1,12 +1,12 @@
 using AquaModelLibrary.Data.BillyHatcher;
 using AquaModelLibrary.Data.BillyHatcher.SetData;
 using AquaModelLibrary.Data.Ninja;
-using AquaModelLibrary.Data.PSO2.Aqua.AquaObjectData;
 using Godot;
 using OverEasy.Billy;
 using OverEasy.TextInfo;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 
 namespace OverEasy
@@ -292,6 +292,15 @@ namespace OverEasy
 
         public static void UpdateBillySetObjects(SetObjList setObjList, int objectId)
         {
+            //Gather some initial values
+            var objPosition = GetVec3SchemaValues("ObjectPosition");
+            var objRotation = GetVec3SchemaValues("ObjectRotation");
+
+            //Update 3d representation
+            var parentNode = (Node3D)TransformGizmo.GetParent();
+            parentNode.Position = new Vector3(objPosition.X, objPosition.Y, objPosition.Z);
+            parentNode.RotationDegrees = new Vector3(objRotation.X, objRotation.Y, objRotation.Z);
+
             //Gather current object values
             var objRaw = setObjList.setObjs[objectId];
             foreach (var objSet in activeObjectEditorObjects)
@@ -302,10 +311,9 @@ namespace OverEasy
                         objRaw.objectId = (int)GetSpinBoxValue("ObjectId");
                         break;
                     case "ObjectPosition":
-                        objRaw.Position = GetVec3SchemaValues("ObjectPosition");
+                        objRaw.Position = objPosition;
                         break;
                     case "ObjectRotation":
-                        var objRotation = GetVec3SchemaValues("ObjectRotation");
                         objRaw.BAMSRotation = new AquaModelLibrary.Data.DataTypes.Vector3Int.Vec3Int((int)(NinjaConstants.ToBAMSValueFromDegrees * objRotation.X),
                             (int)(NinjaConstants.ToBAMSValueFromDegrees * objRotation.Y), (int)(NinjaConstants.ToBAMSValueFromDegrees * objRotation.Z));
                         break;
@@ -447,7 +455,7 @@ namespace OverEasy
                     modelNode.SetMeta("treeItem", objNode);
                     objNode.SetMetadata(3, modelNode);
 
-                    modelNode.Rotation = new Vector3((float)(NinjaConstants.FromBAMSValueToDegrees * obj.BAMSRotation.X), (float)(NinjaConstants.FromBAMSValueToDegrees * obj.BAMSRotation.Y), (float)(NinjaConstants.FromBAMSValueToDegrees * obj.BAMSRotation.Z));
+                    modelNode.RotationDegrees = new Vector3((float)(NinjaConstants.FromBAMSValueToDegrees * obj.BAMSRotation.X), (float)(NinjaConstants.FromBAMSValueToDegrees * obj.BAMSRotation.Y), (float)(NinjaConstants.FromBAMSValueToDegrees * obj.BAMSRotation.Z));
                     modelNode.Position = new Vector3(obj.Position.X, obj.Position.Y, obj.Position.Z);
                     modelRoot.AddChild(modelNode);
                 }
@@ -476,7 +484,7 @@ namespace OverEasy
                     modelNode.SetMeta("treeItem", objNode);
                     objNode.SetMetadata(3, modelNode);
 
-                    modelNode.Rotation = new Vector3((float)(NinjaConstants.FromBAMSValueToDegrees * obj.BAMSRotation.X), (float)(NinjaConstants.FromBAMSValueToDegrees * obj.BAMSRotation.Y), (float)(NinjaConstants.FromBAMSValueToDegrees * obj.BAMSRotation.Z));
+                    modelNode.RotationDegrees = new Vector3((float)(NinjaConstants.FromBAMSValueToDegrees * obj.BAMSRotation.X), (float)(NinjaConstants.FromBAMSValueToDegrees * obj.BAMSRotation.Y), (float)(NinjaConstants.FromBAMSValueToDegrees * obj.BAMSRotation.Z));
                     modelNode.Position = new Vector3(obj.Position.X, obj.Position.Y, obj.Position.Z);
                     modelRoot.AddChild(modelNode);
                 }
@@ -549,6 +557,28 @@ namespace OverEasy
             else
             {
                 return $"Object {nodeAddition}{obj.objectId} 0x{obj.objectId:X}";
+            }
+        }
+
+        public static void TransformFromGizmoBilly(Vector3? pos, Quaternion? rot, Vector3? scale)
+        {
+            switch(currentEditorType)
+            {
+                case EditingType.BillySetObj:
+                case EditingType.BillySetDesign:
+                    if(pos != null)
+                    {
+                        SetVec3SchemaValues("ObjectPosition", (Vector3)pos);
+                    }
+                    if(rot != null)
+                    {
+
+                    }
+                    if(scale != null)
+                    {
+
+                    }
+                    break;
             }
         }
     }

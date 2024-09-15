@@ -39,6 +39,10 @@ namespace OverEasy
 		public static CollisionShape2D objectPanelButtonCollision = null;
 
 		public static Gizmo TransformGizmo = null;
+		/// <summary>
+		/// False for local, true for world
+		/// </summary>
+		public static bool TransformGizmoWorld = false;
 
 		public static Dictionary<string, Texture2D> globalTexturePool = new Dictionary<string, Texture2D>();
 		public static Dictionary<string, List<Texture2D>> orderedTextureArchivePools = new Dictionary<string, List<Texture2D>>();
@@ -678,6 +682,17 @@ namespace OverEasy
 			{
 				return Path.Combine(gameFolderLocation, fileName);
 			}
-		}
-	}
+        }
+
+        public static void TransformFromGizmo(Vector3? pos, Quaternion? rot, Vector3? scale)
+        {
+			switch(gameType)
+			{
+				case GameType.BillyPC:
+				case GameType.BillyGC:
+					TransformFromGizmoBilly(pos, rot, scale);
+					break;
+			}
+        }
+    }
 }
