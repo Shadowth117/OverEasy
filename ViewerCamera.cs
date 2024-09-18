@@ -2,399 +2,413 @@ using Godot;
 using Godot.Collections;
 using System.Linq;
 using OverEasy;
-using OverEasy.Util;
 
 public partial class ViewerCamera : Camera3D
 {
-	public enum CameraMode : int
-	{
-		Orbit = 0,
-		Freecam = 1,
-	}
+    public enum CameraMode : int
+    {
+        Orbit = 0,
+        Freecam = 1,
+    }
 
-	/// <summary>
-	/// Multiplier for zooming in and out with a mouse
-	/// </summary>
-	
-	public static double SCROLL_SPEED = 10;
-	/// <summary>
-	/// Multiplier for zooming and out with a touch screen
-	/// </summary>
-	
-	public static double ZOOM_SPEED = 5;
-	/// <summary>
-	/// Multiplier for spinning the camera on the roll axis
-	/// </summary>
-	
-	public static double SPIN_SPEED = 10;
-	/// <summary>
-	/// Initial distance in meters the camera should distance itself from the target
-	/// </summary>
-	
-	public static double DEFAULT_DISTANCE = 20;
-	/// <summary>
-	/// Multiplier for rotating the camera on the X axis
-	/// </summary>
-	
-	public static double ROTATE_SPEED_X = 40;
-	/// <summary>
-	/// Multiplier for rotating the camera on the Y axis
-	/// </summary>
-	
-	public static double ROTATE_SPEED_Y = 40;
-	/// <summary>
-	/// Multiplier for rotating the camera via touch screen dragging
-	/// </summary>
-	
-	public static double TOUCH_ZOOM_SPEED = 40;
-	/// <summary>
-	/// Multiplier for camera position fast movement
-	/// </summary>
-	
-	public static double SHIFT_MULTIPLIER = 2.5;
-	/// <summary>
-	/// Multiplier for camera position slow movemnet
-	/// </summary>
-	
-	public static double CTRL_MULTIPLIER = 0.4;
-	/// <summary>
-	/// Acceleration multiplier for the freecam
-	/// </summary>
-	
-	public static double FREECAM_ACCELERATION = 30;
-	/// <summary>
-	/// Deceleration multiplier for the freecam
-	/// </summary>
-	
-	public static double FREECAM_DECELERATION = -10;
-	/// <summary>
-	/// Velocity multiplier for the freecam
-	/// </summary>
-	
-	public static double FREECAM_VELOCITY_MULTIPLIER = 4;
+    /// <summary>
+    /// Multiplier for zooming in and out with a mouse
+    /// </summary>
 
-	//Common params
-	/// <summary>
-	/// Sensitivity when rotating horizontally
-	/// </summary>
-	[Export(PropertyHint.Range, "0.0,1.0,")]
-	public double sensitivityX = 0.25;
-	/// <summary>
-	/// Sensitivity when rotating vertically
-	/// </summary>
-	[Export(PropertyHint.Range, "0.0,1.0,")]
-	public double sensitivityY = 0.25;
-	/// <summary>
-	/// Boolean to decide if camera should invert mouse vertical rotation 
-	/// </summary>
-	
-	public static bool INVERT_MOUSE_VERTICAL_ROTATION = false;
-	/// <summary>
-	/// Boolean to decide if camera should invert mouse horizontal rotation 
-	/// </summary>
-	
-	public static bool INVERT_MOUSE_HORIZONTAL_ROTATION = false;
-	/// <summary>
-	/// Boolean to decide if camera should invert gamepad vertical rotation 
-	/// </summary>
-	
-	public static bool INVERT_GAMEPAD_VERTICAL_ROTATION = false;
-	/// <summary>
-	/// Boolean to decide if camera should invert gamepad horizontal rotation 
-	/// </summary>
-	
-	public static bool INVERT_GAMEPAD_HORIZONTAL_ROTATION = false;
-	/// <summary>
-	/// Boolean to decide if camera should invert touch event rotation 
-	/// </summary>
-	
-	public static bool INVERT_TOUCH_ROTATION = false;
-	/// <summary>
-	/// Target node
-	/// </summary>
-	[Export]
-	public Node3D targetNode;
+    public static double SCROLL_SPEED = 10;
+    /// <summary>
+    /// Multiplier for zooming and out with a touch screen
+    /// </summary>
 
-	//Active variables
-	/// <summary>
-	/// Current camera mode
-	/// </summary>
-	public CameraMode cameraMode = CameraMode.Freecam;
-	/// <summary>
-	/// Current mouse movement speed during a right click
-	/// </summary>
-	public Vector2 mouseRightClickMoveSpeed = new Vector2();
-	/// <summary>
-	/// Current mouse movement speed 
-	/// </summary>
-	public Vector2 mouseMoveSpeed = new Vector2();
-	/// <summary>
-	/// Current scrolling speed. Can be from mouse scroll wheel, touchscreen zoom, etc.
-	/// </summary>
-	public double scrollSpeed = 0;
-	/// <summary>
-	/// Current direction the freecam is facing
-	/// </summary>
-	public Vector3 freeCamDirection = new Vector3();
-	/// <summary>
-	/// Current velocity the freecam applies
-	/// </summary>
-	public Vector3 freeCamVelocity = new Vector3();
-	/// <summary>
-	/// Current pitch for the freecam
-	/// </summary>
-	public double freecamTotalPitch = 0;
-	/// <summary>
-	/// Dictionary containing info on recorded touch input
-	/// </summary>
-	public Dictionary<int, Vector2> touchDictionary = new Dictionary<int, Vector2>();
-	/// <summary>
-	/// Previous touch rotation event distance calculation
-	/// </summary>
-	public double oldTouchDistance = 0;
-	/// <summary>
-	/// The object which the orbit cam will focus on
-	/// </summary>
-	public Node3D orbitFocusNode = null;
-	/// <summary>
-	/// Working value for orbit rotation
-	/// </summary>
-	public Vector3 _orbitRotation = new Vector3();
-	/// <summary>
-	/// Working value for current orbit camera distance
-	/// </summary>
-	public double _distance = 0;
+    public static double ZOOM_SPEED = 5;
+    /// <summary>
+    /// Multiplier for spinning the camera on the roll axis
+    /// </summary>
 
-	/// <summary>
-	/// A determinant for if we're currently draggging an item with the mouse, such as a transform gizmo
-	/// </summary>
-	public bool isDragging = false;
+    public static double SPIN_SPEED = 10;
+    /// <summary>
+    /// Initial distance in meters the camera should distance itself from the target
+    /// </summary>
 
-	/// <summary>
-	/// A tracker for if we've started attempting to drag by holding the mouse.
-	/// </summary>
+    public static double DEFAULT_DISTANCE = 20;
+    /// <summary>
+    /// Multiplier for rotating the camera on the X axis
+    /// </summary>
+
+    public static double ROTATE_SPEED_X = 40;
+    /// <summary>
+    /// Multiplier for rotating the camera on the Y axis
+    /// </summary>
+
+    public static double ROTATE_SPEED_Y = 40;
+    /// <summary>
+    /// Multiplier for rotating the camera via touch screen dragging
+    /// </summary>
+
+    public static double TOUCH_ZOOM_SPEED = 40;
+    /// <summary>
+    /// Multiplier for camera position fast movement
+    /// </summary>
+
+    public static double SHIFT_MULTIPLIER = 2.5;
+    /// <summary>
+    /// Multiplier for camera position slow movemnet
+    /// </summary>
+
+    public static double CTRL_MULTIPLIER = 0.4;
+    /// <summary>
+    /// Acceleration multiplier for the freecam
+    /// </summary>
+
+    public static double FREECAM_ACCELERATION = 30;
+    /// <summary>
+    /// Deceleration multiplier for the freecam
+    /// </summary>
+
+    public static double FREECAM_DECELERATION = -10;
+    /// <summary>
+    /// Velocity multiplier for the freecam
+    /// </summary>
+
+    public static double FREECAM_VELOCITY_MULTIPLIER = 4;
+
+    //Common params
+    /// <summary>
+    /// Sensitivity when rotating horizontally
+    /// </summary>
+    [Export(PropertyHint.Range, "0.0,1.0,")]
+    public double sensitivityX = 0.25;
+    /// <summary>
+    /// Sensitivity when rotating vertically
+    /// </summary>
+    [Export(PropertyHint.Range, "0.0,1.0,")]
+    public double sensitivityY = 0.25;
+    /// <summary>
+    /// Boolean to decide if camera should invert mouse vertical rotation 
+    /// </summary>
+
+    public static bool INVERT_MOUSE_VERTICAL_ROTATION = false;
+    /// <summary>
+    /// Boolean to decide if camera should invert mouse horizontal rotation 
+    /// </summary>
+
+    public static bool INVERT_MOUSE_HORIZONTAL_ROTATION = false;
+    /// <summary>
+    /// Boolean to decide if camera should invert gamepad vertical rotation 
+    /// </summary>
+
+    public static bool INVERT_GAMEPAD_VERTICAL_ROTATION = false;
+    /// <summary>
+    /// Boolean to decide if camera should invert gamepad horizontal rotation 
+    /// </summary>
+
+    public static bool INVERT_GAMEPAD_HORIZONTAL_ROTATION = false;
+    /// <summary>
+    /// Boolean to decide if camera should invert touch event rotation 
+    /// </summary>
+
+    public static bool INVERT_TOUCH_ROTATION = false;
+    /// <summary>
+    /// Target node
+    /// </summary>
+    [Export]
+    public Node3D targetNode;
+
+    //Active variables
+    /// <summary>
+    /// Current camera mode
+    /// </summary>
+    public CameraMode cameraMode = CameraMode.Freecam;
+    /// <summary>
+    /// Current mouse movement speed during a right click
+    /// </summary>
+    public Vector2 mouseRightClickMoveSpeed = new Vector2();
+    /// <summary>
+    /// Current mouse movement speed 
+    /// </summary>
+    public Vector2 mouseMoveSpeed = new Vector2();
+    /// <summary>
+    /// Current scrolling speed. Can be from mouse scroll wheel, touchscreen zoom, etc.
+    /// </summary>
+    public double scrollSpeed = 0;
+    /// <summary>
+    /// Current direction the freecam is facing
+    /// </summary>
+    public Vector3 freeCamDirection = new Vector3();
+    /// <summary>
+    /// Current velocity the freecam applies
+    /// </summary>
+    public Vector3 freeCamVelocity = new Vector3();
+    /// <summary>
+    /// Current pitch for the freecam
+    /// </summary>
+    public double freecamTotalPitch = 0;
+    /// <summary>
+    /// Dictionary containing info on recorded touch input
+    /// </summary>
+    public Dictionary<int, Vector2> touchDictionary = new Dictionary<int, Vector2>();
+    /// <summary>
+    /// Previous touch rotation event distance calculation
+    /// </summary>
+    public double oldTouchDistance = 0;
+    /// <summary>
+    /// The object which the orbit cam will focus on
+    /// </summary>
+    public Node3D orbitFocusNode = null;
+    /// <summary>
+    /// Working value for orbit rotation
+    /// </summary>
+    public Vector3 _orbitRotation = new Vector3();
+    /// <summary>
+    /// Working value for current orbit camera distance
+    /// </summary>
+    public double _distance = 0;
+
+    /// <summary>
+    /// A determinant for if we're currently draggging an item with the mouse, such as a transform gizmo
+    /// </summary>
+    public bool isDragging = false;
+
+    /// <summary>
+    /// A tracker for if we've started attempting to drag by holding the mouse.
+    /// </summary>
     public bool startedDragging = false;
 
-	/// <summary>
-	/// A holding object for tracking where the drag area began
-	/// </summary>
-	public Vector2 dragStart = new Vector2(-1, -1);
+    /// <summary>
+    /// A holding object for tracking where the drag area began
+    /// </summary>
+    public Vector2 dragStart = new Vector2(-1, -1);
 
-	/// <summary>
-	/// Default value for drag start
-	/// </summary>
-	public Vector2 DragStartDefault = new Vector2(-1, -1);
+    /// <summary>
+    /// Default value for drag start
+    /// </summary>
+    public Vector2 DragStartDefault = new Vector2(-1, -1);
 
     /// <summary>
     /// Base value for scaling the transformation gizmo
     /// </summary>
     public float FixedGizmoSize = .0025f;
 
-	/// <summary>
-	/// Making this much higher causes odd consistency issues and overall problems
-	/// </summary>
-	public const int MouseRayCastLength = 100000;
+    /// <summary>
+    /// Making this much higher causes odd consistency issues and overall problems
+    /// </summary>
+    public const int MouseRayCastLength = 100000;
 
     /// <summary>
     /// Records if the left mouse button is clicked while in 3d space to bypass CanAccess3d if we're holding it already
     /// </summary>
     public bool mouseLeftClickedIn3d = false;
 
-	/// <summary>
-	/// Records if the right mouse buttton is clicked while in 3d space to bypass CanAccess3d if we're holding it already
-	/// </summary>
-	public bool mouseRightClickedIn3d = false;
+    /// <summary>
+    /// Records if the right mouse buttton is clicked while in 3d space to bypass CanAccess3d if we're holding it already
+    /// </summary>
+    public bool mouseRightClickedIn3d = false;
 
-	/// <summary>
-	/// For locking a transformation type on the gizmo while manipulating it
-	/// </summary>
+    /// <summary>
+    /// For locking a transformation type on the gizmo while manipulating it
+    /// </summary>
     public bool transformLocked = false;
+
+    /// <summary>
+    /// For holding the gizmo transform coords from the start of the dragging
+    /// </summary>
+    public Godot.Transform3D dragGizmoOriginalTransform = Godot.Transform3D.Identity;
+
+    /// <summary>
+    /// For holding the position in 2d where the gizmo was at the start of the drag
+    /// </summary>
+    public Godot.Vector2 dragGizmoCenter = new Vector2(-1, -1);
+
+    /// <summary>
+    /// Current gizmo raycast result. Null if unselected 
+    /// </summary>
+    public Dictionary currentGizmoRaycastResults = null;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
-	{
-		_distance = DEFAULT_DISTANCE;
-		_orbitRotation = targetNode.Transform.Basis.GetRotationQuaternion().GetEuler();
-	}
+    {
+        _distance = DEFAULT_DISTANCE;
+        _orbitRotation = targetNode.Transform.Basis.GetRotationQuaternion().GetEuler();
+    }
 
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
-		_ProcessGizmoSize();
-		_ProcessTransformation(delta);
-	}
+    // Called every frame. 'delta' is the elapsed time since the previous frame.
+    public override void _Process(double delta)
+    {
+        _ProcessGizmoSize();
+        _ProcessTransformation(delta);
+    }
 
-	private void _ProcessGizmoSize()
-	{
-		var gizmoDistance = (this.GlobalPosition - OverEasyGlobals.TransformGizmo.GlobalPosition).Length();
-		var size = gizmoDistance * FixedGizmoSize * this.Fov;
-		OverEasyGlobals.TransformGizmo.Scale = Vector3.One * size;
-	}
+    private void _ProcessGizmoSize()
+    {
+        var gizmoDistance = (this.GlobalPosition - OverEasyGlobals.TransformGizmo.GlobalPosition).Length();
+        var size = gizmoDistance * FixedGizmoSize * this.Fov;
+        OverEasyGlobals.TransformGizmo.Scale = Vector3.One * size;
+    }
 
-	private void _ProcessTransformation(double delta)
-	{
-		if(OverEasyGlobals.CanAccess3d || mouseRightClickedIn3d)
-		{
-			switch (cameraMode)
-			{
-				case CameraMode.Orbit:
-					_ProcessOrbit(delta);
-					break;
-				case CameraMode.Freecam:
-					_ProcessFreecam(delta);
-					break;
-			}
+    private void _ProcessTransformation(double delta)
+    {
+        if (OverEasyGlobals.CanAccess3d || mouseRightClickedIn3d)
+        {
+            switch (cameraMode)
+            {
+                case CameraMode.Orbit:
+                    _ProcessOrbit(delta);
+                    break;
+                case CameraMode.Freecam:
+                    _ProcessFreecam(delta);
+                    break;
+            }
 
-			//Reset mouseMoveSpeed so we don't repeat the previous movement info
-			mouseRightClickMoveSpeed = new Vector2();
-		}
-	}
+            //Reset mouseMoveSpeed so we don't repeat the previous movement info
+            mouseRightClickMoveSpeed = new Vector2();
+        }
+    }
 
-	public void _ProcessOrbit(double delta)
-	{
-		// Update rotation
-		_orbitRotation.X += (float)(-mouseRightClickMoveSpeed.Y * delta * ROTATE_SPEED_X * sensitivityX);
-		_orbitRotation.Y += (float)(-mouseRightClickMoveSpeed.X * delta * ROTATE_SPEED_Y * sensitivityY);
+    public void _ProcessOrbit(double delta)
+    {
+        // Update rotation
+        _orbitRotation.X += (float)(-mouseRightClickMoveSpeed.Y * delta * ROTATE_SPEED_X * sensitivityX);
+        _orbitRotation.Y += (float)(-mouseRightClickMoveSpeed.X * delta * ROTATE_SPEED_Y * sensitivityY);
 
-		//_rotation.z += _spin_speed * delta
+        //_rotation.z += _spin_speed * delta
 
-		if (_orbitRotation.X < -Mathf.Pi / 2)
-		{
-			_orbitRotation.X = -Mathf.Pi / 2;
-		}
+        if (_orbitRotation.X < -Mathf.Pi / 2)
+        {
+            _orbitRotation.X = -Mathf.Pi / 2;
+        }
 
-		if (_orbitRotation.X > Mathf.Pi / 2)
-		{
-			_orbitRotation.X = Mathf.Pi / 2;
-		}
+        if (_orbitRotation.X > Mathf.Pi / 2)
+        {
+            _orbitRotation.X = Mathf.Pi / 2;
+        }
 
-		mouseRightClickMoveSpeed = new Vector2();
+        mouseRightClickMoveSpeed = new Vector2();
 
-		// Update distance
-		_distance += scrollSpeed * delta;
+        // Update distance
+        _distance += scrollSpeed * delta;
 
-		if (_distance < 0)
-		{
-			_distance = 0;
-		}
+        if (_distance < 0)
+        {
+            _distance = 0;
+        }
 
-		scrollSpeed = 0;
-		//spinSpeed = 0
+        scrollSpeed = 0;
+        //spinSpeed = 0
 
-		this.SetIdentity();
-		this.TranslateObjectLocal(new Vector3(0, 0, (float)_distance));
+        this.SetIdentity();
+        this.TranslateObjectLocal(new Vector3(0, 0, (float)_distance));
 
-		targetNode.SetIdentity();
-		var targetNodeTfm = targetNode.Transform;
-		targetNodeTfm.Basis = new Basis(Quaternion.FromEuler(_orbitRotation));
-		targetNode.Transform = targetNodeTfm;
-	}
+        targetNode.SetIdentity();
+        var targetNodeTfm = targetNode.Transform;
+        targetNodeTfm.Basis = new Basis(Godot.Quaternion.FromEuler(_orbitRotation));
+        targetNode.Transform = targetNodeTfm;
+    }
 
-	public void _ProcessFreecam(double delta)
-	{
-		//Update Mouse Info
-		var yaw = mouseRightClickMoveSpeed.X * sensitivityX;
-		var pitch = mouseRightClickMoveSpeed.Y * sensitivityY;
+    public void _ProcessFreecam(double delta)
+    {
+        //Update Mouse Info
+        var yaw = mouseRightClickMoveSpeed.X * sensitivityX;
+        var pitch = mouseRightClickMoveSpeed.Y * sensitivityY;
 
-		pitch = Mathf.Clamp(pitch, -90 - freecamTotalPitch, 90 - freecamTotalPitch);
-		freecamTotalPitch += pitch;
+        pitch = Mathf.Clamp(pitch, -90 - freecamTotalPitch, 90 - freecamTotalPitch);
+        freecamTotalPitch += pitch;
 
-		RotateY((float)Mathf.DegToRad(-yaw));
-		RotateObjectLocal(new Vector3(1, 0, 0), (float)Mathf.DegToRad(-pitch));
+        RotateY((float)Mathf.DegToRad(-yaw));
+        RotateObjectLocal(new Vector3(1, 0, 0), (float)Mathf.DegToRad(-pitch));
 
-		//Update Freecam movement
-		var movementVec2 = Input.GetVector("move_left", "move_right", "move_forward", "move_back");
-		var verticalMovement = Input.GetAxis("move_down", "move_up");
-		var movementDirection = new Vector3(movementVec2.X, 0, movementVec2.Y);
-		movementDirection = movementDirection.Normalized();
+        //Update Freecam movement
+        var movementVec2 = Input.GetVector("move_left", "move_right", "move_forward", "move_back");
+        var verticalMovement = Input.GetAxis("move_down", "move_up");
+        var movementDirection = new Vector3(movementVec2.X, 0, movementVec2.Y);
+        movementDirection = movementDirection.Normalized();
 
-		//Add the vertical movement separately by intention
-		movementDirection.Y = verticalMovement;
-		freeCamDirection = movementDirection;
+        //Add the vertical movement separately by intention
+        movementDirection.Y = verticalMovement;
+        freeCamDirection = movementDirection;
 
-		// Computes the change in velocity due to desired direction and "drag"
-		// The "drag" is a constant acceleration on the camera to bring it's velocity to 0
-		var offset = freeCamDirection.Normalized() * (float)(FREECAM_ACCELERATION * FREECAM_VELOCITY_MULTIPLIER * delta);
-		var drag = freeCamVelocity.Normalized() * (float)(FREECAM_DECELERATION * FREECAM_VELOCITY_MULTIPLIER * delta);
-		offset += drag;
+        // Computes the change in velocity due to desired direction and "drag"
+        // The "drag" is a constant acceleration on the camera to bring it's velocity to 0
+        var offset = freeCamDirection.Normalized() * (float)(FREECAM_ACCELERATION * FREECAM_VELOCITY_MULTIPLIER * delta);
+        var drag = freeCamVelocity.Normalized() * (float)(FREECAM_DECELERATION * FREECAM_VELOCITY_MULTIPLIER * delta);
+        offset += drag;
 
-		// Mixes in speed multipliers
-		var ctrlMulti = Input.GetActionStrength("slow_down");
-		var shiftMulti = Input.GetActionStrength("speed_up");
+        // Mixes in speed multipliers
+        var ctrlMulti = Input.GetActionStrength("slow_down");
+        var shiftMulti = Input.GetActionStrength("speed_up");
 
-		//Multiply by the result in case we're using an axis input
-		var speedMulti = (ctrlMulti > 0 ? ctrlMulti * CTRL_MULTIPLIER : 1) * (shiftMulti > 0 ? shiftMulti * SHIFT_MULTIPLIER : 1);
+        //Multiply by the result in case we're using an axis input
+        var speedMulti = (ctrlMulti > 0 ? ctrlMulti * CTRL_MULTIPLIER : 1) * (shiftMulti > 0 ? shiftMulti * SHIFT_MULTIPLIER : 1);
 
-		// Determine if the camera should translate or not
-		if (freeCamDirection == Vector3.Zero && offset.LengthSquared() > freeCamVelocity.LengthSquared())
-		{
-			freeCamVelocity = Vector3.Zero;
-		}
-		else
-		{
-			freeCamVelocity.X = Mathf.Clamp(freeCamVelocity.X + offset.X, (float)-FREECAM_VELOCITY_MULTIPLIER, (float)FREECAM_VELOCITY_MULTIPLIER);
-			freeCamVelocity.Y = Mathf.Clamp(freeCamVelocity.Y + offset.Y, (float)-FREECAM_VELOCITY_MULTIPLIER, (float)FREECAM_VELOCITY_MULTIPLIER);
-			freeCamVelocity.Z = Mathf.Clamp(freeCamVelocity.Z + offset.Z, (float)-FREECAM_VELOCITY_MULTIPLIER, (float)FREECAM_VELOCITY_MULTIPLIER);
+        // Determine if the camera should translate or not
+        if (freeCamDirection == Vector3.Zero && offset.LengthSquared() > freeCamVelocity.LengthSquared())
+        {
+            freeCamVelocity = Vector3.Zero;
+        }
+        else
+        {
+            freeCamVelocity.X = Mathf.Clamp(freeCamVelocity.X + offset.X, (float)-FREECAM_VELOCITY_MULTIPLIER, (float)FREECAM_VELOCITY_MULTIPLIER);
+            freeCamVelocity.Y = Mathf.Clamp(freeCamVelocity.Y + offset.Y, (float)-FREECAM_VELOCITY_MULTIPLIER, (float)FREECAM_VELOCITY_MULTIPLIER);
+            freeCamVelocity.Z = Mathf.Clamp(freeCamVelocity.Z + offset.Z, (float)-FREECAM_VELOCITY_MULTIPLIER, (float)FREECAM_VELOCITY_MULTIPLIER);
 
-			Translate(freeCamVelocity * (float)(delta * speedMulti));
-		}
-	}
+            Translate(freeCamVelocity * (float)(delta * speedMulti));
+        }
+    }
 
-	public override void _Input(InputEvent @event)
-	{
-		switch (@event)
-		{
-			case InputEventMouseMotion iemmEvent:
-				_ProcessMouseMovementEvent(iemmEvent);
-				break;
-			case InputEventMouseButton iembEvent:
-				_ProcessMouseButtonEvent(iembEvent);
-				break;
-			case InputEventScreenTouch iestEvent:
-				_ProcessTouchZoomEvent(iestEvent);
-				break;
-			case InputEventScreenDrag iesdEvent:
-				_ProcessTouchMovementEvent(iesdEvent);
-				break;
-			case InputEventKey iekEvent:
-				//Placeholder
-				break;
-			default:
-				_ProcessMiscInputEvents(@event);
-				break;
-		}
-	}
+    public override void _Input(InputEvent @event)
+    {
+        switch (@event)
+        {
+            case InputEventMouseMotion iemmEvent:
+                _ProcessMouseMovementEvent(iemmEvent);
+                break;
+            case InputEventMouseButton iembEvent:
+                _ProcessMouseButtonEvent(iembEvent);
+                break;
+            case InputEventScreenTouch iestEvent:
+                _ProcessTouchZoomEvent(iestEvent);
+                break;
+            case InputEventScreenDrag iesdEvent:
+                _ProcessTouchMovementEvent(iesdEvent);
+                break;
+            case InputEventKey iekEvent:
+                //Placeholder
+                break;
+            default:
+                _ProcessMiscInputEvents(@event);
+                break;
+        }
+    }
 
-	public void _ProcessMiscInputEvents(InputEvent @event)
-	{
-		if (Input.IsActionJustReleased("mode_toggle"))
-		{
-			if (cameraMode == CameraMode.Orbit)
-			{
-				cameraMode = CameraMode.Freecam;
-				this.Reparent(GetTree().Root);
-				//Adjust targetNode while it's not parented
-				targetNode.GlobalRotation = new Vector3(0, targetNode.GlobalRotation.Y, targetNode.GlobalRotation.Z);
-				targetNode.Reparent(GetTree().Root, true);
+    public void _ProcessMiscInputEvents(InputEvent @event)
+    {
+        if (Input.IsActionJustReleased("mode_toggle"))
+        {
+            if (cameraMode == CameraMode.Orbit)
+            {
+                cameraMode = CameraMode.Freecam;
+                this.Reparent(GetTree().Root);
+                //Adjust targetNode while it's not parented
+                targetNode.GlobalRotation = new Vector3(0, targetNode.GlobalRotation.Y, targetNode.GlobalRotation.Z);
+                targetNode.Reparent(GetTree().Root, true);
 
-				//Reparent back to targetNode after its adjustment
-				this.Reparent(targetNode);
-				freecamTotalPitch = -(this.Rotation.X * 180 / Mathf.Pi);
-			}
-			else if (cameraMode == CameraMode.Freecam)
-			{
-				if (orbitFocusNode == null)
-				{
-					cameraMode = CameraMode.Orbit;
-					targetNode.Reparent(orbitFocusNode);
-				}
-			}
-		}
-	}
+                //Reparent back to targetNode after its adjustment
+                this.Reparent(targetNode);
+                freecamTotalPitch = -(this.Rotation.X * 180 / Mathf.Pi);
+            }
+            else if (cameraMode == CameraMode.Freecam)
+            {
+                if (orbitFocusNode == null)
+                {
+                    cameraMode = CameraMode.Orbit;
+                    targetNode.Reparent(orbitFocusNode);
+                }
+            }
+        }
+    }
 
-	public void _ProcessMouseMovementEvent(InputEventMouseMotion e)
-	{                
-		if(transformLocked == false)
+    public void _ProcessMouseMovementEvent(InputEventMouseMotion e)
+    {
+        if (transformLocked == false)
         {
             //Check for if we're hovering over a gizmo piece. This is for highlighting them as well as handling them as 'selected'.
             var start = ProjectRayOrigin(e.Position);
@@ -409,6 +423,9 @@ public partial class ViewerCamera : Camera3D
             if (gizmoResult.Count > 0)
             {
                 OverEasyGlobals.TransformGizmo.SetHover((StaticBody3D)gizmoResult["collider"]);
+                currentGizmoRaycastResults = gizmoResult;
+                dragGizmoOriginalTransform = OverEasyGlobals.TransformGizmo.Transform;
+                dragGizmoCenter = this.UnprojectPosition(dragGizmoOriginalTransform.Origin);
             }
             else
             {
@@ -416,33 +433,33 @@ public partial class ViewerCamera : Camera3D
             }
         }
 
-		//Reset the selection point if the mouse moves too far from it
-		if (e.Position.X > OverEasyGlobals.PreviousMouseSelectionPoint.X + OverEasyGlobals.MouseNotMovedThresholdX || e.Position.X < OverEasyGlobals.PreviousMouseSelectionPoint.X - OverEasyGlobals.MouseNotMovedThresholdX ||
-			e.Position.Y > OverEasyGlobals.PreviousMouseSelectionPoint.Y + OverEasyGlobals.MouseNotMovedThresholdY || e.Position.Y < OverEasyGlobals.PreviousMouseSelectionPoint.Y - OverEasyGlobals.MouseNotMovedThresholdY)
-		{
-			OverEasyGlobals.ClearPreviousMouseSelectionCache();
-		}
+        //Reset the selection point if the mouse moves too far from it
+        if (e.Position.X > OverEasyGlobals.PreviousMouseSelectionPoint.X + OverEasyGlobals.MouseNotMovedThresholdX || e.Position.X < OverEasyGlobals.PreviousMouseSelectionPoint.X - OverEasyGlobals.MouseNotMovedThresholdX ||
+            e.Position.Y > OverEasyGlobals.PreviousMouseSelectionPoint.Y + OverEasyGlobals.MouseNotMovedThresholdY || e.Position.Y < OverEasyGlobals.PreviousMouseSelectionPoint.Y - OverEasyGlobals.MouseNotMovedThresholdY)
+        {
+            OverEasyGlobals.ClearPreviousMouseSelectionCache();
+        }
 
-		//Get mouse movement speed for camera rotation
-		if (Input.IsMouseButtonPressed(MouseButton.Right))
-		{
-			mouseRightClickMoveSpeed = e.Relative;
-		}
-		mouseMoveSpeed = e.Relative;
-	}
+        //Get mouse movement speed for camera rotation
+        if (Input.IsMouseButtonPressed(MouseButton.Right))
+        {
+            mouseRightClickMoveSpeed = e.Relative;
+        }
+        mouseMoveSpeed = e.Relative;
+    }
 
     public void _ProcessMouseButtonEvent(InputEventMouseButton e)
-	{
-		switch (e.ButtonIndex)
-		{
-			case MouseButton.WheelUp:
-				scrollSpeed = -1 * scrollSpeed;
-				break;
-			case MouseButton.WheelDown:
-				scrollSpeed = 1 * scrollSpeed;
-				break;
-			case MouseButton.Middle:
-				break;
+    {
+        switch (e.ButtonIndex)
+        {
+            case MouseButton.WheelUp:
+                scrollSpeed = -1 * scrollSpeed;
+                break;
+            case MouseButton.WheelDown:
+                scrollSpeed = 1 * scrollSpeed;
+                break;
+            case MouseButton.Middle:
+                break;
             case MouseButton.Right:
                 if (e.IsPressed() && OverEasyGlobals.CanAccess3d)
                 {
@@ -452,65 +469,66 @@ public partial class ViewerCamera : Camera3D
                 {
                     mouseRightClickedIn3d = false;
                 }
-				break;
-			case MouseButton.Left:
+                break;
+            case MouseButton.Left:
                 var start = ProjectRayOrigin(e.Position);
                 if (e.IsPressed() && OverEasyGlobals.CanAccess3d)
                 {
                     mouseLeftClickedIn3d = true;
                     if (OverEasyGlobals.TransformGizmo.currentHover != OverEasy.Editor.Gizmo.SelectionRegion.None)
-					{
-						startedDragging = true;
-						//When dragging, we want to check on subsequent frames if we're actually moving the gizmo or not.
-						//If not, we want the user to still be able to select what's under the gizmo later.
-						if(dragStart.IsEqualApprox(DragStartDefault))
-						{
-							dragStart = e.Position;
-						} else if(!e.Position.IsEqualApprox(dragStart))
+                    {
+                        startedDragging = true;
+                        //When dragging, we want to check on subsequent frames if we're actually moving the gizmo or not.
+                        //If not, we want the user to still be able to select what's under the gizmo later.
+                        if (dragStart.IsEqualApprox(DragStartDefault))
+                        {
+                            dragStart = e.Position;
+                        }
+                        else if (!e.Position.IsEqualApprox(dragStart))
                         {
                             isDragging = true;
                         }
-						transformLocked = true;
+                        transformLocked = true;
 
-                        var end = ProjectPosition(e.Position, 1);
-                        Vector3? pos = null;
-						Quaternion? rot = null;
-						Vector3? scale = null;
-						switch(OverEasyGlobals.TransformGizmo.currentHover)
-						{
-							case OverEasy.Editor.Gizmo.SelectionRegion.PositionX:
-							case OverEasy.Editor.Gizmo.SelectionRegion.PositionY:
-							case OverEasy.Editor.Gizmo.SelectionRegion.PositionZ:
-								pos = OverEasy.Editor.Gizmo.GetSingleAxisProjection(start.ToSNVec3(), end.ToSNVec3(), OverEasyGlobals.TransformGizmo, OverEasyGlobals.TransformGizmo.currentHover).ToGVec3();
-                                break;
-							case OverEasy.Editor.Gizmo.SelectionRegion.PositionXY:
-							case OverEasy.Editor.Gizmo.SelectionRegion.PositionXZ:
-							case OverEasy.Editor.Gizmo.SelectionRegion.PositionYZ:
-                                pos = OverEasy.Editor.Gizmo.GetDoubleAxisProjection(start.ToSNVec3(), end.ToSNVec3(), OverEasyGlobals.TransformGizmo, OverEasyGlobals.TransformGizmo.currentHover).ToGVec3();
-                                break;
-							case OverEasy.Editor.Gizmo.SelectionRegion.RotationX:
-							case OverEasy.Editor.Gizmo.SelectionRegion.RotationY:
-							case OverEasy.Editor.Gizmo.SelectionRegion.RotationZ:
-                                break;
-							case OverEasy.Editor.Gizmo.SelectionRegion.ScaleX:
-							case OverEasy.Editor.Gizmo.SelectionRegion.ScaleY:
-							case OverEasy.Editor.Gizmo.SelectionRegion.ScaleZ:
-								break;
-							case OverEasy.Editor.Gizmo.SelectionRegion.ScaleXY:
-							case OverEasy.Editor.Gizmo.SelectionRegion.ScaleXZ:
-							case OverEasy.Editor.Gizmo.SelectionRegion.ScaleYZ:
-								break;
-							case OverEasy.Editor.Gizmo.SelectionRegion.None:
-							default:
-								//Shouldn't happen, but who knows
-								break;
-						}
-						OverEasyGlobals.TransformFromGizmo(pos, rot, scale);
-					}
-				}
-				if(e.IsReleased())
-				{
-					if(OverEasyGlobals.CanAccess3d)
+                        if (isDragging)
+                        {
+                            Vector3? pos = null;
+                            Godot.Quaternion? rot = null;
+                            Vector3? scale = null;
+                            switch (OverEasyGlobals.TransformGizmo.currentHover)
+                            {
+                                case OverEasy.Editor.Gizmo.SelectionRegion.PositionX:
+                                case OverEasy.Editor.Gizmo.SelectionRegion.PositionY:
+                                case OverEasy.Editor.Gizmo.SelectionRegion.PositionZ:
+                                    break;
+                                case OverEasy.Editor.Gizmo.SelectionRegion.PositionXY:
+                                case OverEasy.Editor.Gizmo.SelectionRegion.PositionXZ:
+                                case OverEasy.Editor.Gizmo.SelectionRegion.PositionYZ:
+                                    break;
+                                case OverEasy.Editor.Gizmo.SelectionRegion.RotationX:
+                                case OverEasy.Editor.Gizmo.SelectionRegion.RotationY:
+                                case OverEasy.Editor.Gizmo.SelectionRegion.RotationZ:
+                                    break;
+                                case OverEasy.Editor.Gizmo.SelectionRegion.ScaleX:
+                                case OverEasy.Editor.Gizmo.SelectionRegion.ScaleY:
+                                case OverEasy.Editor.Gizmo.SelectionRegion.ScaleZ:
+                                    break;
+                                case OverEasy.Editor.Gizmo.SelectionRegion.ScaleXY:
+                                case OverEasy.Editor.Gizmo.SelectionRegion.ScaleXZ:
+                                case OverEasy.Editor.Gizmo.SelectionRegion.ScaleYZ:
+                                    break;
+                                case OverEasy.Editor.Gizmo.SelectionRegion.None:
+                                default:
+                                    //Shouldn't happen, but who knows
+                                    break;
+                            }
+                            OverEasyGlobals.TransformFromGizmo(pos, rot, scale);
+                        }
+                    }
+                }
+                if (e.IsReleased())
+                {
+                    if (OverEasyGlobals.CanAccess3d)
                     {
                         //If we're dragging a transform, we don't want to select a new object
                         if (isDragging == false)
@@ -544,61 +562,64 @@ public partial class ViewerCamera : Camera3D
                             }
                         }
                     }
-					startedDragging = false;
+                    dragGizmoCenter = new Vector2(-1, -1);
+                    dragGizmoOriginalTransform = Godot.Transform3D.Identity;
+                    currentGizmoRaycastResults = null;
+                    startedDragging = false;
                     isDragging = false;
                     dragStart = new Vector2(-1, -1);
-					mouseLeftClickedIn3d = false;
-					transformLocked = false;
+                    mouseLeftClickedIn3d = false;
+                    transformLocked = false;
                 }
-				OverEasyGlobals.PreviousMouseSelectionPoint = e.Position;
-				break;
-		}
-	}
+                OverEasyGlobals.PreviousMouseSelectionPoint = e.Position;
+                break;
+        }
+    }
 
-	public void _ProcessTouchMovementEvent(InputEventScreenDrag e)
-	{
-		if (touchDictionary.ContainsKey(e.Index))
-		{
-			touchDictionary[e.Index] = e.Position;
-		}
-		if (touchDictionary.Count == 2)
-		{
-			var keys = touchDictionary.Keys.ToArray();
-			var posFinger1 = touchDictionary[keys[0]];
-			var posFinger2 = touchDictionary[keys[1]];
-			var dist = posFinger1.DistanceTo(posFinger2);
-			if (oldTouchDistance != -1)
-			{
-				scrollSpeed = (dist - oldTouchDistance) * TOUCH_ZOOM_SPEED;
-			}
-			if (INVERT_TOUCH_ROTATION)
-			{
-				scrollSpeed *= -1;
-			}
-			oldTouchDistance = dist;
-		}
-		else if (touchDictionary.Count < 2)
-		{
-			oldTouchDistance = -1;
-			mouseRightClickMoveSpeed = e.Relative;
-		}
-	}
+    public void _ProcessTouchMovementEvent(InputEventScreenDrag e)
+    {
+        if (touchDictionary.ContainsKey(e.Index))
+        {
+            touchDictionary[e.Index] = e.Position;
+        }
+        if (touchDictionary.Count == 2)
+        {
+            var keys = touchDictionary.Keys.ToArray();
+            var posFinger1 = touchDictionary[keys[0]];
+            var posFinger2 = touchDictionary[keys[1]];
+            var dist = posFinger1.DistanceTo(posFinger2);
+            if (oldTouchDistance != -1)
+            {
+                scrollSpeed = (dist - oldTouchDistance) * TOUCH_ZOOM_SPEED;
+            }
+            if (INVERT_TOUCH_ROTATION)
+            {
+                scrollSpeed *= -1;
+            }
+            oldTouchDistance = dist;
+        }
+        else if (touchDictionary.Count < 2)
+        {
+            oldTouchDistance = -1;
+            mouseRightClickMoveSpeed = e.Relative;
+        }
+    }
 
-	public void _ProcessTouchZoomEvent(InputEventScreenTouch e)
-	{
-		if (e.Pressed)
-		{
-			if (!touchDictionary.ContainsKey(e.Index))
-			{
-				touchDictionary[e.Index] = e.Position;
-			}
-		}
-		else
-		{
-			if (touchDictionary.ContainsKey(e.Index))
-			{
-				touchDictionary.Remove(e.Index);
-			}
-		}
-	}
+    public void _ProcessTouchZoomEvent(InputEventScreenTouch e)
+    {
+        if (e.Pressed)
+        {
+            if (!touchDictionary.ContainsKey(e.Index))
+            {
+                touchDictionary[e.Index] = e.Position;
+            }
+        }
+        else
+        {
+            if (touchDictionary.ContainsKey(e.Index))
+            {
+                touchDictionary.Remove(e.Index);
+            }
+        }
+    }
 }

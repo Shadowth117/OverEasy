@@ -42,51 +42,51 @@ public partial class OverEasyMaster : Control
 		//Configure settings
 		//We can't set the max and mins to the true type max mins.
 		((SpinBox)FloatSchemaTemplate.GetChild(1)).MinValue = int.MinValue;
-        ((SpinBox)FloatSchemaTemplate.GetChild(1)).MaxValue = int.MaxValue;
+		((SpinBox)FloatSchemaTemplate.GetChild(1)).MaxValue = int.MaxValue;
 		((SpinBox)FloatSchemaTemplate.GetChild(1)).Step = 0.01;
 
-        ((SpinBox)IntSchemaTemplate.GetChild(1)).MinValue = int.MinValue;
-        ((SpinBox)IntSchemaTemplate.GetChild(1)).MaxValue = int.MaxValue;
-        ((SpinBox)IntSchemaTemplate.GetChild(1)).Step = 1;
+		((SpinBox)IntSchemaTemplate.GetChild(1)).MinValue = int.MinValue;
+		((SpinBox)IntSchemaTemplate.GetChild(1)).MaxValue = int.MaxValue;
+		((SpinBox)IntSchemaTemplate.GetChild(1)).Step = 1;
 
-        ((SpinBox)Vector2SchemaTemplate.GetChild(1).GetChild(0).GetChild(1)).MinValue = int.MinValue;
-        ((SpinBox)Vector2SchemaTemplate.GetChild(1).GetChild(0).GetChild(1)).MaxValue = int.MaxValue;
-        ((SpinBox)Vector2SchemaTemplate.GetChild(1).GetChild(0).GetChild(1)).Step = 0.01;
+		((SpinBox)Vector2SchemaTemplate.GetChild(1).GetChild(0).GetChild(1)).MinValue = int.MinValue;
+		((SpinBox)Vector2SchemaTemplate.GetChild(1).GetChild(0).GetChild(1)).MaxValue = int.MaxValue;
+		((SpinBox)Vector2SchemaTemplate.GetChild(1).GetChild(0).GetChild(1)).Step = 0.01;
 
-        ((SpinBox)Vector2SchemaTemplate.GetChild(1).GetChild(1).GetChild(1)).MinValue = int.MinValue;
-        ((SpinBox)Vector2SchemaTemplate.GetChild(1).GetChild(1).GetChild(1)).MaxValue = int.MaxValue;
-        ((SpinBox)Vector2SchemaTemplate.GetChild(1).GetChild(1).GetChild(1)).Step = 0.01;
+		((SpinBox)Vector2SchemaTemplate.GetChild(1).GetChild(1).GetChild(1)).MinValue = int.MinValue;
+		((SpinBox)Vector2SchemaTemplate.GetChild(1).GetChild(1).GetChild(1)).MaxValue = int.MaxValue;
+		((SpinBox)Vector2SchemaTemplate.GetChild(1).GetChild(1).GetChild(1)).Step = 0.01;
 
 
-        ((SpinBox)Vector3SchemaTemplate.GetChild(1).GetChild(0).GetChild(1)).MinValue = int.MinValue;
-        ((SpinBox)Vector3SchemaTemplate.GetChild(1).GetChild(0).GetChild(1)).MaxValue = int.MaxValue;
-        ((SpinBox)Vector3SchemaTemplate.GetChild(1).GetChild(0).GetChild(1)).Step = 0.01;
+		((SpinBox)Vector3SchemaTemplate.GetChild(1).GetChild(0).GetChild(1)).MinValue = int.MinValue;
+		((SpinBox)Vector3SchemaTemplate.GetChild(1).GetChild(0).GetChild(1)).MaxValue = int.MaxValue;
+		((SpinBox)Vector3SchemaTemplate.GetChild(1).GetChild(0).GetChild(1)).Step = 0.01;
 
 		((SpinBox)Vector3SchemaTemplate.GetChild(1).GetChild(1).GetChild(1)).MinValue = int.MinValue;
 		((SpinBox)Vector3SchemaTemplate.GetChild(1).GetChild(1).GetChild(1)).MaxValue = int.MaxValue;
-        ((SpinBox)Vector3SchemaTemplate.GetChild(1).GetChild(1).GetChild(1)).Step = 0.01;
+		((SpinBox)Vector3SchemaTemplate.GetChild(1).GetChild(1).GetChild(1)).Step = 0.01;
 
-        ((SpinBox)Vector3SchemaTemplate.GetChild(1).GetChild(2).GetChild(1)).MinValue = int.MinValue;
-        ((SpinBox)Vector3SchemaTemplate.GetChild(1).GetChild(2).GetChild(1)).MaxValue = int.MaxValue;
-        ((SpinBox)Vector3SchemaTemplate.GetChild(1).GetChild(2).GetChild(1)).Step = 0.01;
+		((SpinBox)Vector3SchemaTemplate.GetChild(1).GetChild(2).GetChild(1)).MinValue = int.MinValue;
+		((SpinBox)Vector3SchemaTemplate.GetChild(1).GetChild(2).GetChild(1)).MaxValue = int.MaxValue;
+		((SpinBox)Vector3SchemaTemplate.GetChild(1).GetChild(2).GetChild(1)).Step = 0.01;
 
 
-        ((SpinBox)Vector4SchemaTemplate.GetChild(1).GetChild(0).GetChild(1)).MinValue = int.MinValue;
-        ((SpinBox)Vector4SchemaTemplate.GetChild(1).GetChild(0).GetChild(1)).MaxValue = int.MaxValue;
-        ((SpinBox)Vector4SchemaTemplate.GetChild(1).GetChild(0).GetChild(1)).Step = 0.01;
+		((SpinBox)Vector4SchemaTemplate.GetChild(1).GetChild(0).GetChild(1)).MinValue = int.MinValue;
+		((SpinBox)Vector4SchemaTemplate.GetChild(1).GetChild(0).GetChild(1)).MaxValue = int.MaxValue;
+		((SpinBox)Vector4SchemaTemplate.GetChild(1).GetChild(0).GetChild(1)).Step = 0.01;
 
-        ((SpinBox)Vector4SchemaTemplate.GetChild(1).GetChild(1).GetChild(1)).MinValue = int.MinValue;
-        ((SpinBox)Vector4SchemaTemplate.GetChild(1).GetChild(1).GetChild(1)).MaxValue = int.MaxValue;
-        ((SpinBox)Vector4SchemaTemplate.GetChild(1).GetChild(1).GetChild(1)).Step = 0.01;
+		((SpinBox)Vector4SchemaTemplate.GetChild(1).GetChild(1).GetChild(1)).MinValue = int.MinValue;
+		((SpinBox)Vector4SchemaTemplate.GetChild(1).GetChild(1).GetChild(1)).MaxValue = int.MaxValue;
+		((SpinBox)Vector4SchemaTemplate.GetChild(1).GetChild(1).GetChild(1)).Step = 0.01;
 
-        ((SpinBox)Vector4SchemaTemplate.GetChild(1).GetChild(2).GetChild(1)).MinValue = int.MinValue;
-        ((SpinBox)Vector4SchemaTemplate.GetChild(1).GetChild(2).GetChild(1)).MaxValue = int.MaxValue;
-        ((SpinBox)Vector4SchemaTemplate.GetChild(1).GetChild(2).GetChild(1)).Step = 0.01;
+		((SpinBox)Vector4SchemaTemplate.GetChild(1).GetChild(2).GetChild(1)).MinValue = int.MinValue;
+		((SpinBox)Vector4SchemaTemplate.GetChild(1).GetChild(2).GetChild(1)).MaxValue = int.MaxValue;
+		((SpinBox)Vector4SchemaTemplate.GetChild(1).GetChild(2).GetChild(1)).Step = 0.01;
 
-        ((SpinBox)Vector4SchemaTemplate.GetChild(1).GetChild(3).GetChild(1)).MinValue = int.MinValue;
-        ((SpinBox)Vector4SchemaTemplate.GetChild(1).GetChild(3).GetChild(1)).MaxValue = int.MaxValue;
-        ((SpinBox)Vector4SchemaTemplate.GetChild(1).GetChild(3).GetChild(1)).Step = 0.01;
-    }
+		((SpinBox)Vector4SchemaTemplate.GetChild(1).GetChild(3).GetChild(1)).MinValue = int.MinValue;
+		((SpinBox)Vector4SchemaTemplate.GetChild(1).GetChild(3).GetChild(1)).MaxValue = int.MaxValue;
+		((SpinBox)Vector4SchemaTemplate.GetChild(1).GetChild(3).GetChild(1)).Step = 0.01;
+	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
