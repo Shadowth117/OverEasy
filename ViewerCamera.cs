@@ -356,31 +356,33 @@ public partial class ViewerCamera : Camera3D
 
     public override void _Input(InputEvent @event)
     {
-        switch (@event)
+        if(!_ProcessMiscInputEvents(@event))
         {
-            case InputEventMouseMotion iemmEvent:
-                _ProcessMouseMovementEvent(iemmEvent);
-                break;
-            case InputEventMouseButton iembEvent:
-                _ProcessMouseButtonEvent(iembEvent);
-                break;
-            case InputEventScreenTouch iestEvent:
-                _ProcessTouchZoomEvent(iestEvent);
-                break;
-            case InputEventScreenDrag iesdEvent:
-                _ProcessTouchMovementEvent(iesdEvent);
-                break;
-            case InputEventKey iekEvent:
-                //Placeholder
-                break;
-            default:
-                _ProcessMiscInputEvents(@event);
-                break;
+            switch (@event)
+            {
+                case InputEventMouseMotion iemmEvent:
+                    _ProcessMouseMovementEvent(iemmEvent);
+                    break;
+                case InputEventMouseButton iembEvent:
+                    _ProcessMouseButtonEvent(iembEvent);
+                    break;
+                case InputEventScreenTouch iestEvent:
+                    _ProcessTouchZoomEvent(iestEvent);
+                    break;
+                case InputEventScreenDrag iesdEvent:
+                    _ProcessTouchMovementEvent(iesdEvent);
+                    break;
+                case InputEventKey iekEvent:
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
-    public void _ProcessMiscInputEvents(InputEvent @event)
+    public bool _ProcessMiscInputEvents(InputEvent @event)
     {
+       // GD.Print("mode_toggle pressed");
         if (Input.IsActionJustReleased("mode_toggle"))
         {
             if (cameraMode == CameraMode.Orbit)
@@ -397,13 +399,26 @@ public partial class ViewerCamera : Camera3D
             }
             else if (cameraMode == CameraMode.Freecam)
             {
-                if (orbitFocusNode == null)
-                {
-                    cameraMode = CameraMode.Orbit;
-                    targetNode.Reparent(orbitFocusNode);
-                }
+                TrySetOrbitCam();
             }
+
+            return true;
         }
+
+        return false;
+    }
+
+    private bool TrySetOrbitCam()
+    {
+        if (orbitFocusNode != null)
+        {
+            cameraMode = CameraMode.Orbit;
+            targetNode.Reparent(orbitFocusNode);
+
+            return true;
+        }
+
+        return false;
     }
 
     public void _ProcessMouseMovementEvent(InputEventMouseMotion e)
@@ -551,6 +566,11 @@ public partial class ViewerCamera : Camera3D
                             {
                                 OverEasyGlobals.PreviousMouseSelectionPointRidCache.Add((Godot.Rid)result["rid"]);
                                 var parentNode = ((Node3D)result["collider"]).GetParent().GetParent();
+                                orbitFocusNode = (Node3D)parentNode;
+                                if(cameraMode == CameraMode.Orbit)
+                                {
+                                    TrySetOrbitCam();
+                                }
 
                                 var activeTreeItem = (TreeItem)parentNode.GetMeta("treeItem");
                                 var parentTreeItem = activeTreeItem.GetParent();
