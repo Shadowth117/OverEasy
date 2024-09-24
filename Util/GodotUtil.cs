@@ -1,4 +1,6 @@
-﻿namespace OverEasy.Util
+﻿using Godot;
+
+namespace OverEasy.Util
 {
     public static class GodotUtil
     {
@@ -17,6 +19,26 @@
         public static Godot.Quaternion ToGQuat(this System.Numerics.Quaternion quat)
         {
             return new Godot.Quaternion(quat.X, quat.Y, quat.Z, quat.W);
+        }
+
+        public static Godot.Aabb GetHierarchyAABB(Node3D node)
+        {
+            return GetHierarchyAABB(node, new Aabb());
+        }
+
+        private static Godot.Aabb GetHierarchyAABB(Node3D node, Godot.Aabb aabb)
+        {
+            foreach(var nodeChild in node.GetChildren())
+            {
+                aabb = aabb.Merge(GetHierarchyAABB((Node3D)nodeChild, aabb));
+            }
+
+            if(node is MeshInstance3D)
+            {
+                return aabb.Merge(((MeshInstance3D)node).GetAabb());
+            }
+
+            return aabb;
         }
     }
 }

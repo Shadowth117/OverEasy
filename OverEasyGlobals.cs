@@ -38,6 +38,7 @@ namespace OverEasy
 		public static CollisionShape2D objectPanelCollision = null;
 		public static CollisionShape2D objectPanelButtonCollision = null;
 
+		public static ViewerCamera ViewCamera = null;
 		public static Gizmo TransformGizmo = null;
 		/// <summary>
 		/// False for local, true for world
@@ -611,8 +612,12 @@ namespace OverEasy
                     currentObjectId = activeNode.GetMetadata(1).AsInt32();
                     currentEditorType = (EditingType)(activeNode.GetMetadata(2).AsInt32());
                     currentObjectTreeItem = activeNode;
-                    TransformGizmo.Reparent((Node3D)activeNode.GetMetadata(3), false);
+					var activeNode3d = (Node3D)activeNode.GetMetadata(3);
+                    TransformGizmo.Reparent(activeNode3d, false);
                     TransformGizmo.SetCurrentTransformType(OverEasy.Editor.Gizmo.TransformType.Translation);
+                    ViewCamera.orbitFocusNode = activeNode3d;
+                    ViewCamera.TrySetOrbitCam();
+                    ViewCamera.oneTimeProcessTransform = true;
                     LoadSetObject();
                     setDataTree.ScrollToItem(activeNode);
                     break;

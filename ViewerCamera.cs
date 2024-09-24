@@ -83,6 +83,12 @@ public partial class ViewerCamera : Camera3D
     /// </summary>
     [Export(PropertyHint.Range, "0.0,1.0,")]
     public double sensitivityY = 0.25;
+
+    /// <summary>
+    /// Dampens orbit sensitivity to be closer to the feel of freecam sensitivity
+    /// </summary>
+    public double orbitDampener = 0.04;
+
     /// <summary>
     /// Boolean to decide if camera should invert mouse vertical rotation 
     /// </summary>
@@ -210,6 +216,11 @@ public partial class ViewerCamera : Camera3D
     public bool transformLocked = false;
 
     /// <summary>
+    /// For bypassing CanAccess3d while in GUI, such as during a selection via a GUI element
+    /// </summary>
+    public bool oneTimeProcessTransform = false;
+
+    /// <summary>
     /// For holding the gizmo transform coords from the start of the dragging
     /// </summary>
     public Godot.Transform3D dragGizmoOriginalTransform = Godot.Transform3D.Identity;
@@ -227,6 +238,7 @@ public partial class ViewerCamera : Camera3D
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        OverEasyGlobals.ViewCamera = this;
         _distance = DEFAULT_DISTANCE;
         _orbitRotation = targetNode.Transform.Basis.GetRotationQuaternion().GetEuler();
     }
@@ -247,7 +259,7 @@ public partial class ViewerCamera : Camera3D
 
     private void _ProcessTransformation(double delta)
     {
-        if (OverEasyGlobals.CanAccess3d || mouseRightClickedIn3d)
+        if (OverEasyGlobals.CanAccess3d || mouseRightClickedIn3d || oneTimeProcessTransform)
         {
             switch (cameraMode)
             {
@@ -261,14 +273,15 @@ public partial class ViewerCamera : Camera3D
 
             //Reset mouseMoveSpeed so we don't repeat the previous movement info
             mouseRightClickMoveSpeed = new Vector2();
+            oneTimeProcessTransform = false;
         }
     }
 
     public void _ProcessOrbit(double delta)
     {
         // Update rotation
-        _orbitRotation.X += (float)(-mouseRightClickMoveSpeed.Y * delta * ROTATE_SPEED_X * sensitivityX);
-        _orbitRotation.Y += (float)(-mouseRightClickMoveSpeed.X * delta * ROTATE_SPEED_Y * sensitivityY);
+        _orbitRotation.X += (float)(-mouseRightClickMoveSpeed.Y * delta * ROTATE_SPEED_X * sensitivityX * orbitDampener);
+        _orbitRotation.Y += (float)(-mouseRightClickMoveSpeed.X * delta * ROTATE_SPEED_Y * sensitivityY * orbitDampener);
 
         //_rotation.z += _spin_speed * delta
 
@@ -286,7 +299,6 @@ public partial class ViewerCamera : Camera3D
 
         // Update distance
         _distance += scrollSpeed * delta;
-
         if (_distance < 0)
         {
             _distance = 0;
@@ -399,6 +411,7 @@ public partial class ViewerCamera : Camera3D
             }
             else if (cameraMode == CameraMode.Freecam)
             {
+                cameraMode = CameraMode.Orbit;
                 TrySetOrbitCam();
             }
 
@@ -408,12 +421,13 @@ public partial class ViewerCamera : Camera3D
         return false;
     }
 
-    private bool TrySetOrbitCam()
+    public bool TrySetOrbitCam()
     {
         if (orbitFocusNode != null)
         {
-            cameraMode = CameraMode.Orbit;
             targetNode.Reparent(orbitFocusNode);
+            var aabb = OverEasy.Util.GodotUtil.GetHierarchyAABB(orbitFocusNode);
+            _distance = aabb.Size.Length() * 2;
 
             return true;
         }
@@ -468,10 +482,10 @@ public partial class ViewerCamera : Camera3D
         switch (e.ButtonIndex)
         {
             case MouseButton.WheelUp:
-                scrollSpeed = -1 * scrollSpeed;
+                scrollSpeed = -1 * SCROLL_SPEED;
                 break;
             case MouseButton.WheelDown:
-                scrollSpeed = 1 * scrollSpeed;
+                scrollSpeed = 1 * SCROLL_SPEED;
                 break;
             case MouseButton.Middle:
                 break;
