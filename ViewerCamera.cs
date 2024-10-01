@@ -85,7 +85,7 @@ public partial class ViewerCamera : Camera3D
     public double sensitivityY = 0.25;
 
     /// <summary>
-    /// Dampens orbit sensitivity to be closer to the feel of freecam sensitivity
+    /// Dampens orbit sensitivity to be closer to the feel of freecam sensitivity. 
     /// </summary>
     public double orbitDampener = 0.04;
 
@@ -331,7 +331,7 @@ public partial class ViewerCamera : Camera3D
         //Update Freecam movement
         var movementVec2 = Input.GetVector("move_left", "move_right", "move_forward", "move_back");
         var verticalMovement = Input.GetAxis("move_down", "move_up");
-        var movementDirection = new Vector3(movementVec2.X, 0, movementVec2.Y);
+        var movementDirection = new Vector3(movementVec2.X, 0, (float)(movementVec2.Y + scrollSpeed));
         movementDirection = movementDirection.Normalized();
 
         //Add the vertical movement separately by intention
@@ -364,6 +364,8 @@ public partial class ViewerCamera : Camera3D
 
             Translate(freeCamVelocity * (float)(delta * speedMulti));
         }
+
+        scrollSpeed = 0;
     }
 
     public override void _Input(InputEvent @event)
