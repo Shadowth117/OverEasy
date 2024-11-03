@@ -2,7 +2,8 @@ using Godot;
 using Godot.Collections;
 using System.Linq;
 using OverEasy;
-
+using OverEasy.Editor;
+using OverEasy.Util;
 public partial class ViewerCamera : Camera3D
 {
     public enum CameraMode : int
@@ -178,7 +179,7 @@ public partial class ViewerCamera : Camera3D
     /// <summary>
     /// A tracker for if we've started attempting to drag by holding the mouse.
     /// </summary>
-    public bool startedDragging = false;
+    public bool dragButtonHeld = false;
 
     /// <summary>
     /// A holding object for tracking where the drag area began
@@ -221,9 +222,19 @@ public partial class ViewerCamera : Camera3D
     public bool oneTimeProcessTransform = false;
 
     /// <summary>
-    /// For holding the gizmo transform coords from the start of the dragging
+    /// For holding the gizmo global position from the start of a drag
     /// </summary>
-    public Godot.Transform3D dragGizmoOriginalTransform = Godot.Transform3D.Identity;
+    public System.Numerics.Vector3 dragStartPosition;
+
+    /// <summary>
+    /// For holding the gizmo global rotation from the start of a drag
+    /// </summary>
+    public System.Numerics.Quaternion dragStartRotation;
+
+    /// <summary>
+    /// For holding the gizmo global scale from the start of a drag
+    /// </summary>
+    public System.Numerics.Vector3 dragStartScale;
 
     /// <summary>
     /// For holding the position in 2d where the gizmo was at the start of the drag
@@ -246,8 +257,77 @@ public partial class ViewerCamera : Camera3D
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(double delta)
     {
+        _ProcessDrag();
         _ProcessGizmoSize();
         _ProcessTransformation(delta);
+    }
+
+    private void _ProcessDrag()
+    {
+        if(Input.IsMouseButtonPressed(MouseButton.Left) && (OverEasyGlobals.CanAccess3d || mouseLeftClickedIn3d))
+        {
+            var mousePosition = OverEasyGlobals.setDataTree.GetGlobalMousePosition();
+            if(dragButtonHeld)
+            {
+                if (isDragging == false && !mousePosition.IsEqualApprox(dragStart))
+                {
+                    dragStartPosition = OverEasyGlobals.TransformGizmo.GlobalPosition.ToSNVec3();
+                    dragStartRotation = OverEasyGlobals.TransformGizmo.Quaternion.ToSNQuat();
+                    dragStartScale = OverEasyGlobals.TransformGizmo.Scale.ToSNVec3();
+                    dragGizmoCenter = this.UnprojectPosition(OverEasyGlobals.TransformGizmo.GlobalPosition);
+                    isDragging = true;
+                }
+                transformLocked = true;
+
+                if (isDragging)
+                {
+                    var start = ProjectRayOrigin(mousePosition);
+                    var direction = ProjectPosition(mousePosition, 1);
+                    direction = System.Numerics.Vector3.Normalize(direction.ToSNVec3()).ToGVec3();
+
+                    Vector3? pos = null;
+                    Godot.Quaternion? rot = null;
+                    Vector3? scale = null;
+                    switch (OverEasyGlobals.TransformGizmo.currentHover)
+                    {
+                        case OverEasy.Editor.Gizmo.SelectionRegion.PositionX:
+                        case OverEasy.Editor.Gizmo.SelectionRegion.PositionY:
+                        case OverEasy.Editor.Gizmo.SelectionRegion.PositionZ:
+
+                           
+                            var a = dragStartPosition;
+                            var b = Gizmo.GetSingleAxisProjection(start.ToSNVec3(), direction.ToSNVec3(), dragStartPosition, dragStartRotation, OverEasyGlobals.TransformGizmo.currentHover).ToGVec3();
+                            var c = dragStartPosition.ToGVec3() - Gizmo.GetSingleAxisProjection(start.ToSNVec3(), direction.ToSNVec3(), dragStartPosition, dragStartRotation, OverEasyGlobals.TransformGizmo.currentHover).ToGVec3();
+                            GD.Print($"{a} {b} {c} {a.ToGVec3() + b}");
+                            //pos = a.ToGVec3();
+                            pos = a.ToGVec3() + b;
+                            //pos = c;
+                            break;
+                        case OverEasy.Editor.Gizmo.SelectionRegion.PositionXY:
+                        case OverEasy.Editor.Gizmo.SelectionRegion.PositionXZ:
+                        case OverEasy.Editor.Gizmo.SelectionRegion.PositionYZ:
+                            break;
+                        case OverEasy.Editor.Gizmo.SelectionRegion.RotationX:
+                        case OverEasy.Editor.Gizmo.SelectionRegion.RotationY:
+                        case OverEasy.Editor.Gizmo.SelectionRegion.RotationZ:
+                            break;
+                        case OverEasy.Editor.Gizmo.SelectionRegion.ScaleX:
+                        case OverEasy.Editor.Gizmo.SelectionRegion.ScaleY:
+                        case OverEasy.Editor.Gizmo.SelectionRegion.ScaleZ:
+                            break;
+                        case OverEasy.Editor.Gizmo.SelectionRegion.ScaleXY:
+                        case OverEasy.Editor.Gizmo.SelectionRegion.ScaleXZ:
+                        case OverEasy.Editor.Gizmo.SelectionRegion.ScaleYZ:
+                            break;
+                        case OverEasy.Editor.Gizmo.SelectionRegion.None:
+                        default:
+                            //Shouldn't happen, but who knows
+                            break;
+                    }
+                    OverEasyGlobals.TransformFromGizmo(pos, rot, scale);
+                }
+            }
+        }
     }
 
     private void _ProcessGizmoSize()
@@ -455,8 +535,6 @@ public partial class ViewerCamera : Camera3D
             {
                 OverEasyGlobals.TransformGizmo.SetHover((StaticBody3D)gizmoResult["collider"]);
                 currentGizmoRaycastResults = gizmoResult;
-                dragGizmoOriginalTransform = OverEasyGlobals.TransformGizmo.Transform;
-                dragGizmoCenter = this.UnprojectPosition(dragGizmoOriginalTransform.Origin);
             }
             else
             {
@@ -508,53 +586,10 @@ public partial class ViewerCamera : Camera3D
                     mouseLeftClickedIn3d = true;
                     if (OverEasyGlobals.TransformGizmo.currentHover != OverEasy.Editor.Gizmo.SelectionRegion.None)
                     {
-                        startedDragging = true;
+                        dragButtonHeld = true;
                         //When dragging, we want to check on subsequent frames if we're actually moving the gizmo or not.
                         //If not, we want the user to still be able to select what's under the gizmo later.
-                        if (dragStart.IsEqualApprox(DragStartDefault))
-                        {
-                            dragStart = e.Position;
-                        }
-                        else if (!e.Position.IsEqualApprox(dragStart))
-                        {
-                            isDragging = true;
-                        }
-                        transformLocked = true;
-
-                        if (isDragging)
-                        {
-                            Vector3? pos = null;
-                            Godot.Quaternion? rot = null;
-                            Vector3? scale = null;
-                            switch (OverEasyGlobals.TransformGizmo.currentHover)
-                            {
-                                case OverEasy.Editor.Gizmo.SelectionRegion.PositionX:
-                                case OverEasy.Editor.Gizmo.SelectionRegion.PositionY:
-                                case OverEasy.Editor.Gizmo.SelectionRegion.PositionZ:
-                                    break;
-                                case OverEasy.Editor.Gizmo.SelectionRegion.PositionXY:
-                                case OverEasy.Editor.Gizmo.SelectionRegion.PositionXZ:
-                                case OverEasy.Editor.Gizmo.SelectionRegion.PositionYZ:
-                                    break;
-                                case OverEasy.Editor.Gizmo.SelectionRegion.RotationX:
-                                case OverEasy.Editor.Gizmo.SelectionRegion.RotationY:
-                                case OverEasy.Editor.Gizmo.SelectionRegion.RotationZ:
-                                    break;
-                                case OverEasy.Editor.Gizmo.SelectionRegion.ScaleX:
-                                case OverEasy.Editor.Gizmo.SelectionRegion.ScaleY:
-                                case OverEasy.Editor.Gizmo.SelectionRegion.ScaleZ:
-                                    break;
-                                case OverEasy.Editor.Gizmo.SelectionRegion.ScaleXY:
-                                case OverEasy.Editor.Gizmo.SelectionRegion.ScaleXZ:
-                                case OverEasy.Editor.Gizmo.SelectionRegion.ScaleYZ:
-                                    break;
-                                case OverEasy.Editor.Gizmo.SelectionRegion.None:
-                                default:
-                                    //Shouldn't happen, but who knows
-                                    break;
-                            }
-                            OverEasyGlobals.TransformFromGizmo(pos, rot, scale);
-                        }
+                        dragStart = e.Position;
                     }
                 }
                 if (e.IsReleased())
@@ -599,9 +634,11 @@ public partial class ViewerCamera : Camera3D
                         }
                     }
                     dragGizmoCenter = new Vector2(-1, -1);
-                    dragGizmoOriginalTransform = Godot.Transform3D.Identity;
+                    dragStartPosition = new System.Numerics.Vector3();
+                    dragStartRotation = new System.Numerics.Quaternion(0, 0, 0, 1);
+                    dragStartScale = new System.Numerics.Vector3(1, 1, 1);
                     currentGizmoRaycastResults = null;
-                    startedDragging = false;
+                    dragButtonHeld = false;
                     isDragging = false;
                     dragStart = new Vector2(-1, -1);
                     mouseLeftClickedIn3d = false;
