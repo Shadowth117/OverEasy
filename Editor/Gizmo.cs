@@ -291,10 +291,7 @@ namespace OverEasy.Editor
 
             Vector3 pos = tPos;
             Vector3 normal = Vector3.Cross(Vector3.Cross(rayDirection, axisvec), rayDirection);
-            var da = Vector3.Dot(rayOrigin - pos, normal);
-            var db = Vector3.Dot(axisvec, normal);
             var d = Vector3.Dot(rayOrigin - pos, normal) / Vector3.Dot(axisvec, normal);
-            GD.Print($" da: {da} db: {db} d: {d} return {pos + (axisvec * d)} rayOrigin: {rayOrigin} rayDirection: {rayDirection} pos: {pos} normal: {normal} axisVec: {axisvec}");
             return (axisvec * d);
         }
 

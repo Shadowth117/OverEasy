@@ -283,7 +283,7 @@ public partial class ViewerCamera : Camera3D
                 {
                     var start = ProjectRayOrigin(mousePosition);
                     var direction = ProjectPosition(mousePosition, 1);
-                    direction = System.Numerics.Vector3.Normalize(direction.ToSNVec3()).ToGVec3();
+                    direction = System.Numerics.Vector3.Normalize((start - direction).ToSNVec3()).ToGVec3();
 
                     Vector3? pos = null;
                     Godot.Quaternion? rot = null;
@@ -293,15 +293,7 @@ public partial class ViewerCamera : Camera3D
                         case OverEasy.Editor.Gizmo.SelectionRegion.PositionX:
                         case OverEasy.Editor.Gizmo.SelectionRegion.PositionY:
                         case OverEasy.Editor.Gizmo.SelectionRegion.PositionZ:
-
-                           
-                            var a = dragStartPosition;
-                            var b = Gizmo.GetSingleAxisProjection(start.ToSNVec3(), direction.ToSNVec3(), dragStartPosition, dragStartRotation, OverEasyGlobals.TransformGizmo.currentHover).ToGVec3();
-                            var c = dragStartPosition.ToGVec3() - Gizmo.GetSingleAxisProjection(start.ToSNVec3(), direction.ToSNVec3(), dragStartPosition, dragStartRotation, OverEasyGlobals.TransformGizmo.currentHover).ToGVec3();
-                            GD.Print($"{a} {b} {c} {a.ToGVec3() + b}");
-                            //pos = a.ToGVec3();
-                            pos = a.ToGVec3() + b;
-                            //pos = c;
+                            pos = dragStartPosition.ToGVec3() + Gizmo.GetSingleAxisProjection(start.ToSNVec3(), direction.ToSNVec3(), dragStartPosition, dragStartRotation, OverEasyGlobals.TransformGizmo.currentHover).ToGVec3();
                             break;
                         case OverEasy.Editor.Gizmo.SelectionRegion.PositionXY:
                         case OverEasy.Editor.Gizmo.SelectionRegion.PositionXZ:
