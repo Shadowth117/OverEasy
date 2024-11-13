@@ -298,7 +298,7 @@ namespace OverEasy
 
             //Update 3d representation
             var parentNode = (Node3D)TransformGizmo.GetParent();
-            parentNode.Position = new Vector3(objPosition.X, objPosition.Y, objPosition.Z);
+            parentNode.GlobalPosition = new Vector3(objPosition.X, objPosition.Y, objPosition.Z);
             parentNode.RotationDegrees = new Vector3(objRotation.X, objRotation.Y, objRotation.Z);
 
             //Gather current object values

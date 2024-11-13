@@ -521,7 +521,6 @@ script = ExtResource("5_nw6mg")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 5)
 
 [node name="TransformGizmo" parent="." instance=ExtResource("24_wphnq")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -8.00742, 0)
 
 [node name="ModelRoot" type="Node3D" parent="."]
 script = ExtResource("20_bmy2d")
