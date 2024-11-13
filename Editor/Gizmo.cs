@@ -292,14 +292,12 @@ namespace OverEasy.Editor
             Vector3 pos = tPos;
             Vector3 normal = Vector3.Cross(Vector3.Cross(rayDirection, axisvec), rayDirection);
             var d = Vector3.Dot(rayOrigin - pos, normal) / Vector3.Dot(axisvec, normal);
-            return (axisvec * d);
+            return tPos + (axisvec * d);
         }
 
-        public static Vector3 GetDoubleAxisProjection(Vector3 rayOrigin, Vector3 rayDirection, Node3D t, SelectionRegion axis)
+        public static Vector3 GetDoubleAxisProjection(Vector3 rayOrigin, Vector3 rayDirection, Vector3 tPos, System.Numerics.Quaternion tQuat, SelectionRegion axis)
         {
             Vector3 planeNormal = Vector3.Zero;
-            var tPos = t.Position;
-            var tQuat = t.Quaternion;
             switch (axis)
             {
                 case SelectionRegion.PositionXY:

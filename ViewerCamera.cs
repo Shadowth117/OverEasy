@@ -293,11 +293,12 @@ public partial class ViewerCamera : Camera3D
                         case OverEasy.Editor.Gizmo.SelectionRegion.PositionX:
                         case OverEasy.Editor.Gizmo.SelectionRegion.PositionY:
                         case OverEasy.Editor.Gizmo.SelectionRegion.PositionZ:
-                            pos = dragStartPosition.ToGVec3() + Gizmo.GetSingleAxisProjection(start.ToSNVec3(), direction.ToSNVec3(), dragStartPosition, dragStartRotation, OverEasyGlobals.TransformGizmo.currentHover).ToGVec3();
+                            pos = Gizmo.GetSingleAxisProjection(start.ToSNVec3(), direction.ToSNVec3(), dragStartPosition, dragStartRotation, OverEasyGlobals.TransformGizmo.currentHover).ToGVec3();
                             break;
                         case OverEasy.Editor.Gizmo.SelectionRegion.PositionXY:
                         case OverEasy.Editor.Gizmo.SelectionRegion.PositionXZ:
                         case OverEasy.Editor.Gizmo.SelectionRegion.PositionYZ:
+                            pos = Gizmo.GetDoubleAxisProjection(start.ToSNVec3(), direction.ToSNVec3(), dragStartPosition, dragStartRotation, OverEasyGlobals.TransformGizmo.currentHover).ToGVec3();
                             break;
                         case OverEasy.Editor.Gizmo.SelectionRegion.RotationX:
                         case OverEasy.Editor.Gizmo.SelectionRegion.RotationY:
