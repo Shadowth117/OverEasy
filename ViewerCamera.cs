@@ -4,6 +4,7 @@ using System.Linq;
 using OverEasy;
 using OverEasy.Editor;
 using OverEasy.Util;
+using System;
 public partial class ViewerCamera : Camera3D
 {
     public enum CameraMode : int
@@ -237,6 +238,11 @@ public partial class ViewerCamera : Camera3D
     public System.Numerics.Vector3 dragStartScale;
 
     /// <summary>
+    /// First rotation projection for the drag
+    /// </summary>
+    public System.Numerics.Vector3? dragStartRotationProjection = null;
+
+    /// <summary>
     /// For holding the position in 2d where the gizmo was at the start of the drag
     /// </summary>
     public Godot.Vector2 dragGizmoCenter = new Vector2(-1, -1);
@@ -272,7 +278,13 @@ public partial class ViewerCamera : Camera3D
                 if (isDragging == false && !mousePosition.IsEqualApprox(dragStart))
                 {
                     dragStartPosition = OverEasyGlobals.TransformGizmo.GlobalPosition.ToSNVec3();
-                    dragStartRotation = OverEasyGlobals.TransformGizmo.Quaternion.ToSNQuat();
+                    if(OverEasyGlobals.TransformGizmoWorld)
+                    {
+                        dragStartRotation = Quaternion.FromEuler((OverEasyGlobals.TransformGizmo).GlobalRotation).ToSNQuat();
+                    } else
+                    {
+                        dragStartRotation = Quaternion.FromEuler(((Node3D)OverEasyGlobals.TransformGizmo.GetParent()).GlobalRotation).ToSNQuat();
+                    }
                     dragStartScale = OverEasyGlobals.TransformGizmo.Scale.ToSNVec3();
                     dragGizmoCenter = this.UnprojectPosition(OverEasyGlobals.TransformGizmo.GlobalPosition);
                     isDragging = true;
@@ -288,6 +300,7 @@ public partial class ViewerCamera : Camera3D
                     Vector3? pos = null;
                     Godot.Quaternion? rot = null;
                     Vector3? scale = null;
+                    System.Numerics.Vector3 axis = System.Numerics.Vector3.Zero;
                     switch (OverEasyGlobals.TransformGizmo.currentHover)
                     {
                         case OverEasy.Editor.Gizmo.SelectionRegion.PositionX:
@@ -301,8 +314,28 @@ public partial class ViewerCamera : Camera3D
                             pos = Gizmo.GetDoubleAxisProjection(start.ToSNVec3(), direction.ToSNVec3(), dragStartPosition, dragStartRotation, OverEasyGlobals.TransformGizmo.currentHover).ToGVec3();
                             break;
                         case OverEasy.Editor.Gizmo.SelectionRegion.RotationX:
+                            axis = new System.Numerics.Vector3(1.0f, 0.0f, 0.0f);
+                            if(OverEasyGlobals.TransformGizmoWorld == false)
+                            {
+                                axis = System.Numerics.Vector3.Transform(axis, dragStartRotation);
+                            }
+                            rot = _ProcessRotation(axis, start, direction, dragStartPosition, dragStartRotation, Gizmo.SelectionRegion.RotationX);
+                            break;
                         case OverEasy.Editor.Gizmo.SelectionRegion.RotationY:
+                            axis = new System.Numerics.Vector3(0.0f, 1.0f, 0.0f);
+                            if (OverEasyGlobals.TransformGizmoWorld == false)
+                            {
+                                axis = System.Numerics.Vector3.Transform(axis, dragStartRotation);
+                            }
+                            rot = _ProcessRotation(axis, start, direction, dragStartPosition, dragStartRotation, Gizmo.SelectionRegion.RotationY);
+                            break;
                         case OverEasy.Editor.Gizmo.SelectionRegion.RotationZ:
+                            axis = new System.Numerics.Vector3(0.0f, 0.0f, 1.0f);
+                            if (OverEasyGlobals.TransformGizmoWorld == false)
+                            {
+                                axis = System.Numerics.Vector3.Transform(axis, dragStartRotation);
+                            }
+                            rot = _ProcessRotation(axis, start, direction, dragStartPosition, dragStartRotation, Gizmo.SelectionRegion.RotationZ);
                             break;
                         case OverEasy.Editor.Gizmo.SelectionRegion.ScaleX:
                         case OverEasy.Editor.Gizmo.SelectionRegion.ScaleY:
@@ -317,10 +350,36 @@ public partial class ViewerCamera : Camera3D
                             //Shouldn't happen, but who knows
                             break;
                     }
-                    OverEasyGlobals.TransformFromGizmo(pos, rot, scale);
+
+                    //Make sure we're not multiplying a null here
+                    Quaternion? finalRot = null;
+                    if(rot != null)
+                    {
+                        finalRot = dragStartRotation.ToGQuat() * (Quaternion)rot;
+                    }
+                    GD.Print($"Current rot: {dragStartRotation} Delta: {rot} New Rot: {finalRot}");
+                    OverEasyGlobals.TransformFromGizmo(pos, finalRot, scale);
                 }
             }
         }
+    }
+
+    private Quaternion _ProcessRotation(System.Numerics.Vector3 axis, Vector3 start, Vector3 direction, System.Numerics.Vector3 startPosition, System.Numerics.Quaternion startRotation, Gizmo.SelectionRegion selectionAxis)
+    {
+        axis = System.Numerics.Vector3.Normalize(axis);
+        System.Numerics.Vector3 newproj = Gizmo.GetAxisPlaneProjection(start.ToSNVec3(), direction.ToSNVec3(), startPosition, startRotation, selectionAxis);
+        if (dragStartRotationProjection == null)
+        {
+            dragStartRotationProjection = newproj;
+        }
+        System.Numerics.Vector3 delta = System.Numerics.Vector3.Normalize(newproj - startPosition);
+        System.Numerics.Vector3 deltaorig = System.Numerics.Vector3.Normalize((System.Numerics.Vector3)dragStartRotationProjection - startPosition);
+        System.Numerics.Vector3 side = System.Numerics.Vector3.Cross(axis, deltaorig);
+        var y = Math.Max(-1.0f, Math.Min(1.0f, System.Numerics.Vector3.Dot(delta, deltaorig)));
+        var x = Math.Max(-1.0f, Math.Min(1.0f, System.Numerics.Vector3.Dot(delta, side)));
+        var angle = (float)Math.Atan2(x, y);
+        return System.Numerics.Quaternion.Normalize(System.Numerics.Quaternion.CreateFromAxisAngle(axis, angle) *
+                                                         startRotation).ToGQuat();
     }
 
     private void _ProcessGizmoSize()
@@ -472,28 +531,33 @@ public partial class ViewerCamera : Camera3D
        // GD.Print("mode_toggle pressed");
         if (Input.IsActionJustReleased("mode_toggle"))
         {
-            if (cameraMode == CameraMode.Orbit)
-            {
-                cameraMode = CameraMode.Freecam;
-                this.Reparent(GetTree().Root);
-                //Adjust targetNode while it's not parented
-                targetNode.GlobalRotation = new Vector3(0, targetNode.GlobalRotation.Y, targetNode.GlobalRotation.Z);
-                targetNode.Reparent(GetTree().Root, true);
-
-                //Reparent back to targetNode after its adjustment
-                this.Reparent(targetNode);
-                freecamTotalPitch = -(this.Rotation.X * 180 / Mathf.Pi);
-            }
-            else if (cameraMode == CameraMode.Freecam)
-            {
-                cameraMode = CameraMode.Orbit;
-                TrySetOrbitCam();
-            }
+            ToggleMode();
 
             return true;
         }
 
         return false;
+    }
+
+    public void ToggleMode()
+    {
+        if (cameraMode == CameraMode.Orbit)
+        {
+            cameraMode = CameraMode.Freecam;
+            this.Reparent(GetTree().Root);
+            //Adjust targetNode while it's not parented
+            targetNode.GlobalRotation = new Vector3(0, targetNode.GlobalRotation.Y, targetNode.GlobalRotation.Z);
+            targetNode.Reparent(GetTree().Root, true);
+
+            //Reparent back to targetNode after its adjustment
+            this.Reparent(targetNode);
+            freecamTotalPitch = -(this.Rotation.X * 180 / Mathf.Pi);
+        }
+        else if (cameraMode == CameraMode.Freecam)
+        {
+            cameraMode = CameraMode.Orbit;
+            TrySetOrbitCam();
+        }
     }
 
     public bool TrySetOrbitCam()
@@ -629,6 +693,7 @@ public partial class ViewerCamera : Camera3D
                     dragGizmoCenter = new Vector2(-1, -1);
                     dragStartPosition = new System.Numerics.Vector3();
                     dragStartRotation = new System.Numerics.Quaternion(0, 0, 0, 1);
+                    dragStartRotationProjection = null;
                     dragStartScale = new System.Numerics.Vector3(1, 1, 1);
                     currentGizmoRaycastResults = null;
                     dragButtonHeld = false;

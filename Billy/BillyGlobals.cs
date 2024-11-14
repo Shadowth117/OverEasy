@@ -572,11 +572,12 @@ namespace OverEasy
                     }
                     if(rot != null)
                     {
-
+                        var eulRot = ((Quaternion)rot).GetEuler() * 180 / Mathf.Pi;
+                        SetVec3SchemaValues("ObjectRotation", eulRot);
                     }
                     if(scale != null)
                     {
-
+                        //SetVec3SchemaValues("ObjectScale", (Vector3)scale);
                     }
                     break;
             }

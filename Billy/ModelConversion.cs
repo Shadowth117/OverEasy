@@ -88,14 +88,14 @@ namespace OverEasy.Billy
         {
             Node3D root = new Node3D();
             MeshInstance3D meshInst = new MeshInstance3D();
-            var sphere = new SphereMesh();
-            sphere.Radius = 10;
-            sphere.Height = 20;
+            var box = new BoxMesh();
+            box.Size = new Vector3(20, 20, 20);
             var mat = new StandardMaterial3D();
             mat.AlbedoColor = color;
-
-            sphere.Material = mat;
-            meshInst.Mesh = sphere;
+            mat.BlendMode = BaseMaterial3D.BlendModeEnum.Mix;
+            mat.ShadingMode = BaseMaterial3D.ShadingModeEnum.PerVertex;
+            box.Material = mat;
+            meshInst.Mesh = box;
             root.AddChild(meshInst);
 
             return root;

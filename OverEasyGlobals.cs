@@ -6,6 +6,7 @@ using OverEasy.Editor;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 
@@ -40,10 +41,11 @@ namespace OverEasy
 
 		public static ViewerCamera ViewCamera = null;
 		public static Gizmo TransformGizmo = null;
-		/// <summary>
-		/// False for local, true for world
-		/// </summary>
-		public static bool TransformGizmoWorld = false;
+		public static WorldTransformToggle worldTransformToggle = null;
+        /// <summary>
+        /// False for local, true for world
+        /// </summary>
+        public static bool TransformGizmoWorld = false;
 
 		public static Dictionary<string, Texture2D> globalTexturePool = new Dictionary<string, Texture2D>();
 		public static Dictionary<string, List<Texture2D>> orderedTextureArchivePools = new Dictionary<string, List<Texture2D>>();
@@ -185,6 +187,23 @@ namespace OverEasy
 			PreviousMouseSelectionPointRidCache.Clear();
 		}
 
+        public static void WorldTransformToggle()
+        {
+			TransformGizmoWorld = !TransformGizmoWorld;
+			SetGizmoWorldStatus(TransformGizmoWorld);
+        }
+
+		public static void SetGizmoWorldStatus(bool worldMode)
+		{
+			if(worldMode)
+			{
+				TransformGizmo.GlobalRotation = new Vector3();
+			} else
+			{
+				TransformGizmo.Rotation = new Vector3();
+			}
+		}
+        
 		public static void DayNightToggle()
 		{
 			isDay = !isDay;
@@ -504,8 +523,9 @@ namespace OverEasy
 						UpdateBillySetObjects(loadedBillySetDesignObjects, currentObjectId);
 						LoadBillySetObjectTemplateInfo(loadedBillySetDesignObjects);
 						break;
-				}
-			}
+                }
+                SetGizmoWorldStatus(TransformGizmoWorld);
+            }
 		}
 
 		/// <summary>
@@ -620,6 +640,7 @@ namespace OverEasy
                     ViewCamera.oneTimeProcessTransform = true;
                     LoadSetObject();
                     setDataTree.ScrollToItem(activeNode);
+                    ViewCamera.ToggleMode();
                     break;
             }
         }
@@ -697,7 +718,8 @@ namespace OverEasy
 				case GameType.BillyGC:
 					TransformFromGizmoBilly(pos, rot, scale);
 					break;
-			}
+            }
+            SetGizmoWorldStatus(TransformGizmoWorld);
         }
     }
 }

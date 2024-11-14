@@ -269,10 +269,6 @@ namespace OverEasy.Editor
         public static Vector3 GetSingleAxisProjection(Vector3 rayOrigin, Vector3 rayDirection, Vector3 tPos, System.Numerics.Quaternion tQuat, SelectionRegion axis)
         {
             Vector3 axisvec = Vector3.Zero;
-            if (OverEasyGlobals.TransformGizmoWorld == true)
-            {
-                tQuat = new System.Numerics.Quaternion();
-            }
             switch (axis)
             {
                 case SelectionRegion.PositionX:
@@ -325,11 +321,9 @@ namespace OverEasy.Editor
             return rayOrigin;
         }
 
-        public static Vector3 GetAxisPlaneProjection(Vector3 rayOrigin, Vector3 rayDirection, Node3D t, SelectionRegion axis)
+        public static Vector3 GetAxisPlaneProjection(Vector3 rayOrigin, Vector3 rayDirection, Vector3 tPos, System.Numerics.Quaternion tQuat, SelectionRegion axis)
         {
             Vector3 planeNormal = Vector3.Zero;
-            var tPos = t.Position;
-            var tQuat = t.Quaternion;
             switch (axis)
             {
                 case SelectionRegion.RotationX:
