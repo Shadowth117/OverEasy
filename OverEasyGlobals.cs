@@ -6,7 +6,6 @@ using OverEasy.Editor;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 
@@ -169,7 +168,6 @@ namespace OverEasy
 			editorRootDirectory = Path.GetDirectoryName(ProjectSettings.GlobalizePath("res://"));
 			getMainGameFileDialog.FileSelected += ResetLoadedData;
 			getMainGameFileDialog.FileSelected += LoadInitialData;
-			getOnlyGameFileDialog.FileSelected += LoadInitialData;
 
 			confirmCopyModFilesDialog.Confirmed += CopyModFiles;
 			confirmRestoreBackupFilesDialog.Confirmed += RestoreBackupFiles;
@@ -390,42 +388,47 @@ namespace OverEasy
 		/// Resets editor data when we try to load a new project to avoid shenanigans.
 		/// </summary>
 		public static void ResetLoadedData(string path)
-		{
-			TransformGizmo.SetCurrentTransformType(Gizmo.TransformType.None);
-			TransformGizmo.Reparent(TransformGizmo.GetTree().Root, false);
-			modFolderLocation = null;
-			allowedToUpdate = false;
+        {
+            ResetTransformGizmo();
+            modFolderLocation = null;
+            allowedToUpdate = false;
 
-			currentObjectId = -1;
-			currentArchiveFileId = -1;
-			currentPRD = null;
-			currentArhiveFilename = null;
-			currentMissionId = -1;
-			currentObjectTreeItem = null;
-			stgDef = null;
-			loadedBillySetObjects = null;
-			cachedBillySetObjDefinitions.Clear();
-			currentEditorType = EditingType.None;
-			var objDataContainer = (VBoxContainer)objectScrollContainer.GetChild(0);
-			foreach (var obj in activeObjectEditorObjects)
-			{
-				//Assume the object is in there. If it's not, we have some problems.
-				objDataContainer.RemoveChild(obj.Value);
-			}
-			activeObjectEditorObjects.Clear();
+            currentObjectId = -1;
+            currentArchiveFileId = -1;
+            currentPRD = null;
+            currentArhiveFilename = null;
+            currentMissionId = -1;
+            currentObjectTreeItem = null;
+            stgDef = null;
+            loadedBillySetObjects = null;
+            cachedBillySetObjDefinitions.Clear();
+            currentEditorType = EditingType.None;
+            var objDataContainer = (VBoxContainer)objectScrollContainer.GetChild(0);
+            foreach (var obj in activeObjectEditorObjects)
+            {
+                //Assume the object is in there. If it's not, we have some problems.
+                objDataContainer.RemoveChild(obj.Value);
+            }
+            activeObjectEditorObjects.Clear();
 
-			if (setDataTree != null)
-			{
-				setDataTree.Clear();
-			}
+            if (setDataTree != null)
+            {
+                setDataTree.Clear();
+            }
 
-			ClearModelAndTextureData();
-		}
+            ClearModelAndTextureData();
+        }
 
-		/// <summary>
-		/// Method for handling what happens when we load a game
-		/// </summary>
-		public static void LoadInitialData(string path)
+        public static void ResetTransformGizmo()
+        {
+            TransformGizmo.SetCurrentTransformType(Gizmo.TransformType.None);
+            TransformGizmo.Reparent(TransformGizmo.GetTree().Root, false);
+        }
+
+        /// <summary>
+        /// Method for handling what happens when we load a game
+        /// </summary>
+        public static void LoadInitialData(string path)
 		{
 			//Handle if we loaded a mod project
 			if (path.Contains(".oeproj"))
@@ -570,7 +573,8 @@ namespace OverEasy
 			{
 				//Mission Node
 				case 1:
-					foreach (TreeItem item in setDataTree.GetRoot().GetChildren())
+					ResetTransformGizmo();
+                    foreach (TreeItem item in setDataTree.GetRoot().GetChildren())
 					{
 						if (item == activeNode)
 						{
