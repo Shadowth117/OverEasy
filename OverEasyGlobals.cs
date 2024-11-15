@@ -6,6 +6,7 @@ using OverEasy.Editor;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 
@@ -165,7 +166,15 @@ namespace OverEasy
 		public static void StartUp()
 		{
 			Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-			editorRootDirectory = Path.GetDirectoryName(ProjectSettings.GlobalizePath("res://"));
+			var basePath = ProjectSettings.GlobalizePath("res://");
+            GD.Print($"Base1: {basePath}");
+            if (basePath == null || basePath == "")
+            {
+                basePath = Assembly.GetExecutingAssembly().CodeBase.Substring(8);
+                GD.Print($"base2: {basePath}");
+            }
+            editorRootDirectory = Path.GetDirectoryName(basePath);
+			GD.Print($"Path: {editorRootDirectory}");
 			getMainGameFileDialog.FileSelected += ResetLoadedData;
 			getMainGameFileDialog.FileSelected += LoadInitialData;
 
@@ -672,6 +681,7 @@ namespace OverEasy
 				mapKeyOrderList.Clear();
 			}
 			var path = Path.Combine(editorRootDirectory, mapNamesReference);
+            GD.Print(path);
 			var mapNames = File.ReadAllLines(path);
 			foreach (var pair in mapNames)
 			{
@@ -683,7 +693,7 @@ namespace OverEasy
 
 		public static void LoadSetObjTemplates(string setObjDefinitionsReference)
 		{
-			var definitions = Directory.GetFiles(setObjDefinitionsReference);
+			var definitions = Directory.GetFiles(Path.Combine(editorRootDirectory, setObjDefinitionsReference));
 			foreach (var defPath in definitions)
 			{
 				var fileName = Path.GetFileNameWithoutExtension(defPath);

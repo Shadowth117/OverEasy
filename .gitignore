@@ -10,3 +10,7 @@ export_presets.cfg
 .godot/
 
 .vs/
+
+Build/
+
+OverEasy.7z

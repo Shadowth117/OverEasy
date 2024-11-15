@@ -1,4 +1,4 @@
-<Project Sdk="Godot.NET.Sdk/4.2.2">
+﻿<Project Sdk="Godot.NET.Sdk/4.2.2">
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
@@ -8,12 +8,21 @@
     <EnableDynamicLoading>true</EnableDynamicLoading>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Build\**" />
     <Compile Remove="PSO2-Aqua-Library\**" />
+    <EmbeddedResource Remove="Build\**" />
     <EmbeddedResource Remove="PSO2-Aqua-Library\**" />
+    <Page Remove="Build\**" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="TextInfo\BillyMapNames.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TextInfo\BillyObjDefinitions\11.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TextInfo\BillyObjDefinitions\45.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
