@@ -6,7 +6,6 @@ using OverEasy.Billy;
 using OverEasy.TextInfo;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text.Json;
 
 namespace OverEasy
@@ -291,7 +290,43 @@ namespace OverEasy
 			CreateByteSchema("ByteProperty4", setObj.btProperty4);
 		}
 
-		public static void UpdateBillySetObjects(SetObjList setObjList, int objectId)
+        public static void UpdateBillySpawnPoint(int spawnId)
+        {
+            //Gather some initial values
+            var objPosition = GetVec3SchemaValues("PlayerPosition");
+            var objRotation = GetSpinBoxValue("PlayerRotation");
+
+            //Update 3d representation
+            var parentNode = (Node3D)TransformGizmo.GetParent();
+            parentNode.GlobalPosition = new Vector3(objPosition.X, objPosition.Y, objPosition.Z);
+            parentNode.RotationDegrees = new Vector3(0, 0, (float)objRotation);
+
+			//Gather current object values
+			var spawn = new StageDef.PlayerStart();
+            spawn.playerPosition = objPosition;
+            spawn.rotation = (float)objRotation;
+
+            var objRaw = stgDef.defs[currentMissionId];
+            switch (spawnId)
+            {
+                case 0:
+					objRaw.player1Start = spawn;
+                    break;
+                case 1:
+                    objRaw.player2Start = spawn;
+                    break;
+                case 2:
+                    objRaw.player3Start = spawn;
+                    break;
+                case 3:
+                    objRaw.player4Start = spawn;
+                    break;
+            }
+
+			stgDefModified = true;
+        }
+
+        public static void UpdateBillySetObjects(SetObjList setObjList, int objectId)
 		{
 			//Gather some initial values
 			var objPosition = GetVec3SchemaValues("ObjectPosition");
@@ -394,7 +429,19 @@ namespace OverEasy
 
 			File.WriteAllBytes(Path.Combine(modFolderLocation, setName), loadedBillySetObjects.GetBytes());
 			File.WriteAllBytes(Path.Combine(modFolderLocation, setDesignName), loadedBillySetDesignObjects.GetBytes());
-		}
+
+			//StageDef
+			if(stgDefModified)
+			{
+                backupFileName = Path.Combine(backupFolderLocation, "ge_stagedef.bin");
+                if (!File.Exists(backupFileName))
+                {
+                    File.Copy(Path.Combine(gameFolderLocation, "ge_stagedef.bin"), backupFileName);
+                }
+				File.WriteAllBytes(Path.Combine(modFolderLocation, "ge_stagedef.bin"), stgDef.GetBytes());
+				stgDefModified = false;
+            }
+        }
 
 		private static void SaveDataBillyGC()
 		{

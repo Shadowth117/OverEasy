@@ -73,6 +73,7 @@ namespace OverEasy
 		public static Dictionary<string, Node3D> modelDictionary = new Dictionary<string, Node3D>();
 
 		public static StageDef stgDef = null;
+		public static bool stgDefModified = false;
 		public static SetObjList loadedBillySetObjects = null;
 		public static SetObjList loadedBillySetDesignObjects = null;
 		public static Dictionary<int, SetObjDefinition> cachedBillySetObjDefinitions = new Dictionary<int, SetObjDefinition>();
@@ -537,7 +538,7 @@ namespace OverEasy
 						LoadBillySetObjectTemplateInfo(loadedBillySetDesignObjects);
 						break;
 					case EditingType.BillySpawnPoint:
-						//UpdateBillySpawnPoint();
+						UpdateBillySpawnPoint(currentObjectId);
 						break;
                 }
                 SetGizmoWorldStatus(TransformGizmoWorld);
