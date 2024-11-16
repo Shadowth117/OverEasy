@@ -106,6 +106,7 @@ namespace OverEasy
 			None = 0,
 			BillySetObj = 1,
 			BillySetDesign = 2,
+			BillySpawnPoint = 3,
 		}
 
 		public static void SetCameraSettings()
@@ -534,6 +535,9 @@ namespace OverEasy
 					case EditingType.BillySetDesign:
 						UpdateBillySetObjects(loadedBillySetDesignObjects, currentObjectId);
 						LoadBillySetObjectTemplateInfo(loadedBillySetDesignObjects);
+						break;
+					case EditingType.BillySpawnPoint:
+						//UpdateBillySpawnPoint();
 						break;
                 }
                 SetGizmoWorldStatus(TransformGizmoWorld);

@@ -127,6 +127,14 @@ namespace OverEasy
             return spinBox.Value;
         }
 
+        public static void SetSpinBoxValue(string key, double newValue)
+        {
+            var vecObj = activeObjectEditorObjects[key];
+            var spinBox = (SpinBox)vecObj.GetChild(1);
+
+            spinBox.Value = newValue;
+        }
+
         public static System.Numerics.Vector2 GetVec2SchemaValues(string key)
         {
             var vecObj = activeObjectEditorObjects[key];
@@ -157,6 +165,16 @@ namespace OverEasy
             return new System.Numerics.Vector4((float)boxX.Value, (float)boxY.Value, (float)boxZ.Value, (float)boxW.Value);
         }
 
+        public static void SetVec2SchemaValues(string key, Godot.Vector2 vec2)
+        {
+            var vecObj = activeObjectEditorObjects[key];
+            var boxX = (SpinBox)vecObj.GetChild(1).GetChild(0).GetChild(1);
+            var boxY = (SpinBox)vecObj.GetChild(1).GetChild(1).GetChild(1);
+
+            boxX.Value = vec2.X;
+            boxY.Value = vec2.Y;
+        }
+
         public static void SetVec3SchemaValues(string key, Godot.Vector3 vec3)
         {
             var vecObj = activeObjectEditorObjects[key];
@@ -167,6 +185,20 @@ namespace OverEasy
             boxX.Value = vec3.X;
             boxY.Value = vec3.Y;
             boxZ.Value = vec3.Z;
+        }
+
+        public static void SetVec4SchemaValues(string key, Godot.Vector4 vec4)
+        {
+            var vecObj = activeObjectEditorObjects[key];
+            var boxX = (SpinBox)vecObj.GetChild(1).GetChild(0).GetChild(1);
+            var boxY = (SpinBox)vecObj.GetChild(1).GetChild(1).GetChild(1);
+            var boxZ = (SpinBox)vecObj.GetChild(1).GetChild(2).GetChild(1);
+            var boxW = (SpinBox)vecObj.GetChild(1).GetChild(3).GetChild(1);
+
+            boxX.Value = vec4.X;
+            boxY.Value = vec4.Y;
+            boxZ.Value = vec4.Z;
+            boxW.Value = vec4.W;
         }
 
         public static void LoadVec2SchemaTemplateInfo(string key, string objName, string objNameDefault, string objHint, string xName, string yName)

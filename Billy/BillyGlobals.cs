@@ -124,7 +124,8 @@ namespace OverEasy
 			SetCameraSettingsBilly();
 			ClearModelAndTextureData();
 			var prdMissionname = GetBillyMissionName(def.missionName);
-			currentPRD = new PRD(File.ReadAllBytes(GetAssetPath($"k_{prdMissionname}.prd")));
+			currentArhiveFilename = $"k_{prdMissionname}.prd";
+            currentPRD = new PRD(File.ReadAllBytes(GetAssetPath(currentArhiveFilename)));
 
 			for (int i = 0; i < currentPRD.files.Count; i++)
 			{
@@ -580,6 +581,17 @@ namespace OverEasy
 						//SetVec3SchemaValues("ObjectScale", (Vector3)scale);
 					}
 					break;
+				case EditingType.BillySpawnPoint:
+                    if (pos != null)
+                    {
+                        SetVec3SchemaValues("PlayerPosition", (Vector3)pos);
+                    }
+                    if (rot != null)
+                    {
+                        var eulRot = ((Quaternion)rot).GetEuler() * 180 / Mathf.Pi;
+                        SetSpinBoxValue("PlayerRotation", eulRot.Z);
+                    }
+                    break;
 			}
 		}
 	}
