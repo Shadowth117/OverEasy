@@ -469,14 +469,50 @@ namespace OverEasy
 			{
 				currentPRD.files[setDesignId] = loadedBillySetDesignObjects.GetBytes();
 			}
-			//Make sure we have backups if they're not there already
-			backupFileName = Path.Combine(backupFolderLocation, currentArhiveFilename);
+
+			//StageDef
+			string stgDefLocation = null;
+			if(File.Exists(Path.Combine(modFolderLocation, "k_boot.prd")))
+			{
+                stgDefLocation = Path.Combine(modFolderLocation, "k_boot.prd");
+
+            } else if(File.Exists(Path.Combine(gameFolderLocation, "k_boot.prd")))
+            {
+                stgDefLocation = Path.Combine(gameFolderLocation, "k_boot.prd");
+            }
+
+			PRD bootPrd = null;
+			if(stgDefModified == true && stgDefLocation != null)
+            {
+                if (File.Exists(Path.Combine(stgDefLocation, "k_boot.prd")))
+                {
+                    bootPrd = new PRD(Path.Combine(stgDefLocation, "k_boot.prd"));
+                    for (int i = 0; i < bootPrd.files.Count; i++)
+                    {
+                        var fName = bootPrd.fileNames[i];
+                        if (fName == "ge_stagedef.bin")
+                        {
+							bootPrd.files[i] = stgDef.GetBytes();
+                        }
+                    }
+                }
+            }
+
+            //Make sure we have backups if they're not there already
+            backupFileName = Path.Combine(backupFolderLocation, currentArhiveFilename);
 			if (!File.Exists(backupFileName))
 			{
 				File.Copy(Path.Combine(gameFolderLocation, currentArhiveFilename), backupFileName);
 			}
 			File.WriteAllBytes(Path.Combine(modFolderLocation, currentArhiveFilename), currentPRD.GetBytes());
-		}
+
+            backupFileName = Path.Combine(backupFolderLocation, "k_boot.prd");
+            if (!File.Exists(backupFileName))
+            {
+                File.Copy(Path.Combine(gameFolderLocation, "k_boot.prd"), backupFileName);
+            }
+            File.WriteAllBytes(Path.Combine(modFolderLocation, "k_boot.prd"), bootPrd.GetBytes());
+        }
 
 		private static void PopulateSetObjectsBilly(TreeItem activeNode)
 		{
