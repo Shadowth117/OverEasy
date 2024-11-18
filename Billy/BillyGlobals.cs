@@ -124,7 +124,7 @@ namespace OverEasy
 			ClearModelAndTextureData();
 			var prdMissionname = GetBillyMissionName(def.missionName);
 			currentArhiveFilename = $"k_{prdMissionname}.prd";
-            currentPRD = new PRD(File.ReadAllBytes(GetAssetPath(currentArhiveFilename)));
+			currentPRD = new PRD(File.ReadAllBytes(GetAssetPath(currentArhiveFilename)));
 
 			for (int i = 0; i < currentPRD.files.Count; i++)
 			{
@@ -203,7 +203,6 @@ namespace OverEasy
 
 			return false;
 		}
-
 		public static void LoadBillySetObject(SetObjList setObjList)
 		{
 			allowedToUpdate = false;
@@ -219,6 +218,28 @@ namespace OverEasy
 			LoadBillySetObjectTemplateInfo(setObjList);
 			ToggleObjectScrollContainerCollision();
 			allowedToUpdate = true;
+		}
+		
+		public static void LoadBillySpawn()
+		{
+			allowedToUpdate = false;
+			foreach (var objSet in activeObjectEditorObjects)
+			{
+				objSet.Value.Free();
+			}
+			activeObjectEditorObjects.Clear();
+
+			//Load in object data
+			LoadBillySpawnPoint();
+			LoadBillySpawnPointInfo();
+			ToggleObjectScrollContainerCollision();
+			allowedToUpdate = true;
+		}
+
+		public static void LoadBillySpawnPointInfo()
+		{
+			LoadVec3SchemaTemplateInfo("PlayerPosition", "Player Position", "Position", "The position of the player at spawn", "", "", "");
+			LoadSchemaTemplateInfo("PlayerRotation", "Player Rotation", "Rotation", "The rotation of the player at spawn");
 		}
 
 		public static void LoadBillySetObjectTemplateInfo(SetObjList setObjList)
@@ -268,10 +289,34 @@ namespace OverEasy
 			LoadSchemaTemplateInfo("ByteProperty4", template.ByteProperty4, "Byte Property 4", template.ByteProperty4Hint);
 		}
 
+		public static void LoadBillySpawnPoint()
+		{
+			var def = stgDef.defs[currentMissionId];
+			StageDef.PlayerStart start;
+			switch(currentObjectId)
+			{
+				case 0:
+					start = def.player1Start;
+					break;
+				case 1:
+					start = def.player2Start;
+					break;
+				case 2:
+					start = def.player3Start;
+					break;
+				case 3:
+					start = def.player4Start;
+					break;
+				default:
+					throw new System.Exception("Bad player spawn");
+			}
+			CreateVector3Schema("PlayerPosition", new Vector3(start.playerPosition.X, start.playerPosition.Y, start.playerPosition.Z));
+			CreateFloatSchema("PlayerRotation", start.rotation);
+		}
+
 		public static void LoadBillySetObjectGui(SetObjList setObjList)
 		{
 			var setObj = setObjList.setObjs[currentObjectId];
-
 			CreateIntSchema("ObjectId", setObj.objectId);
 			CreateVector3Schema("ObjectPosition", new Vector3(setObj.Position.X, setObj.Position.Y, setObj.Position.Z));
 			CreateVector3Schema("ObjectRotation", new Vector3((float)(NinjaConstants.FromBAMSValueToDegrees * setObj.BAMSRotation.X),
@@ -290,43 +335,43 @@ namespace OverEasy
 			CreateByteSchema("ByteProperty4", setObj.btProperty4);
 		}
 
-        public static void UpdateBillySpawnPoint(int spawnId)
-        {
-            //Gather some initial values
-            var objPosition = GetVec3SchemaValues("PlayerPosition");
-            var objRotation = GetSpinBoxValue("PlayerRotation");
+		public static void UpdateBillySpawnPoint(int spawnId)
+		{
+			//Gather some initial values
+			var objPosition = GetVec3SchemaValues("PlayerPosition");
+			var objRotation = GetSpinBoxValue("PlayerRotation");
 
-            //Update 3d representation
-            var parentNode = (Node3D)TransformGizmo.GetParent();
-            parentNode.GlobalPosition = new Vector3(objPosition.X, objPosition.Y, objPosition.Z);
-            parentNode.RotationDegrees = new Vector3(0, 0, (float)objRotation);
+			//Update 3d representation
+			var parentNode = (Node3D)TransformGizmo.GetParent();
+			parentNode.GlobalPosition = new Vector3(objPosition.X, objPosition.Y, objPosition.Z);
+			parentNode.RotationDegrees = new Vector3(0, (float)objRotation, 0);
 
 			//Gather current object values
 			var spawn = new StageDef.PlayerStart();
-            spawn.playerPosition = objPosition;
-            spawn.rotation = (float)objRotation;
+			spawn.playerPosition = objPosition;
+			spawn.rotation = (float)objRotation;
 
-            var objRaw = stgDef.defs[currentMissionId];
-            switch (spawnId)
-            {
-                case 0:
+			var objRaw = stgDef.defs[currentMissionId];
+			switch (spawnId)
+			{
+				case 0:
 					objRaw.player1Start = spawn;
-                    break;
-                case 1:
-                    objRaw.player2Start = spawn;
-                    break;
-                case 2:
-                    objRaw.player3Start = spawn;
-                    break;
-                case 3:
-                    objRaw.player4Start = spawn;
-                    break;
-            }
+					break;
+				case 1:
+					objRaw.player2Start = spawn;
+					break;
+				case 2:
+					objRaw.player3Start = spawn;
+					break;
+				case 3:
+					objRaw.player4Start = spawn;
+					break;
+			}
 
 			stgDefModified = true;
-        }
+		}
 
-        public static void UpdateBillySetObjects(SetObjList setObjList, int objectId)
+		public static void UpdateBillySetObjects(SetObjList setObjList, int objectId)
 		{
 			//Gather some initial values
 			var objPosition = GetVec3SchemaValues("ObjectPosition");
@@ -433,15 +478,15 @@ namespace OverEasy
 			//StageDef
 			if(stgDefModified)
 			{
-                backupFileName = Path.Combine(backupFolderLocation, "ge_stagedef.bin");
-                if (!File.Exists(backupFileName))
-                {
-                    File.Copy(Path.Combine(gameFolderLocation, "ge_stagedef.bin"), backupFileName);
-                }
+				backupFileName = Path.Combine(backupFolderLocation, "ge_stagedef.bin");
+				if (!File.Exists(backupFileName))
+				{
+					File.Copy(Path.Combine(gameFolderLocation, "ge_stagedef.bin"), backupFileName);
+				}
 				File.WriteAllBytes(Path.Combine(modFolderLocation, "ge_stagedef.bin"), stgDef.GetBytes());
 				stgDefModified = false;
-            }
-        }
+			}
+		}
 
 		private static void SaveDataBillyGC()
 		{
@@ -474,49 +519,92 @@ namespace OverEasy
 			string stgDefLocation = null;
 			if(File.Exists(Path.Combine(modFolderLocation, "k_boot.prd")))
 			{
-                stgDefLocation = Path.Combine(modFolderLocation, "k_boot.prd");
+				stgDefLocation = Path.Combine(modFolderLocation, "k_boot.prd");
 
-            } else if(File.Exists(Path.Combine(gameFolderLocation, "k_boot.prd")))
-            {
-                stgDefLocation = Path.Combine(gameFolderLocation, "k_boot.prd");
-            }
+			} else if(File.Exists(Path.Combine(gameFolderLocation, "k_boot.prd")))
+			{
+				stgDefLocation = Path.Combine(gameFolderLocation, "k_boot.prd");
+			}
 
 			PRD bootPrd = null;
 			if(stgDefModified == true && stgDefLocation != null)
             {
-                if (File.Exists(Path.Combine(stgDefLocation, "k_boot.prd")))
+                bootPrd = new PRD(stgDefLocation);
+                for (int i = 0; i < bootPrd.files.Count; i++)
                 {
-                    bootPrd = new PRD(Path.Combine(stgDefLocation, "k_boot.prd"));
-                    for (int i = 0; i < bootPrd.files.Count; i++)
+                    var fName = bootPrd.fileNames[i];
+                    if (fName == "ge_stagedef.bin")
                     {
-                        var fName = bootPrd.fileNames[i];
-                        if (fName == "ge_stagedef.bin")
-                        {
-							bootPrd.files[i] = stgDef.GetBytes();
-                        }
+                        bootPrd.files[i] = stgDef.GetBytes();
                     }
                 }
-            }
 
-            //Make sure we have backups if they're not there already
-            backupFileName = Path.Combine(backupFolderLocation, currentArhiveFilename);
+                //Make sure we have a backup if it's not there already
+                backupFileName = Path.Combine(backupFolderLocation, "k_boot.prd");
+				if (!File.Exists(backupFileName))
+				{
+					File.Copy(Path.Combine(gameFolderLocation, "k_boot.prd"), backupFileName);
+				}
+				File.WriteAllBytes(Path.Combine(modFolderLocation, "k_boot.prd"), bootPrd.GetBytes());
+			}
+
+			//Make sure we have backups if they're not there already
+			backupFileName = Path.Combine(backupFolderLocation, currentArhiveFilename);
 			if (!File.Exists(backupFileName))
 			{
 				File.Copy(Path.Combine(gameFolderLocation, currentArhiveFilename), backupFileName);
 			}
 			File.WriteAllBytes(Path.Combine(modFolderLocation, currentArhiveFilename), currentPRD.GetBytes());
-
-            backupFileName = Path.Combine(backupFolderLocation, "k_boot.prd");
-            if (!File.Exists(backupFileName))
-            {
-                File.Copy(Path.Combine(gameFolderLocation, "k_boot.prd"), backupFileName);
-            }
-            File.WriteAllBytes(Path.Combine(modFolderLocation, "k_boot.prd"), bootPrd.GetBytes());
-        }
+		}
 
 		private static void PopulateSetObjectsBilly(TreeItem activeNode)
 		{
 			TreeItem temp;
+
+			//We will ALWAYS have 4 spawnpoints. 
+			temp = activeNode.CreateChild();
+			temp.SetText(0, "Player Spawnpoints");
+			temp.SetMetadata(0, 2);
+			for(int i = 0; i < 4; i++)
+			{
+				StageDef.PlayerStart start;
+				switch(i)
+				{
+					case 0:
+						start = stgDef.defs[currentMissionId].player1Start;
+						break;
+					case 1:
+						start = stgDef.defs[currentMissionId].player2Start;
+						break;
+					case 2:
+						start = stgDef.defs[currentMissionId].player3Start;
+						break;
+					case 3:
+						start = stgDef.defs[currentMissionId].player4Start;
+						break;
+					default:
+						throw new System.Exception("Bad player spawn point");
+				}
+
+				var objNode = temp.CreateChild();
+				objNode.SetText(0, $"Player Spawn {i + 1}");
+
+				//Node type
+				objNode.SetMetadata(0, 3);
+				//Node's original object id
+				objNode.SetMetadata(1, i);
+				//Node's object category
+				objNode.SetMetadata(2, 3);
+				//Attach a model instance
+				var modelNode = LoadBillySpawnModel(i);
+				modelNode.SetMeta("treeItem", objNode);
+				objNode.SetMetadata(3, modelNode);
+				modelNode.RotationDegrees = new Vector3(0, start.rotation, 0);
+				modelNode.Position = new Vector3(start.playerPosition.X, start.playerPosition.Y, start.playerPosition.Z);
+				modelRoot.AddChild(modelNode);
+			}
+			temp.Collapsed = true;
+
 			if (loadedBillySetObjects != null && loadedBillySetObjects?.setObjs?.Count != 0)
 			{
 				temp = activeNode.CreateChild();
@@ -576,6 +664,31 @@ namespace OverEasy
 			}
 		}
 
+		private static Node3D LoadBillySpawnModel(int spawnId)
+		{
+			var name = "redDefaultBox";
+			Color color = new Color(1, 0, 0, 1);
+
+			Node3D modelNode;
+			if (modelDictionary.ContainsKey(name))
+			{
+				modelNode = ModelConversion.GDModelClone(modelDictionary[name]);
+			}
+			else
+			{
+				modelNode = ModelConversion.CreateDefaultObjectModel(name, color);
+				((MeshInstance3D)modelNode.GetChild(0)).CreateTrimeshCollision();
+				var staticBody = ((StaticBody3D)modelNode.GetChild(0).GetChild(0));
+				var child = ((CollisionShape3D)staticBody.GetChild(0));
+				child.Disabled = false;
+				staticBody.CollisionLayer = 1;
+				staticBody.CollisionMask = 1;
+				modelDictionary.Add(name, modelNode);
+			}
+
+			return modelNode;
+		}
+
 		private static Node3D LoadBillyObjectModel(SetObj obj, bool designObj)
 		{
 			var name = "blueDefaultBox";
@@ -593,7 +706,7 @@ namespace OverEasy
 			}
 			else
 			{
-				modelNode = ModelConversion.CreateDefaultObjectModel(obj.GetHashCode().ToString("X"), color);
+				modelNode = ModelConversion.CreateDefaultObjectModel(name, color);
 				((MeshInstance3D)modelNode.GetChild(0)).CreateTrimeshCollision();
 				var staticBody = ((StaticBody3D)modelNode.GetChild(0).GetChild(0));
 				var child = ((CollisionShape3D)staticBody.GetChild(0));
@@ -665,16 +778,16 @@ namespace OverEasy
 					}
 					break;
 				case EditingType.BillySpawnPoint:
-                    if (pos != null)
-                    {
-                        SetVec3SchemaValues("PlayerPosition", (Vector3)pos);
-                    }
-                    if (rot != null)
-                    {
-                        var eulRot = ((Quaternion)rot).GetEuler() * 180 / Mathf.Pi;
-                        SetSpinBoxValue("PlayerRotation", eulRot.Z);
-                    }
-                    break;
+					if (pos != null)
+					{
+						SetVec3SchemaValues("PlayerPosition", (Vector3)pos);
+					}
+					if (rot != null)
+					{
+						var eulRot = ((Quaternion)rot).GetEuler() * 180 / Mathf.Pi;
+						SetSpinBoxValue("PlayerRotation", eulRot.Z);
+					}
+					break;
 			}
 		}
 	}

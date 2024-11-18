@@ -7,15 +7,15 @@ public partial class DayNightToggle : CheckButton
 	public override void _Ready()
 	{
 		OverEasyGlobals.dayNightToggle = this;
-    }
+	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
 	}
 
-    public override void _Pressed()
-    {
+	public override void _Pressed()
+	{
 		OverEasyGlobals.DayNightToggle();
-    }
+	}
 }

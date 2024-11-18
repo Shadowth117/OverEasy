@@ -42,10 +42,10 @@ namespace OverEasy
 		public static ViewerCamera ViewCamera = null;
 		public static Gizmo TransformGizmo = null;
 		public static WorldTransformToggle worldTransformToggle = null;
-        /// <summary>
-        /// False for local, true for world
-        /// </summary>
-        public static bool TransformGizmoWorld = false;
+		/// <summary>
+		/// False for local, true for world
+		/// </summary>
+		public static bool TransformGizmoWorld = false;
 
 		public static Dictionary<string, Texture2D> globalTexturePool = new Dictionary<string, Texture2D>();
 		public static Dictionary<string, List<Texture2D>> orderedTextureArchivePools = new Dictionary<string, List<Texture2D>>();
@@ -169,14 +169,11 @@ namespace OverEasy
 		{
 			Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 			var basePath = ProjectSettings.GlobalizePath("res://");
-            GD.Print($"Base1: {basePath}");
-            if (basePath == null || basePath == "")
-            {
-                basePath = Assembly.GetExecutingAssembly().CodeBase.Substring(8);
-                GD.Print($"base2: {basePath}");
-            }
-            editorRootDirectory = Path.GetDirectoryName(basePath);
-			GD.Print($"Path: {editorRootDirectory}");
+			if (basePath == null || basePath == "")
+			{
+				basePath = Assembly.GetExecutingAssembly().CodeBase.Substring(8);
+			}
+			editorRootDirectory = Path.GetDirectoryName(basePath);
 			getMainGameFileDialog.FileSelected += ResetLoadedData;
 			getMainGameFileDialog.FileSelected += LoadInitialData;
 
@@ -196,11 +193,11 @@ namespace OverEasy
 			PreviousMouseSelectionPointRidCache.Clear();
 		}
 
-        public static void WorldTransformToggle()
-        {
+		public static void WorldTransformToggle()
+		{
 			TransformGizmoWorld = !TransformGizmoWorld;
 			SetGizmoWorldStatus(TransformGizmoWorld);
-        }
+		}
 
 		public static void SetGizmoWorldStatus(bool worldMode)
 		{
@@ -212,7 +209,7 @@ namespace OverEasy
 				TransformGizmo.Rotation = new Vector3();
 			}
 		}
-        
+		
 		public static void DayNightToggle()
 		{
 			isDay = !isDay;
@@ -257,8 +254,8 @@ namespace OverEasy
 			var viewPortSize = OEMainViewPort.GetVisibleRect().Size;
 			setDataTree.Size = new Vector2(300, viewPortSize.Y - 31);
 			setDataTreeButton.Size = new Vector2(setDataTreeButton.Size.X, viewPortSize.Y - 31);
-            dummyTree.Size = new Vector2(objectScrollContainer.Size.X, viewPortSize.Y - 31);
-            objectScrollContainer.Size = new Vector2(objectScrollContainer.Size.X, viewPortSize.Y - 31);
+			dummyTree.Size = new Vector2(objectScrollContainer.Size.X, viewPortSize.Y - 31);
+			objectScrollContainer.Size = new Vector2(objectScrollContainer.Size.X, viewPortSize.Y - 31);
 			objectScrollContainerButton.Size = new Vector2(objectScrollContainerButton.Size.X, viewPortSize.Y - 31);
 
 			setDataTreeCollision.GlobalPosition = new Vector2(setDataTreeCollision.GlobalPosition.X, 31 + (viewPortSize.Y - 31) / 2);
@@ -285,7 +282,7 @@ namespace OverEasy
 			}
 			objectPanelCollision.Shape = objPanelShape;
 
-            setDataTreeButtonCollision.GlobalPosition = new Vector2(setDataTreeButtonCollision.GlobalPosition.X, 31 + (viewPortSize.Y - 31) / 2);
+			setDataTreeButtonCollision.GlobalPosition = new Vector2(setDataTreeButtonCollision.GlobalPosition.X, 31 + (viewPortSize.Y - 31) / 2);
 			var setDataTreeButtonShape = (RectangleShape2D)setDataTreeButtonCollision.Shape;
 			setDataTreeButtonShape.Size = new Vector2(setDataTreeButtonShape.Size.X, (viewPortSize.Y - 31));
 			setDataTreeButtonCollision.Shape = setDataTreeButtonShape;
@@ -322,17 +319,17 @@ namespace OverEasy
 		/// Method for handling the result of clicking the Show/Hide button for the object data panel
 		/// </summary>
 		public static void OnObjectScrollContainerButtonReleased()
-        {
-            var currentVisibility = !objectScrollContainer.Visible;
-            if (activeObjectEditorObjects.Count == 0)
+		{
+			var currentVisibility = !objectScrollContainer.Visible;
+			if (activeObjectEditorObjects.Count == 0)
 			{
 				return;
 			}
 			objectScrollContainer.Visible = currentVisibility;
 			objectScrollContainer.SetProcessInput(currentVisibility);
-            dummyTree.Visible = currentVisibility;
+			dummyTree.Visible = currentVisibility;
 
-            foreach (var objSet in activeObjectEditorObjects)
+			foreach (var objSet in activeObjectEditorObjects)
 			{
 				objSet.Value.Visible = currentVisibility;
 			}
@@ -399,47 +396,47 @@ namespace OverEasy
 		/// Resets editor data when we try to load a new project to avoid shenanigans.
 		/// </summary>
 		public static void ResetLoadedData(string path)
-        {
-            ResetTransformGizmo();
-            modFolderLocation = null;
-            allowedToUpdate = false;
+		{
+			ResetTransformGizmo();
+			modFolderLocation = null;
+			allowedToUpdate = false;
 
-            currentObjectId = -1;
-            currentArchiveFileId = -1;
-            currentPRD = null;
-            currentArhiveFilename = null;
-            currentMissionId = -1;
-            currentObjectTreeItem = null;
-            stgDef = null;
-            loadedBillySetObjects = null;
-            cachedBillySetObjDefinitions.Clear();
-            currentEditorType = EditingType.None;
-            var objDataContainer = (VBoxContainer)objectScrollContainer.GetChild(0);
-            foreach (var obj in activeObjectEditorObjects)
-            {
-                //Assume the object is in there. If it's not, we have some problems.
-                objDataContainer.RemoveChild(obj.Value);
-            }
-            activeObjectEditorObjects.Clear();
+			currentObjectId = -1;
+			currentArchiveFileId = -1;
+			currentPRD = null;
+			currentArhiveFilename = null;
+			currentMissionId = -1;
+			currentObjectTreeItem = null;
+			stgDef = null;
+			loadedBillySetObjects = null;
+			cachedBillySetObjDefinitions.Clear();
+			currentEditorType = EditingType.None;
+			var objDataContainer = (VBoxContainer)objectScrollContainer.GetChild(0);
+			foreach (var obj in activeObjectEditorObjects)
+			{
+				//Assume the object is in there. If it's not, we have some problems.
+				objDataContainer.RemoveChild(obj.Value);
+			}
+			activeObjectEditorObjects.Clear();
 
-            if (setDataTree != null)
-            {
-                setDataTree.Clear();
-            }
+			if (setDataTree != null)
+			{
+				setDataTree.Clear();
+			}
 
-            ClearModelAndTextureData();
-        }
+			ClearModelAndTextureData();
+		}
 
-        public static void ResetTransformGizmo()
-        {
-            TransformGizmo.SetCurrentTransformType(Gizmo.TransformType.None);
-            TransformGizmo.Reparent(TransformGizmo.GetTree().Root, false);
-        }
+		public static void ResetTransformGizmo()
+		{
+			TransformGizmo.SetCurrentTransformType(Gizmo.TransformType.None);
+			TransformGizmo.Reparent(TransformGizmo.GetTree().Root, false);
+		}
 
-        /// <summary>
-        /// Method for handling what happens when we load a game
-        /// </summary>
-        public static void LoadInitialData(string path)
+		/// <summary>
+		/// Method for handling what happens when we load a game
+		/// </summary>
+		public static void LoadInitialData(string path)
 		{
 			//Handle if we loaded a mod project
 			if (path.Contains(".oeproj"))
@@ -540,9 +537,9 @@ namespace OverEasy
 					case EditingType.BillySpawnPoint:
 						UpdateBillySpawnPoint(currentObjectId);
 						break;
-                }
-                SetGizmoWorldStatus(TransformGizmoWorld);
-            }
+				}
+				SetGizmoWorldStatus(TransformGizmoWorld);
+			}
 		}
 
 		/// <summary>
@@ -567,15 +564,18 @@ namespace OverEasy
 			if (objectScrollContainer.Visible == false)
 			{
 				OnObjectScrollContainerButtonReleased();
-            }
-            dummyTree.Visible = true;
-            switch (currentEditorType)
+			}
+			dummyTree.Visible = true;
+			switch (currentEditorType)
 			{
 				case EditingType.BillySetObj:
 					LoadBillySetObject(loadedBillySetObjects);
 					break;
 				case EditingType.BillySetDesign:
 					LoadBillySetObject(loadedBillySetDesignObjects);
+					break;
+				case EditingType.BillySpawnPoint:
+					LoadBillySpawn();
 					break;
 			}
 		}
@@ -588,7 +588,7 @@ namespace OverEasy
 				//Mission Node
 				case 1:
 					ResetTransformGizmo();
-                    foreach (TreeItem item in setDataTree.GetRoot().GetChildren())
+					foreach (TreeItem item in setDataTree.GetRoot().GetChildren())
 					{
 						if (item == activeNode)
 						{
@@ -629,44 +629,44 @@ namespace OverEasy
 					break;
 				//Object Node
 				case 3:
-                    break;
+					break;
 			}
-        }
+		}
 
-        public static void HandleTreeNodeSelected()
-        {
-            var activeNode = setDataTree.GetSelected();
+		public static void HandleTreeNodeSelected()
+		{
+			var activeNode = setDataTree.GetSelected();
 			var parentNode = activeNode.GetParent();
 
-            switch (activeNode.GetMetadata(0).AsInt32())
-            {
-                //Mission Node
-                case 1:
-                //mission Node Data Type - SetObject, Camera, etc.
-                case 2:
-                    break;
-                //Object Node
-                case 3:
-                    currentObjectId = activeNode.GetMetadata(1).AsInt32();
-                    currentEditorType = (EditingType)(activeNode.GetMetadata(2).AsInt32());
-                    currentObjectTreeItem = activeNode;
+			switch (activeNode.GetMetadata(0).AsInt32())
+			{
+				//Mission Node
+				case 1:
+				//mission Node Data Type - SetObject, Camera, etc.
+				case 2:
+					break;
+				//Object Node
+				case 3:
+					currentObjectId = activeNode.GetMetadata(1).AsInt32();
+					currentEditorType = (EditingType)(activeNode.GetMetadata(2).AsInt32());
+					currentObjectTreeItem = activeNode;
 					var activeNode3d = (Node3D)activeNode.GetMetadata(3);
-                    TransformGizmo.Reparent(activeNode3d, false);
-                    TransformGizmo.SetCurrentTransformType(OverEasy.Editor.Gizmo.TransformType.Translation);
-                    ViewCamera.orbitFocusNode = activeNode3d;
-                    ViewCamera.TrySetOrbitCam();
-                    ViewCamera.oneTimeProcessTransform = true;
-                    LoadSetObject();
-                    setDataTree.ScrollToItem(activeNode);
-                    ViewCamera.ToggleMode();
-                    break;
-            }
-        }
+					TransformGizmo.Reparent(activeNode3d, false);
+					TransformGizmo.SetCurrentTransformType(OverEasy.Editor.Gizmo.TransformType.Translation);
+					ViewCamera.orbitFocusNode = activeNode3d;
+					ViewCamera.TrySetOrbitCam();
+					ViewCamera.oneTimeProcessTransform = true;
+					LoadSetObject();
+					setDataTree.ScrollToItem(activeNode);
+					ViewCamera.ToggleMode();
+					break;
+			}
+		}
 
-        /// <summary>
-        /// Method for lazy loading area data. Should be called upon expansion of a node.
-        /// </summary>
-        public static void LazyLoadAreaData()
+		/// <summary>
+		/// Method for lazy loading area data. Should be called upon expansion of a node.
+		/// </summary>
+		public static void LazyLoadAreaData()
 		{
 			switch (gameType)
 			{
@@ -686,7 +686,6 @@ namespace OverEasy
 				mapKeyOrderList.Clear();
 			}
 			var path = Path.Combine(editorRootDirectory, mapNamesReference);
-            GD.Print(path);
 			var mapNames = File.ReadAllLines(path);
 			foreach (var pair in mapNames)
 			{
@@ -727,18 +726,18 @@ namespace OverEasy
 			{
 				return Path.Combine(gameFolderLocation, fileName);
 			}
-        }
+		}
 
-        public static void TransformFromGizmo(Vector3? pos, Quaternion? rot, Vector3? scale)
-        {
+		public static void TransformFromGizmo(Vector3? pos, Quaternion? rot, Vector3? scale)
+		{
 			switch(gameType)
 			{
 				case GameType.BillyPC:
 				case GameType.BillyGC:
 					TransformFromGizmoBilly(pos, rot, scale);
 					break;
-            }
-            SetGizmoWorldStatus(TransformGizmoWorld);
-        }
-    }
+			}
+			SetGizmoWorldStatus(TransformGizmoWorld);
+		}
+	}
 }

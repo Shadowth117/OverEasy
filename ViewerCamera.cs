@@ -357,7 +357,7 @@ public partial class ViewerCamera : Camera3D
 					{
 						finalRot = dragStartRotation.ToGQuat() * (Quaternion)rot;
 					}
-					GD.Print($"Current rot: {dragStartRotation} Delta: {rot} New Rot: {finalRot}");
+					//GD.Print($"Current rot: {dragStartRotation} Delta: {rot} New Rot: {finalRot}");
 					OverEasyGlobals.TransformFromGizmo(pos, finalRot, scale);
 				}
 			}
@@ -528,7 +528,6 @@ public partial class ViewerCamera : Camera3D
 
 	public bool _ProcessMiscInputEvents(InputEvent @event)
 	{
-	   // GD.Print("mode_toggle pressed");
 		if (Input.IsActionJustReleased("mode_toggle"))
 		{
 			ToggleMode();
