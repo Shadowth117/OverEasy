@@ -295,6 +295,7 @@ public partial class ViewerCamera : Camera3D
 				{
 					var start = ProjectRayOrigin(mousePosition);
 					var direction = ProjectPosition(mousePosition, 1);
+					//Thanks to BlankMauser for pointing out my silly original error here
 					direction = System.Numerics.Vector3.Normalize((start - direction).ToSNVec3()).ToGVec3();
 
 					Vector3? pos = null;
