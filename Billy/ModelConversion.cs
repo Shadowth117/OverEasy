@@ -1,9 +1,14 @@
+using AquaModelLibrary.Data.AM2.BorderBreakPS4;
 using AquaModelLibrary.Data.BillyHatcher;
 using AquaModelLibrary.Data.BillyHatcher.LNDH;
 using AquaModelLibrary.Data.Ninja;
 using AquaModelLibrary.Data.Ninja.Model;
+using AquaModelLibrary.Data.Ninja.Motion;
+using AquaModelLibrary.Data.PSO2.Aqua;
+using AquaModelLibrary.Data.PSO2.Aqua.AquaObjectData;
 using ArchiveLib;
 using Godot;
+using OverEasy.Util;
 using System;
 using System.Collections.Generic;
 using VrSharp.Gvr;
@@ -112,40 +117,238 @@ namespace OverEasy.Billy
 			return root;
 		}
 
+		public static void NinjaAnimsToGDAnims(NJSObject nj, List<NJSMotion> njmList, Skeleton3D skel)
+		{
+            //We need to know which bones are actually used for animation so first we gather up mappings for that.
+            List<int> animBoneMappings = new List<int>();
+			int skipCount = 0;
+            GetNinjaNoAnimateMapping(animBoneMappings, nj, ref skipCount);
+
+			//
+        }
+
+		public static void GetNinjaNoAnimateMapping(List<int> mappings, NJSObject nj, ref int skipCount)
+		{
+			bool animatable = (nj.flags & ObjectFlags.NoAnimate) > 0;
+			if(animatable)
+			{
+				skipCount++;
+				mappings.Add(-1);
+			} else
+			{
+				mappings.Add(mappings.Count + skipCount);
+			}
+
+            if (nj.childObject != null)
+            {
+				GetNinjaNoAnimateMapping(mappings, nj, ref skipCount);
+            }
+
+            if (nj.siblingObject != null)
+            {
+                GetNinjaNoAnimateMapping(mappings, nj, ref skipCount);
+            }
+        }
+
 		/// <summary>
 		/// Returns a Node3D containing a mesh instances with the model's arraymesh and a skeleton equivalent to the NJSObject nodes of the provided model.
 		/// </summary>
-		public static Node3D NinjaToGDModel(string name, NJSObject nj, NJTextureList texList)
+		public static Node3D NinjaToGDModel(string name, NJSObject nj, NJTextureList texList, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes)
 		{
 			Node3D root = new Node3D();
 			root.Name = name;
-
-			MeshInstance3D meshInst = new MeshInstance3D();
-			ArrayMesh mesh = new ArrayMesh();
 			
 			Skeleton3D skeleton = new Skeleton3D();
 			skeleton.RotationOrder = EulerOrder.Xyz;
 			skeleton.Name = name + "_skel";
+			int nodeId = 0;
+
+            VTXL fullVertList = null;
+            if (nj.HasWeights())
+			{
+                fullVertList = new VTXL();
+                int nodeCounter = 0;
+                NinjaModelConvert.GatherFullVertexListRecursive(nj, fullVertList, ref nodeCounter, System.Numerics.Matrix4x4.Identity, -1);
+                fullVertList.ProcessToPSO2Weights();
+            }
+
+            IterateNJSObject(nj, fullVertList, ref nodeId, -1, root, skeleton, System.Numerics.Matrix4x4.Identity, texList, gvrTextures, gvrAlphaTypes);
 			
-			IterateNJSObject(nj, mesh, skeleton);
-			
-			meshInst.Mesh = mesh;
-			meshInst.Skeleton = skeleton.GetPath();
-			root.AddChild(meshInst);
 			root.AddChild(skeleton);
 			return root;
 		}
 
 
-		private static void IterateNJSObject(NJSObject nj, ArrayMesh mesh, Skeleton3D skel)
-		{
-			if (nj.mesh != null)
-			{
+		private static void IterateNJSObject(NJSObject nj, VTXL fullVertList, ref int nodeId, int parentId, Node3D modelRoot, Skeleton3D skel,
+			System.Numerics.Matrix4x4 parentMatrix, NJTextureList texList, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes)
+        {
+            int currentNodeId = nodeId;
+            string boneName = $"Node_{nodeId}";
 
+            skel.AddBone(boneName);
+			int gdIndex = skel.GetBoneCount();
+			int parGdIndex = skel.FindBone($"Node_{parentId}");
+			if (parGdIndex != -1) {
+				skel.SetBoneParent(gdIndex, parGdIndex);
+			}
+			//Animation base position for ninja stuff should just be 0ed essentially
+			skel.SetBoneRest(gdIndex, new Transform3D());
+			skel.SetBonePosePosition(gdIndex, nj.pos.ToGVec3());
+			skel.SetBonePoseRotation(gdIndex, Quaternion.FromEuler(nj.rot.ToGVec3()));
+
+			//Calc node matrices for mesh transforms
+			//We need this regardless of if there's a mesh or not since child meshes might exist
+            System.Numerics.Matrix4x4 mat = System.Numerics.Matrix4x4.Identity;
+            mat *= System.Numerics.Matrix4x4.CreateScale(nj.scale);
+            var rotation = System.Numerics.Matrix4x4.CreateRotationX(nj.rot.X) *
+                System.Numerics.Matrix4x4.CreateRotationY(nj.rot.Y) *
+                System.Numerics.Matrix4x4.CreateRotationZ(nj.rot.Z);
+            mat *= rotation;
+            mat *= System.Numerics.Matrix4x4.CreateTranslation(nj.pos);
+            mat = mat * parentMatrix;
+
+            if (nj.mesh != null)
+            {
+
+				VTXL tempVtxl;
+				//Get vertex data and face data
+				if(fullVertList != null)
+				{
+					tempVtxl = fullVertList;
+				} else
+				{
+					tempVtxl = new VTXL();
+					nj.mesh.GetVertexData(currentNodeId, tempVtxl, mat);
+				}
+
+				//It'd probably be more efficient to pull the face data out directly here, but for now we'll use the Aqua focused method.
+				var testAqo = new AquaObject();
+                nj.GetFaceData(nodeId, tempVtxl, testAqo);
+
+                //Assign vertex and face data to GD ArrayMesh
+                foreach(var tempTri in testAqo.tempTris)
+                {
+                    MeshInstance3D meshInst = new MeshInstance3D();
+                    ArrayMesh mesh = new ArrayMesh();
+                    var arrays = new Godot.Collections.Array();
+                    arrays.Resize((int)Mesh.ArrayType.Max);
+
+					List<Vector3> vertPosList = new List<Vector3>();
+					List<Vector3> vertNrmList = new List<Vector3>();
+					List<Vector2> vertUvList = new List<Vector2>();
+					List<Color> vertClrList = new List<Color>();
+                    foreach (var faceVtxl in tempTri.faceVerts)
+					{
+						foreach(var vertPos in faceVtxl.vertPositions)
+						{
+							vertPosList.Add(vertPos.ToGVec3());
+                        }
+                        foreach (var vertNrm in faceVtxl.vertNormals)
+                        {
+                            vertNrmList.Add(vertNrm.ToGVec3());
+                        }
+                        foreach (var vertUv in faceVtxl.uv1List)
+                        {
+                            vertUvList.Add(vertUv.ToGVec2());
+                        }
+						foreach (var vertColor in faceVtxl.vertColors)
+						{
+							vertClrList.Add(new Color(vertColor[2] / 255f, vertColor[1] / 255f, vertColor[0] / 255f, vertColor[3] / 255f));
+						}
+                    }
+					if(vertPosList.Count > 0)
+                    {
+                        arrays[(int)Mesh.ArrayType.Vertex] = vertPosList.ToArray();
+                    }
+                    if (vertNrmList.Count > 0)
+                    {
+                        arrays[(int)Mesh.ArrayType.Normal] = vertNrmList.ToArray();
+                    }
+                    if (vertUvList.Count > 0)
+                    {
+                        arrays[(int)Mesh.ArrayType.TexUV] = vertUvList.ToArray();
+                    }
+                    if (vertClrList.Count > 0)
+                    {
+                        arrays[(int)Mesh.ArrayType.Color] = vertClrList.ToArray();
+                    }
+
+                    //Set up material
+                    StandardMaterial3D gdMaterial = new StandardMaterial3D();
+                    gdMaterial.VertexColorUseAsAlbedo = true;
+                    gdMaterial.ShadingMode = BaseMaterial3D.ShadingModeEnum.PerPixel;
+                    gdMaterial.CullMode = BaseMaterial3D.CullModeEnum.Back;
+					var matId = tempTri.matIdList.Count > 0 ? tempTri.matIdList[0] : 0;
+					if(testAqo.tempMats.Count > 0)
+                    {
+						var texId = Int32.Parse(testAqo.tempMats[matId].texNames[0]);
+						if(texId >= 0)
+                        {
+							if(texId < gvrTextures.Count)
+                            {
+                                gdMaterial.AlbedoTexture = gvrTextures[texId];
+                            }
+                            switch (gvrAlphaTypes[texId])
+                            {
+                                case 0:
+                                    gdMaterial.Transparency = BaseMaterial3D.TransparencyEnum.Disabled;
+                                    break;
+                                case 1:
+                                    gdMaterial.Transparency = BaseMaterial3D.TransparencyEnum.AlphaScissor;
+                                    break;
+                                case 2:
+                                    gdMaterial.Transparency = BaseMaterial3D.TransparencyEnum.Alpha;
+                                    break;
+                            }
+                        }
+                    }
+
+                    //Final assignment steps
+                    meshInst.Mesh = mesh;
+                    meshInst.Skeleton = skel.GetPath();
+                    modelRoot.AddChild(meshInst);
+                }
+
+            }
+
+			if(nj.childObject != null)
+			{
+				nodeId++;
+				IterateNJSObject(nj.childObject, fullVertList, ref nodeId, currentNodeId, modelRoot, skel, mat, texList, gvrTextures, gvrAlphaTypes);
+			}
+
+			if(nj.siblingObject != null)
+            {
+                nodeId++;
+                IterateNJSObject(nj.siblingObject, fullVertList, ref nodeId, parentId, modelRoot, skel, parentMatrix, texList, gvrTextures, gvrAlphaTypes);
 			}
 		}
 
-		public static Node3D LNDToGDModel(string name, LND lnd)
+		public static int GetGvrAlphaType(GvrDataFormat format)
+		{
+            switch (format)
+            {
+                case GvrDataFormat.Intensity4:
+                case GvrDataFormat.Intensity8:
+                case GvrDataFormat.Rgb565:
+                case GvrDataFormat.Index4:
+                case GvrDataFormat.Index8:
+                case GvrDataFormat.Unknown:
+					return 0;
+                case GvrDataFormat.Dxt1:
+                case GvrDataFormat.Rgb5a3:
+					return 1;
+                case GvrDataFormat.IntensityA4:
+                case GvrDataFormat.IntensityA8:
+                case GvrDataFormat.Argb8888:
+                    return 2;
+            }
+
+			return 0;
+        }
+
+
+        public static Node3D LNDToGDModel(string name, LND lnd)
 		{
 			//Load in textures
 			var gvm = lnd.gvm;
@@ -162,27 +365,7 @@ namespace OverEasy.Billy
 					texArray[t + 2] = texArray[t];
 					texArray[t] = temp;
 				}
-				switch (tex.DataFormat)
-				{
-					case GvrDataFormat.Intensity4:
-					case GvrDataFormat.Intensity8:
-					case GvrDataFormat.Rgb565:
-					case GvrDataFormat.Index4:
-					case GvrDataFormat.Index8:
-					case GvrDataFormat.Unknown:
-						gvrAlphaTypes.Add(0);
-						break;
-					case GvrDataFormat.Dxt1:
-					case GvrDataFormat.Rgb5a3:
-						gvrAlphaTypes.Add(1);
-						break;
-					case GvrDataFormat.IntensityA4:
-					case GvrDataFormat.IntensityA8:
-					case GvrDataFormat.Argb8888:
-						gvrAlphaTypes.Add(2);
-						break;
-
-				}
+				gvrAlphaTypes.Add(GetGvrAlphaType(tex.DataFormat));
 
 				var img = Godot.Image.CreateFromData(tex.TextureWidth, tex.TextureHeight, false, Image.Format.Rgba8, texArray);
 				img.GenerateMipmaps();
@@ -250,7 +433,7 @@ namespace OverEasy.Billy
 			return root;
 		}
 
-		private static void AddARCLNDModelData(LND lnd, ARCLNDModel mdl, Node3D modelParent, List<Texture2D> gvmTextures, List<int> gvrAlphaTypes)
+		private static void AddARCLNDModelData(LND lnd, ARCLNDModel mdl, Node3D modelParent, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes)
 		{
 			for (int i = 0; i < mdl.arcMeshDataList.Count; i++)
 			{
@@ -284,7 +467,7 @@ namespace OverEasy.Billy
 					}
 					if(texId != -1)
 					{
-						gdMaterial.AlbedoTexture = gvmTextures[texId];
+						gdMaterial.AlbedoTexture = gvrTextures[texId];
 						switch (gvrAlphaTypes[texId])
 						{
 							case 0:
@@ -320,11 +503,11 @@ namespace OverEasy.Billy
 			LNDVertContainer billyData = new LNDVertContainer();
 			if (faceData.triIndicesList0.Count > 0)
 			{
-				AddFromARCPolyData(model, faceData.triIndicesList0, faceData.triIndicesListStarts0, faceData.flags, 0, arrays, billyData);
+				AddFromARCPolyData(model, faceData.triIndicesList0, faceData.triIndicesListStarts0, faceData.flags, 0, billyData);
 			}
 			if (faceData.triIndicesList1.Count > 0)
 			{
-				AddFromARCPolyData(model, faceData.triIndicesList1, faceData.triIndicesListStarts1, faceData.flags, 1, arrays, billyData);
+				AddFromARCPolyData(model, faceData.triIndicesList1, faceData.triIndicesListStarts1, faceData.flags, 1, billyData);
 			}
 
 			if (billyData.posList.Count > 0)
@@ -355,7 +538,7 @@ namespace OverEasy.Billy
 		}
 
 		private static void AddFromARCPolyData(ARCLNDModel mdl, List<List<List<int>>> triIndicesList, List<List<List<int>>> triIndicesListStarts,
-			ArcLndVertType flags, int listFlip, Godot.Collections.Array arrays, LNDVertContainer billyData)
+			ArcLndVertType flags, int listFlip, LNDVertContainer billyData)
 		{
 			for (int s = 0; s < triIndicesList.Count; s++)
 			{

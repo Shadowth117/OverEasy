@@ -4,6 +4,14 @@ namespace OverEasy.Util
 {
     public static class GodotUtil
     {
+        public static System.Numerics.Vector2 ToSNVec2(this Godot.Vector2 vec3)
+        {
+            return new System.Numerics.Vector2(vec3.X, vec3.Y);
+        }
+        public static Godot.Vector2 ToGVec2(this System.Numerics.Vector2 vec3)
+        {
+            return new Godot.Vector2(vec3.X, vec3.Y);
+        }
         public static System.Numerics.Vector3 ToSNVec3(this Godot.Vector3 vec3)
         {
             return new System.Numerics.Vector3(vec3.X, vec3.Y, vec3.Z);
