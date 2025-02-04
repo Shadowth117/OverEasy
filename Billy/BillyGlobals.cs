@@ -3,7 +3,6 @@ using AquaModelLibrary.Data.BillyHatcher.ARCData;
 using AquaModelLibrary.Data.BillyHatcher.SetData;
 using AquaModelLibrary.Data.Ninja;
 using AquaModelLibrary.Data.Ninja.Model;
-using AquaModelLibrary.Helpers.Readers;
 using ArchiveLib;
 using Godot;
 using OverEasy.Billy;
@@ -12,8 +11,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using VrSharp.Gvr;
-using static AquaModelLibrary.Data.BillyHatcher.EggLevel;
 
 namespace OverEasy
 {
@@ -722,6 +719,7 @@ namespace OverEasy
 			string backupFileName;
 			string setName = stgDef.defs[currentMissionId].setObjFilename;
 			string setDesignName = stgDef.defs[currentMissionId].setDesignFilename;
+			string setEnemyName = stgDef.defs[currentMissionId].setEnemyFilename;
 			//Make sure we have backups if they're not there already
 			backupFileName = Path.Combine(backupFolderLocation, setName);
 			if (!File.Exists(backupFileName))
@@ -736,6 +734,7 @@ namespace OverEasy
 
 			File.WriteAllBytes(Path.Combine(modFolderLocation, setName), loadedBillySetObjects.GetBytes());
 			File.WriteAllBytes(Path.Combine(modFolderLocation, setDesignName), loadedBillySetDesignObjects.GetBytes());
+			File.WriteAllBytes(Path.Combine(modFolderLocation, setEnemyName), loadedBillySetEnemies.GetBytes());
 
 			//StageDef
 			if(stgDefModified)
@@ -755,9 +754,12 @@ namespace OverEasy
 			string backupFileName;
 			string setName = stgDef.defs[currentMissionId].setObjFilename;
 			string setDesignName = stgDef.defs[currentMissionId].setDesignFilename;
-			int setFileId = -1;
+            string setEnemyName = stgDef.defs[currentMissionId].setEnemyFilename;
+            int setFileId = -1;
 			int setDesignId = -1;
-			for (int i = 0; i < currentPRD.fileNames.Count; i++)
+			int setEnemyId = -1;
+
+            for (int i = 0; i < currentPRD.fileNames.Count; i++)
 			{
 				if (currentPRD.fileNames[i] == setName)
 				{
@@ -766,6 +768,10 @@ namespace OverEasy
 				else if (currentPRD.fileNames[i] == setDesignName)
 				{
 					setDesignId = i;
+				}
+				else if (currentPRD.fileNames[i] == setEnemyName)
+				{
+					setEnemyId = i;
 				}
 			}
 			if (setFileId != -1)
@@ -776,6 +782,10 @@ namespace OverEasy
 			{
 				currentPRD.files[setDesignId] = loadedBillySetDesignObjects.GetBytes();
 			}
+			if (setEnemyId != -1)
+			{
+                currentPRD.files[setEnemyId] = loadedBillySetEnemies.GetBytes();
+            }
 
 			//StageDef
 			string stgDefLocation = null;
@@ -1113,22 +1123,6 @@ namespace OverEasy
 				switch(obj.objectId)
 				{
 					default:
-						NJTextureList texList;
-						using (MemoryStream ms = new MemoryStream(File.ReadAllBytes(@"C:\Program Files (x86)\SEGA\Billy Hatcher_\ge_animal_c1.glk_out\y_anic_iwhale_base.gjt")))
-						using (BufferedStreamReaderBE<MemoryStream> sr = new BufferedStreamReaderBE<MemoryStream>(ms))
-						{
-							sr.Seek(8, SeekOrigin.Begin);
-							sr._BEReadActive = true;
-							texList = new NJTextureList(sr, 8);
-						}
-
-						var gvm = new PuyoFile(File.ReadAllBytes(@"C:\Program Files (x86)\SEGA\Billy Hatcher_\ge_animal_c1.glk_out\y_anic_iwhale_base.gvm"));
-						ModelConversion.LoadGVM(name, gvm, out var gvmTextures, out var gvrAlphaTypes);
-						modelNode = ModelConversion.NinjaToGDModel(name,
-							ModelConversion.ReadNJ(File.ReadAllBytes(@"C:\Program Files (x86)\SEGA\Billy Hatcher_\ge_animal_c1.glk_out\y_anic_iwhale_base.gj"), AquaModelLibrary.Data.Ninja.Model.NinjaVariant.Ginja, true, 0),
-							texList, gvmTextures, gvrAlphaTypes);
-
-
 						name = "blueDefaultBox";
 						Color color = new Color(0, 0, 1, 1);
 						if (designObj)
