@@ -1,0 +1,6 @@
+{
+  "EnemyName": "Zako",
+  "EnemyId": 257,
+  "Int_38": "Variant",
+  "Int_38Hint": "0-4 are valid, but it will default to the lowest loaded if an invalid choice."
+}

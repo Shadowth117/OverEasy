@@ -1,5 +1,4 @@
 using AquaModelLibrary.Data.BillyHatcher;
-using AquaModelLibrary.Data.BillyHatcher.SetData;
 using Godot;
 using OverEasy.Billy;
 using OverEasy.Editor;
@@ -72,16 +71,7 @@ namespace OverEasy
 		public static Dictionary<string, Container> activeObjectEditorObjects = new Dictionary<string, Container>();
 		public static Dictionary<string, Node3D> modelDictionary = new Dictionary<string, Node3D>();
 
-		public static StageDef stgDef = null;
-		public static bool stgDefModified = false;
-		public static SetObjList loadedBillySetObjects = null;
-		public static SetObjList loadedBillySetDesignObjects = null;
-		public static Dictionary<int, SetObjDefinition> cachedBillySetObjDefinitions = new Dictionary<int, SetObjDefinition>();
-		public static EditingType currentEditorType = EditingType.None;
-		public static bool isDay = true;
-		public static Node3D daySkybox = null;
-		public static Node3D nightSkybox = null;
-		public static DayNightToggle dayNightToggle = null;
+        public static EditingType currentEditorType = EditingType.None;
 
 		public static int currentObjectId = -1;
 		public static int currentArchiveFileId = -1;
@@ -108,6 +98,7 @@ namespace OverEasy
 			BillySetObj = 1,
 			BillySetDesign = 2,
 			BillySpawnPoint = 3,
+			BillySetEnemy = 4,
 		}
 
 		public static void SetCameraSettings()
@@ -390,6 +381,7 @@ namespace OverEasy
 				modelRoot.RemoveChild(child);
 				child.QueueFree();
 			}
+			modelDictionary.Clear();
 		}
 
 		/// <summary>
@@ -410,6 +402,7 @@ namespace OverEasy
 			stgDef = null;
 			loadedBillySetObjects = null;
 			cachedBillySetObjDefinitions.Clear();
+			cachedBillySetEnemyDefinitions.Clear();
 			currentEditorType = EditingType.None;
 			var objDataContainer = (VBoxContainer)objectScrollContainer.GetChild(0);
 			foreach (var obj in activeObjectEditorObjects)
@@ -537,6 +530,9 @@ namespace OverEasy
 					case EditingType.BillySpawnPoint:
 						UpdateBillySpawnPoint(currentObjectId);
 						break;
+					case EditingType.BillySetEnemy:
+						UpdateBillySetEnemies(currentObjectId);
+						break;
 				}
 				SetGizmoWorldStatus(TransformGizmoWorld);
 			}
@@ -576,6 +572,9 @@ namespace OverEasy
 					break;
 				case EditingType.BillySpawnPoint:
 					LoadBillySpawn();
+					break;
+				case EditingType.BillySetEnemy:
+					LoadBillyEnemy();
 					break;
 			}
 		}
@@ -703,15 +702,28 @@ namespace OverEasy
 				var fileName = Path.GetFileNameWithoutExtension(defPath);
 				if (Int32.TryParse(fileName, out int id))
 				{
-					cachedBillySetObjDefinitions.Add(id, JsonSerializer.Deserialize<SetObjDefinition>(File.ReadAllText(defPath)));
+					cachedBillySetObjDefinitions.Add(id, JsonSerializer.Deserialize<TextInfo.SetObjDefinition>(File.ReadAllText(defPath)));
 				}
 			}
 		}
 
-		/// <summary>
-		/// For files where we want to prioritize the modified path vs the game path, but load the game path as a fallback
-		/// </summary>
-		public static string GetAssetPath(string fileName)
+        public static void LoadSetEnemyTemplates(string setEnemyDefinitionsReference)
+        {
+            var definitions = Directory.GetFiles(Path.Combine(editorRootDirectory, setEnemyDefinitionsReference));
+            foreach (var defPath in definitions)
+            {
+                var fileName = Path.GetFileNameWithoutExtension(defPath);
+                if (Int32.TryParse(fileName, out int id))
+                {
+                    cachedBillySetEnemyDefinitions.Add(id, JsonSerializer.Deserialize<TextInfo.SetEnemyDefinition>(File.ReadAllText(defPath)));
+                }
+            }
+        }
+
+        /// <summary>
+        /// For files where we want to prioritize the modified path vs the game path, but load the game path as a fallback
+        /// </summary>
+        public static string GetAssetPath(string fileName)
 		{
 			if (fileName == "" || fileName == null)
 			{

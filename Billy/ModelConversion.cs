@@ -6,11 +6,13 @@ using AquaModelLibrary.Data.Ninja.Model;
 using AquaModelLibrary.Data.Ninja.Motion;
 using AquaModelLibrary.Data.PSO2.Aqua;
 using AquaModelLibrary.Data.PSO2.Aqua.AquaObjectData;
+using AquaModelLibrary.Helpers.Readers;
 using ArchiveLib;
 using Godot;
 using OverEasy.Util;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using VrSharp.Gvr;
 using Material = Godot.Material;
 
@@ -119,13 +121,13 @@ namespace OverEasy.Billy
 
 		public static void NinjaAnimsToGDAnims(NJSObject nj, List<NJSMotion> njmList, Skeleton3D skel)
 		{
-            //We need to know which bones are actually used for animation so first we gather up mappings for that.
-            List<int> animBoneMappings = new List<int>();
+			//We need to know which bones are actually used for animation so first we gather up mappings for that.
+			List<int> animBoneMappings = new List<int>();
 			int skipCount = 0;
-            GetNinjaNoAnimateMapping(animBoneMappings, nj, ref skipCount);
+			GetNinjaNoAnimateMapping(animBoneMappings, nj, ref skipCount);
 
 			//
-        }
+		}
 
 		public static void GetNinjaNoAnimateMapping(List<int> mappings, NJSObject nj, ref int skipCount)
 		{
@@ -139,16 +141,38 @@ namespace OverEasy.Billy
 				mappings.Add(mappings.Count + skipCount);
 			}
 
-            if (nj.childObject != null)
-            {
+			if (nj.childObject != null)
+			{
 				GetNinjaNoAnimateMapping(mappings, nj, ref skipCount);
-            }
+			}
 
-            if (nj.siblingObject != null)
-            {
-                GetNinjaNoAnimateMapping(mappings, nj, ref skipCount);
-            }
-        }
+			if (nj.siblingObject != null)
+			{
+				GetNinjaNoAnimateMapping(mappings, nj, ref skipCount);
+			}
+		}
+
+		public static NJSObject ReadNJ(byte[] file, NinjaVariant variant, bool hasHeader, int offset)
+		{
+			using (MemoryStream ms = new MemoryStream(file))
+			using (BufferedStreamReaderBE<MemoryStream> sr = new BufferedStreamReaderBE<MemoryStream>(ms))
+			{
+				return ReadNJ(sr, variant, hasHeader, offset);
+			}
+		}
+
+		public static NJSObject ReadNJ(BufferedStreamReaderBE<MemoryStream> sr, NinjaVariant variant, bool hasHeader, int offset)
+		{
+			if(hasHeader)
+			{
+				sr.ReadBE<long>();
+				offset += 8;
+			}
+			int leCheck = sr.Peek<int>();
+			int beCheck = sr.PeekBigEndianInt32();
+			sr._BEReadActive = sr.Peek<uint>() > sr.PeekBigEndianUInt32();
+			return new NJSObject(sr, variant, sr._BEReadActive, offset);
+		}
 
 		/// <summary>
 		/// Returns a Node3D containing a mesh instances with the model's arraymesh and a skeleton equivalent to the NJSObject nodes of the provided model.
@@ -163,30 +187,28 @@ namespace OverEasy.Billy
 			skeleton.Name = name + "_skel";
 			int nodeId = 0;
 
-            VTXL fullVertList = null;
-            if (nj.HasWeights())
+			VTXL fullVertList = null;
+			if (nj.HasWeights())
 			{
-                fullVertList = new VTXL();
-                int nodeCounter = 0;
-                NinjaModelConvert.GatherFullVertexListRecursive(nj, fullVertList, ref nodeCounter, System.Numerics.Matrix4x4.Identity, -1);
-                fullVertList.ProcessToPSO2Weights();
-            }
+				fullVertList = new VTXL();
+				int nodeCounter = 0;
+				NinjaModelConvert.GatherFullVertexListRecursive(nj, fullVertList, ref nodeCounter, System.Numerics.Matrix4x4.Identity, -1);
+				fullVertList.ProcessToPSO2Weights();
+			}
 
-            IterateNJSObject(nj, fullVertList, ref nodeId, -1, root, skeleton, System.Numerics.Matrix4x4.Identity, texList, gvrTextures, gvrAlphaTypes);
-			
-			root.AddChild(skeleton);
+			IterateNJSObject(nj, fullVertList, ref nodeId, -1, root, skeleton, System.Numerics.Matrix4x4.Identity, texList, gvrTextures, gvrAlphaTypes);
+
 			return root;
 		}
 
-
 		private static void IterateNJSObject(NJSObject nj, VTXL fullVertList, ref int nodeId, int parentId, Node3D modelRoot, Skeleton3D skel,
 			System.Numerics.Matrix4x4 parentMatrix, NJTextureList texList, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes)
-        {
-            int currentNodeId = nodeId;
-            string boneName = $"Node_{nodeId}";
+		{
+			int currentNodeId = nodeId;
+			string boneName = $"Node_{nodeId}";
 
-            skel.AddBone(boneName);
-			int gdIndex = skel.GetBoneCount();
+			skel.AddBone(boneName);
+			int gdIndex = skel.GetBoneCount() - 1;
 			int parGdIndex = skel.FindBone($"Node_{parentId}");
 			if (parGdIndex != -1) {
 				skel.SetBoneParent(gdIndex, parGdIndex);
@@ -198,17 +220,17 @@ namespace OverEasy.Billy
 
 			//Calc node matrices for mesh transforms
 			//We need this regardless of if there's a mesh or not since child meshes might exist
-            System.Numerics.Matrix4x4 mat = System.Numerics.Matrix4x4.Identity;
-            mat *= System.Numerics.Matrix4x4.CreateScale(nj.scale);
-            var rotation = System.Numerics.Matrix4x4.CreateRotationX(nj.rot.X) *
-                System.Numerics.Matrix4x4.CreateRotationY(nj.rot.Y) *
-                System.Numerics.Matrix4x4.CreateRotationZ(nj.rot.Z);
-            mat *= rotation;
-            mat *= System.Numerics.Matrix4x4.CreateTranslation(nj.pos);
-            mat = mat * parentMatrix;
+			System.Numerics.Matrix4x4 mat = System.Numerics.Matrix4x4.Identity;
+			mat *= System.Numerics.Matrix4x4.CreateScale(nj.scale);
+			var rotation = System.Numerics.Matrix4x4.CreateRotationX(nj.rot.X) *
+				System.Numerics.Matrix4x4.CreateRotationY(nj.rot.Y) *
+				System.Numerics.Matrix4x4.CreateRotationZ(nj.rot.Z);
+			mat *= rotation;
+			mat *= System.Numerics.Matrix4x4.CreateTranslation(nj.pos);
+			mat = mat * parentMatrix;
 
-            if (nj.mesh != null)
-            {
+			if (nj.mesh != null)
+			{
 
 				VTXL tempVtxl;
 				//Get vertex data and face data
@@ -219,97 +241,102 @@ namespace OverEasy.Billy
 				{
 					tempVtxl = new VTXL();
 					nj.mesh.GetVertexData(currentNodeId, tempVtxl, mat);
+					tempVtxl.ProcessToPSO2Weights();
 				}
 
 				//It'd probably be more efficient to pull the face data out directly here, but for now we'll use the Aqua focused method.
 				var testAqo = new AquaObject();
-                nj.GetFaceData(nodeId, tempVtxl, testAqo);
+				nj.GetFaceData(nodeId, tempVtxl, testAqo);
 
-                //Assign vertex and face data to GD ArrayMesh
-                foreach(var tempTri in testAqo.tempTris)
-                {
-                    MeshInstance3D meshInst = new MeshInstance3D();
-                    ArrayMesh mesh = new ArrayMesh();
-                    var arrays = new Godot.Collections.Array();
-                    arrays.Resize((int)Mesh.ArrayType.Max);
+				//Assign vertex and face data to GD ArrayMesh
+				foreach(var tempTri in testAqo.tempTris)
+				{
+					MeshInstance3D meshInst = new MeshInstance3D();
+					ArrayMesh mesh = new ArrayMesh();
+					var arrays = new Godot.Collections.Array();
+					arrays.Resize((int)Mesh.ArrayType.Max);
 
 					List<Vector3> vertPosList = new List<Vector3>();
 					List<Vector3> vertNrmList = new List<Vector3>();
 					List<Vector2> vertUvList = new List<Vector2>();
 					List<Color> vertClrList = new List<Color>();
-                    foreach (var faceVtxl in tempTri.faceVerts)
+					for(int i = 0; i < tempTri.faceVerts.Count; i++)
 					{
+						var faceVtxl = tempTri.faceVerts[i];
 						foreach(var vertPos in faceVtxl.vertPositions)
 						{
 							vertPosList.Add(vertPos.ToGVec3());
-                        }
-                        foreach (var vertNrm in faceVtxl.vertNormals)
-                        {
-                            vertNrmList.Add(vertNrm.ToGVec3());
-                        }
-                        foreach (var vertUv in faceVtxl.uv1List)
-                        {
-                            vertUvList.Add(vertUv.ToGVec2());
-                        }
+						}
+						foreach (var vertNrm in faceVtxl.vertNormals)
+						{
+							vertNrmList.Add(vertNrm.ToGVec3());
+						}
+						foreach (var vertUv in faceVtxl.uv1List)
+						{
+							vertUvList.Add(vertUv.ToGVec2());
+						}
 						foreach (var vertColor in faceVtxl.vertColors)
 						{
 							vertClrList.Add(new Color(vertColor[2] / 255f, vertColor[1] / 255f, vertColor[0] / 255f, vertColor[3] / 255f));
 						}
-                    }
+					}
 					if(vertPosList.Count > 0)
-                    {
-                        arrays[(int)Mesh.ArrayType.Vertex] = vertPosList.ToArray();
-                    }
-                    if (vertNrmList.Count > 0)
-                    {
-                        arrays[(int)Mesh.ArrayType.Normal] = vertNrmList.ToArray();
-                    }
-                    if (vertUvList.Count > 0)
-                    {
-                        arrays[(int)Mesh.ArrayType.TexUV] = vertUvList.ToArray();
-                    }
-                    if (vertClrList.Count > 0)
-                    {
-                        arrays[(int)Mesh.ArrayType.Color] = vertClrList.ToArray();
-                    }
+					{
+						arrays[(int)Mesh.ArrayType.Vertex] = vertPosList.ToArray();
+					}
+					if (vertNrmList.Count > 0)
+					{
+						arrays[(int)Mesh.ArrayType.Normal] = vertNrmList.ToArray();
+					}
+					if (vertUvList.Count > 0)
+					{
+						arrays[(int)Mesh.ArrayType.TexUV] = vertUvList.ToArray();
+					}
+					if (vertClrList.Count > 0)
+					{
+						arrays[(int)Mesh.ArrayType.Color] = vertClrList.ToArray();
+					}
 
-                    //Set up material
-                    StandardMaterial3D gdMaterial = new StandardMaterial3D();
-                    gdMaterial.VertexColorUseAsAlbedo = true;
-                    gdMaterial.ShadingMode = BaseMaterial3D.ShadingModeEnum.PerPixel;
-                    gdMaterial.CullMode = BaseMaterial3D.CullModeEnum.Back;
+					//Set up material
+					StandardMaterial3D gdMaterial = new StandardMaterial3D();
+					gdMaterial.VertexColorUseAsAlbedo = true;
+					gdMaterial.ShadingMode = BaseMaterial3D.ShadingModeEnum.PerPixel;
+					gdMaterial.CullMode = BaseMaterial3D.CullModeEnum.Front;
 					var matId = tempTri.matIdList.Count > 0 ? tempTri.matIdList[0] : 0;
 					if(testAqo.tempMats.Count > 0)
-                    {
+					{
 						var texId = Int32.Parse(testAqo.tempMats[matId].texNames[0]);
 						if(texId >= 0)
-                        {
+						{
 							if(texId < gvrTextures.Count)
-                            {
-                                gdMaterial.AlbedoTexture = gvrTextures[texId];
-                            }
-                            switch (gvrAlphaTypes[texId])
-                            {
-                                case 0:
-                                    gdMaterial.Transparency = BaseMaterial3D.TransparencyEnum.Disabled;
-                                    break;
-                                case 1:
-                                    gdMaterial.Transparency = BaseMaterial3D.TransparencyEnum.AlphaScissor;
-                                    break;
-                                case 2:
-                                    gdMaterial.Transparency = BaseMaterial3D.TransparencyEnum.Alpha;
-                                    break;
-                            }
-                        }
-                    }
+							{
+								gdMaterial.AlbedoTexture = gvrTextures[texId];
+							}
+							if(gvrAlphaTypes.Count > texId)
+							{
+								switch (gvrAlphaTypes[texId])
+								{
+									case 0:
+										gdMaterial.Transparency = BaseMaterial3D.TransparencyEnum.Disabled;
+										break;
+									case 1:
+										gdMaterial.Transparency = BaseMaterial3D.TransparencyEnum.AlphaScissor;
+										break;
+									case 2:
+										gdMaterial.Transparency = BaseMaterial3D.TransparencyEnum.Alpha;
+										break;
+								}
+							}
+						}
+					}
+					mesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, arrays, null, null);
+					mesh.SurfaceSetMaterial(0, gdMaterial);
+					//Final assignment steps
+					meshInst.Mesh = mesh;
+					modelRoot.AddChild(meshInst);
+				}
 
-                    //Final assignment steps
-                    meshInst.Mesh = mesh;
-                    meshInst.Skeleton = skel.GetPath();
-                    modelRoot.AddChild(meshInst);
-                }
-
-            }
+			}
 
 			if(nj.childObject != null)
 			{
@@ -318,62 +345,43 @@ namespace OverEasy.Billy
 			}
 
 			if(nj.siblingObject != null)
-            {
-                nodeId++;
-                IterateNJSObject(nj.siblingObject, fullVertList, ref nodeId, parentId, modelRoot, skel, parentMatrix, texList, gvrTextures, gvrAlphaTypes);
+			{
+				nodeId++;
+				IterateNJSObject(nj.siblingObject, fullVertList, ref nodeId, parentId, modelRoot, skel, parentMatrix, texList, gvrTextures, gvrAlphaTypes);
 			}
 		}
 
 		public static int GetGvrAlphaType(GvrDataFormat format)
 		{
-            switch (format)
-            {
-                case GvrDataFormat.Intensity4:
-                case GvrDataFormat.Intensity8:
-                case GvrDataFormat.Rgb565:
-                case GvrDataFormat.Index4:
-                case GvrDataFormat.Index8:
-                case GvrDataFormat.Unknown:
+			switch (format)
+			{
+				case GvrDataFormat.Intensity4:
+				case GvrDataFormat.Intensity8:
+				case GvrDataFormat.Rgb565:
+				case GvrDataFormat.Index4:
+				case GvrDataFormat.Index8:
+				case GvrDataFormat.Unknown:
 					return 0;
-                case GvrDataFormat.Dxt1:
-                case GvrDataFormat.Rgb5a3:
+				case GvrDataFormat.Dxt1:
+				case GvrDataFormat.Rgb5a3:
 					return 1;
-                case GvrDataFormat.IntensityA4:
-                case GvrDataFormat.IntensityA8:
-                case GvrDataFormat.Argb8888:
-                    return 2;
-            }
+				case GvrDataFormat.IntensityA4:
+				case GvrDataFormat.IntensityA8:
+				case GvrDataFormat.Argb8888:
+					return 2;
+			}
 
 			return 0;
-        }
+		}
 
 
-        public static Node3D LNDToGDModel(string name, LND lnd)
+		public static Node3D LNDToGDModel(string name, LND lnd)
 		{
 			//Load in textures
 			var gvm = lnd.gvm;
-			List<Texture2D> gvmTextures = new List<Texture2D>();
-			List<int> gvrAlphaTypes = new List<int>(); //0 none, 1 cutout, 2 full
-			for (int i = 0; i < gvm.Entries.Count; i++)
-			{
-				var entry = (GVMEntry)gvm.Entries[i];
-				var tex = new GvrTexture(entry.Data);
-				var texArray = tex.ToArray();
-				for (int t = 0; t < texArray.Length - 4; t += 4)
-				{
-					var temp = texArray[t + 2];
-					texArray[t + 2] = texArray[t];
-					texArray[t] = temp;
-				}
-				gvrAlphaTypes.Add(GetGvrAlphaType(tex.DataFormat));
-
-				var img = Godot.Image.CreateFromData(tex.TextureWidth, tex.TextureHeight, false, Image.Format.Rgba8, texArray);
-				img.GenerateMipmaps();
-				var imgTex = ImageTexture.CreateFromImage(img);
-				imgTex.ResourceName = entry.Name; //We don't need the GBIX (global index) here, probably.
-				gvmTextures.Add(imgTex);
-			}
-			OverEasyGlobals.orderedTextureArchivePools.Add(name, gvmTextures);
+			List<Texture2D> gvmTextures;
+			List<int> gvrAlphaTypes;
+			LoadGVM(name, gvm, out gvmTextures, out gvrAlphaTypes);
 
 			//Load in models
 			Node3D root = new Node3D();
@@ -431,6 +439,35 @@ namespace OverEasy.Billy
 			}
 
 			return root;
+		}
+
+		public static void LoadGVM(string name, PuyoFile gvm, out List<Texture2D> gvmTextures, out List<int> gvrAlphaTypes)
+		{
+			gvmTextures = new List<Texture2D>();
+			gvrAlphaTypes = new List<int>();
+			for (int i = 0; i < gvm.Entries.Count; i++)
+			{
+				var entry = (GVMEntry)gvm.Entries[i];
+				var tex = new GvrTexture(entry.Data);
+				var texArray = tex.ToArray();
+				for (int t = 0; t < texArray.Length - 4; t += 4)
+				{
+					var temp = texArray[t + 2];
+					texArray[t + 2] = texArray[t];
+					texArray[t] = temp;
+				}
+				gvrAlphaTypes.Add(GetGvrAlphaType(tex.DataFormat));
+
+				var img = Godot.Image.CreateFromData(tex.TextureWidth, tex.TextureHeight, false, Image.Format.Rgba8, texArray);
+				img.GenerateMipmaps();
+				var imgTex = ImageTexture.CreateFromImage(img);
+				imgTex.ResourceName = entry.Name; //We don't need the GBIX (global index) here, probably.
+				gvmTextures.Add(imgTex);
+			}
+			if(!OverEasyGlobals.orderedTextureArchivePools.ContainsKey(name))
+			{
+				OverEasyGlobals.orderedTextureArchivePools.Add(name, gvmTextures);
+			}
 		}
 
 		private static void AddARCLNDModelData(LND lnd, ARCLNDModel mdl, Node3D modelParent, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes)

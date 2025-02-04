@@ -1,17 +1,36 @@
 using AquaModelLibrary.Data.BillyHatcher;
+using AquaModelLibrary.Data.BillyHatcher.ARCData;
 using AquaModelLibrary.Data.BillyHatcher.SetData;
 using AquaModelLibrary.Data.Ninja;
+using AquaModelLibrary.Data.Ninja.Model;
+using AquaModelLibrary.Helpers.Readers;
+using ArchiveLib;
 using Godot;
 using OverEasy.Billy;
 using OverEasy.TextInfo;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using VrSharp.Gvr;
+using static AquaModelLibrary.Data.BillyHatcher.EggLevel;
 
 namespace OverEasy
 {
 	partial class OverEasyGlobals
 	{
+		public static StageDef stgDef = null;
+		public static bool stgDefModified = false;
+		public static SetEnemyList loadedBillySetEnemies = null;
+		public static SetObjList loadedBillySetObjects = null;
+		public static SetObjList loadedBillySetDesignObjects = null;
+		public static Dictionary<int, SetObjDefinition> cachedBillySetObjDefinitions = new Dictionary<int, SetObjDefinition>();
+		public static Dictionary<int, SetEnemyDefinition> cachedBillySetEnemyDefinitions = new Dictionary<int, SetEnemyDefinition>();
+		public static bool isDay = true;
+		public static Node3D daySkybox = null;
+		public static Node3D nightSkybox = null;
+		public static DayNightToggle dayNightToggle = null;
+		
 		public static void SetCameraSettingsBilly()
 		{
 			ViewerCamera.SCROLL_SPEED = 1000;
@@ -32,6 +51,7 @@ namespace OverEasy
 		{
 			LoadMapNames("TextInfo\\BillyMapNames.txt");
 			LoadSetObjTemplates("TextInfo\\BillyObjDefinitions\\");
+			LoadSetEnemyTemplates("TextInfo\\BillyEnemyDefinitions\\");
 			if (!ReadBillyGEStageDef(modFolderLocation))
 			{
 				ReadBillyGEStageDef(gameFolderLocation);
@@ -83,6 +103,13 @@ namespace OverEasy
 			isDay = true;
 			SetCameraSettingsBilly();
 			ClearModelAndTextureData();
+
+			//Load Player Models
+			CachePlayerModelsPC();
+
+			//Load Enemy Models
+			CacheEnemyModelsPC();
+
 			//Load Set Design
 			string setDesignFilePath = GetAssetPath(def.setDesignFilename);
 			if (File.Exists(setDesignFilePath))
@@ -95,6 +122,13 @@ namespace OverEasy
 			if (File.Exists(setObjFilePath))
 			{
 				loadedBillySetObjects = new SetObjList(File.ReadAllBytes(setObjFilePath));
+			}
+
+			//Load Set Enemies
+			string setEnemyFilePath = GetAssetPath(def.setEnemyFilename);
+			if (File.Exists(setEnemyFilePath))
+			{
+				loadedBillySetEnemies = new SetEnemyList(File.ReadAllBytes(setEnemyFilePath));
 			}
 
 			string lndPath = GetAssetPath(def.lndFilename);
@@ -126,23 +160,88 @@ namespace OverEasy
 			currentArhiveFilename = $"k_{prdMissionname}.prd";
 			currentPRD = new PRD(File.ReadAllBytes(GetAssetPath(currentArhiveFilename)));
 
+			//Load common object models, enemies, items. May want to do this in the initial load step
+			var battleCommonPRD = new PRD(File.ReadAllBytes(GetAssetPath("k_battle_common.prd")));
+			for (int i = 0; i < battleCommonPRD.files.Count; i++)
+			{
+				switch(battleCommonPRD.fileNames[i])
+				{
+					case "ge_player1l.arc":
+						var billy = new GEPlayer(battleCommonPRD.files[i]);
+						CacheModel("player_1", billy.models[0], billy.texnames, billy.gvm, false);
+						break;
+					case "ge_player2l.arc":
+						var rolly = new GEPlayer(battleCommonPRD.files[i]);
+						CacheModel("player_2", rolly.models[0], rolly.texnames, rolly.gvm, false);
+						break;
+					case "ge_player3l.arc":
+						var chick = new GEPlayer(battleCommonPRD.files[i]);
+						CacheModel("player_3", chick.models[0], chick.texnames, chick.gvm, false);
+						break;
+					case "ge_player4l.arc":
+						var bantam = new GEPlayer(battleCommonPRD.files[i]);
+						CacheModel("player_4", bantam.models[0], bantam.texnames, bantam.gvm, false);
+						break;
+				}
+			}
+
+			Dictionary<string, ArEnemy> enemyArchiveDict = new Dictionary<string, ArEnemy>();
+			Dictionary<string, PuyoFile> enemyGVMDict = new Dictionary<string, PuyoFile>();
 			for (int i = 0; i < currentPRD.files.Count; i++)
 			{
+				//Hold Enemy GVM
+				if (currentPRD.fileNames[i].ToLower().StartsWith("ar_"))
+				{
+					if (Path.GetExtension(currentPRD.fileNames[i].ToLower()) == ".gvm")
+					{
+						enemyGVMDict.Add(Path.GetFileNameWithoutExtension(currentPRD.fileNames[i].ToLower()), new PuyoFile(currentPRD.files[i]));
+					} else if (Path.GetExtension(currentPRD.fileNames[i].ToLower()) == ".arc")
+					{
+						enemyArchiveDict.Add(Path.GetFileNameWithoutExtension(currentPRD.fileNames[i].ToLower().Replace("ar_", "")), new ArEnemy(currentPRD.files[i]));
+					}
+				} else
+				//Load High Quality Player Model
+				if(currentPRD.fileNames[i] == "ge_player1.arc")
+				{
+					var billy = new GEPlayer(currentPRD.files[i]);
+					CacheModel("player_1", billy.models[0], billy.texnames, billy.gvm, true);
+				}
+				else if (currentPRD.fileNames[i] == "ge_player2.arc")
+				{
+					var rolly = new GEPlayer(currentPRD.files[i]);
+					CacheModel("player_2", rolly.models[0], rolly.texnames, rolly.gvm, true);
+				}
+				else if (currentPRD.fileNames[i] == "ge_player3.arc")
+				{
+					var chick = new GEPlayer(currentPRD.files[i]);
+					CacheModel("player_3", chick.models[0], chick.texnames, chick.gvm, true);
+				}
+				else if (currentPRD.fileNames[i] == "ge_player4.arc")
+				{
+					var bantam = new GEPlayer(currentPRD.files[i]);
+					CacheModel("player_4", bantam.models[0], bantam.texnames, bantam.gvm, true);
+				}
+				else
+
 				//Load Set Camera
 
 				//Load Set Design
 				if (currentPRD.fileNames[i] == def.setDesignFilename)
 				{
 					loadedBillySetDesignObjects = new SetObjList(currentPRD.files[i]);
-				}
+				} else
 
 				//Load Set Enemeies
+				if (currentPRD.fileNames[i] == def.setEnemyFilename)
+				{
+					loadedBillySetEnemies = new SetEnemyList(currentPRD.files[i]);
+				} else
 
 				//Load Set Objects
 				if (currentPRD.fileNames[i] == def.setObjFilename)
 				{
 					loadedBillySetObjects = new SetObjList(currentPRD.files[i]);
-				}
+				} else
 
 				//Load Stage Model
 				if (currentPRD.fileNames[i] == def.lndFilename)
@@ -159,9 +258,15 @@ namespace OverEasy
 				//Load Stage Event Camera
 
 				//When figured out, load stage event file
-
-				//Load stage bsp?
 			}
+
+			//Load enemies
+			foreach(var pair in enemyArchiveDict)
+			{
+				CacheModel($"enemy_{ObjectVariants.enemyFileMap[$"ar_{pair.Key}.arc"]}", pair.Value.models[0], pair.Value.texList[0], enemyGVMDict[pair.Key], false);
+			}
+
+			//Set skybox setting
 			if (daySkybox != null)
 			{
 				daySkybox.Visible = isDay;
@@ -170,8 +275,6 @@ namespace OverEasy
 			{
 				nightSkybox.Visible = !isDay;
 			}
-
-			//Load common object models, enemies, items. May want to do this in the initial load step
 		}
 
 		public static bool ReadBillyGEStageDef(string location)
@@ -203,6 +306,23 @@ namespace OverEasy
 
 			return false;
 		}
+
+		public static void LoadBillyEnemy()
+		{
+			allowedToUpdate = false;
+			foreach (var objSet in activeObjectEditorObjects)
+			{
+				objSet.Value.Free();
+			}
+			activeObjectEditorObjects.Clear();
+
+			//Load in enemy data
+			LoadBillySetEnemyGui();
+			LoadBillySetEnemyTemplateInfo();
+			ToggleObjectScrollContainerCollision();
+			allowedToUpdate = true;
+		}
+
 		public static void LoadBillySetObject(SetObjList setObjList)
 		{
 			allowedToUpdate = false;
@@ -213,7 +333,6 @@ namespace OverEasy
 			activeObjectEditorObjects.Clear();
 
 			//Load in object data
-			var setObj = setObjList.setObjs[currentObjectId];
 			LoadBillySetObjectGui(setObjList);
 			LoadBillySetObjectTemplateInfo(setObjList);
 			ToggleObjectScrollContainerCollision();
@@ -289,6 +408,54 @@ namespace OverEasy
 			LoadSchemaTemplateInfo("ByteProperty4", template.ByteProperty4, "Byte Property 4", template.ByteProperty4Hint);
 		}
 
+		public static void LoadBillySetEnemyTemplateInfo()
+		{
+			var setObj = loadedBillySetEnemies.setEnemies[currentObjectId];
+			//Check if there's a template for this object type, else we use the defaults
+			var template = new SetEnemyDefinition();
+			var key = setObj.enemyId;
+
+			//Check if we've loaded this template already
+			if (cachedBillySetEnemyDefinitions.ContainsKey(key))
+			{
+				template = cachedBillySetEnemyDefinitions[key];
+
+			}
+			else
+			{
+				var templatePath = Path.Combine(editorRootDirectory, "TextInfo\\BillyEnemyDefinitions", $"{setObj.enemyId}.json");
+				if (File.Exists(templatePath))
+				{
+					template = JsonSerializer.Deserialize<SetEnemyDefinition>(File.ReadAllText(templatePath));
+					cachedBillySetEnemyDefinitions.Add(key, template);
+				}
+			}
+
+			if (activeObjectEditorObjects.ContainsKey("ObjectId"))
+			{
+				var objName = activeObjectEditorObjects["ObjectId"];
+				var objNameText = (RichTextLabel)objName.GetChild(0);
+				objNameText.Text = GetEnemyName(false, setObj);
+				currentObjectTreeItem.SetText(0, GetEnemyName(true, setObj));
+			}
+
+			LoadVec3SchemaTemplateInfo("ObjectPosition", template.Position, "Position", template.PositionHint, template.PositionX, template.PositionY, template.PositionZ);
+			LoadVec3SchemaTemplateInfo("ObjectRotation", template.Rotation, "Rotation", template.RotationHint, template.RotationX, template.RotationY, template.RotationZ);
+			LoadSchemaTemplateInfo("Int_1C", template.Int_1C, "Int_1C", template.Int_1CHint);
+			LoadSchemaTemplateInfo("Int_20", template.Int_20, "Int_20", template.Int_20Hint);
+			LoadSchemaTemplateInfo("Int_24", template.Int_24, "Int_24", template.Int_24Hint);
+			LoadSchemaTemplateInfo("Int_28", template.Int_28, "Int_28", template.Int_28Hint);
+			LoadSchemaTemplateInfo("Int_2C", template.Int_2C, "Int_2C", template.Int_2CHint);
+			LoadSchemaTemplateInfo("Int_30", template.Int_30, "Int_30", template.Int_30Hint);
+			LoadSchemaTemplateInfo("Int_34", template.Int_34, "Int_34", template.Int_34Hint);
+			LoadSchemaTemplateInfo("Int_38", template.Int_38, "Int_38", template.Int_38Hint);
+			LoadSchemaTemplateInfo("Int_3C", template.Int_3C, "Int_3C", template.Int_3CHint);
+			LoadSchemaTemplateInfo("Flt_40", template.Flt_40, "Flt_40", template.Flt_40Hint);
+			LoadSchemaTemplateInfo("Flt_44", template.Flt_44, "Flt_44", template.Flt_44Hint);
+			LoadSchemaTemplateInfo("Flt_48", template.Flt_48, "Flt_48", template.Flt_48Hint);
+			LoadSchemaTemplateInfo("Flt_4C", template.Flt_4C, "Flt_4C", template.Flt_4CHint);
+		}
+
 		public static void LoadBillySpawnPoint()
 		{
 			var def = stgDef.defs[currentMissionId];
@@ -312,6 +479,28 @@ namespace OverEasy
 			}
 			CreateVector3Schema("PlayerPosition", new Vector3(start.playerPosition.X, start.playerPosition.Y, start.playerPosition.Z));
 			CreateFloatSchema("PlayerRotation", start.rotation);
+		}
+
+		public static void LoadBillySetEnemyGui()
+		{
+			var setEne = loadedBillySetEnemies.setEnemies[currentObjectId];
+			CreateIntSchema("ObjectId", setEne.enemyId);
+			CreateVector3Schema("ObjectPosition", new Vector3(setEne.Position.X, setEne.Position.Y, setEne.Position.Z));
+			CreateVector3Schema("ObjectRotation", new Vector3((float)(NinjaConstants.FromBAMSValueToDegrees * setEne.BAMSRotation.X),
+				(float)(NinjaConstants.FromBAMSValueToDegrees * setEne.BAMSRotation.Y), (float)(NinjaConstants.FromBAMSValueToDegrees * setEne.BAMSRotation.Z)));
+			CreateIntSchema("Int_1C", setEne.int_1C);
+			CreateIntSchema("Int_20", setEne.int_20);
+			CreateIntSchema("Int_24", setEne.int_24);
+			CreateIntSchema("Int_28", setEne.int_28);
+			CreateIntSchema("Int_2C", setEne.int_2C);
+			CreateIntSchema("Int_30", setEne.int_30);
+			CreateIntSchema("Int_34", setEne.int_34);
+			CreateIntSchema("Int_38", setEne.int_38);
+			CreateIntSchema("Int_3C", setEne.int_3C);
+			CreateFloatSchema("Flt_40", setEne.flt_40);
+			CreateFloatSchema("Flt_44", setEne.flt_44);
+			CreateFloatSchema("Flt_48", setEne.flt_48);
+			CreateFloatSchema("Flt_4C", setEne.flt_4C);
 		}
 
 		public static void LoadBillySetObjectGui(SetObjList setObjList)
@@ -441,6 +630,79 @@ namespace OverEasy
 			setObjList.setObjs[objectId] = objRaw;
 		}
 
+		public static void UpdateBillySetEnemies(int objectId)
+		{
+			//Gather some initial values
+			var objPosition = GetVec3SchemaValues("ObjectPosition");
+			var objRotation = GetVec3SchemaValues("ObjectRotation");
+
+			//Update 3d representation
+			var parentNode = (Node3D)TransformGizmo.GetParent();
+			parentNode.GlobalPosition = new Vector3(objPosition.X, objPosition.Y, objPosition.Z);
+			parentNode.RotationDegrees = new Vector3(objRotation.X, objRotation.Y, objRotation.Z);
+
+			//Gather current object values
+			var objRaw = loadedBillySetEnemies.setEnemies[objectId];
+			foreach (var objSet in activeObjectEditorObjects)
+			{
+				switch (objSet.Key)
+				{
+					case "ObjectId":
+						objRaw.enemyId = (int)GetSpinBoxValue("ObjectId");
+						break;
+					case "ObjectPosition":
+						objRaw.Position = objPosition;
+						break;
+					case "ObjectRotation":
+						objRaw.BAMSRotation = new AquaModelLibrary.Data.DataTypes.Vector3Int.Vec3Int((int)(NinjaConstants.ToBAMSValueFromDegrees * objRotation.X),
+							(int)(NinjaConstants.ToBAMSValueFromDegrees * objRotation.Y), (int)(NinjaConstants.ToBAMSValueFromDegrees * objRotation.Z));
+						break;
+					case "Int_1C":
+						objRaw.int_1C = (int)GetSpinBoxValue("Int_1C");
+						break;
+					case "Int_20":
+						objRaw.int_20 = (int)GetSpinBoxValue("Int_20");
+						break;
+					case "Int_24":
+						objRaw.int_24 = (int)GetSpinBoxValue("Int_24");
+						break;
+					case "Int_28":
+						objRaw.int_28 = (int)GetSpinBoxValue("Int_28");
+						break;
+					case "Int_2C":
+						objRaw.int_2C = (int)GetSpinBoxValue("Int_2C");
+						break;
+					case "Int_30":
+						objRaw.int_30 = (int)GetSpinBoxValue("Int_30");
+						break;
+					case "Int_34":
+						objRaw.int_34 = (int)GetSpinBoxValue("Int_34");
+						break;
+					case "Int_38":
+						objRaw.int_38 = (int)GetSpinBoxValue("Int_38");
+						break;
+					case "Int_3C":
+						objRaw.int_3C = (int)GetSpinBoxValue("Int_3C");
+						break;
+					case "Flt_40":
+						objRaw.flt_40 = (int)GetSpinBoxValue("Flt_40");
+						break;
+					case "Flt_44":
+						objRaw.flt_44 = (int)GetSpinBoxValue("Flt_44");
+						break;
+					case "Flt_48":
+						objRaw.flt_48 = (int)GetSpinBoxValue("Flt_48");
+						break;
+					case "Flt_4C":
+						objRaw.flt_4C = (int)GetSpinBoxValue("Flt_4C");
+						break;
+				}
+			}
+
+			//Insert over original file object values
+			loadedBillySetEnemies.setEnemies[objectId] = objRaw;
+		}
+
 		/// <summary>
 		/// For some reason this one mission doesn't correlate to the actual mission name.
 		/// Billy mission names are technically hardcoded, but in most cases we can infer them from the stagedef mission name anyways.
@@ -528,19 +790,19 @@ namespace OverEasy
 
 			PRD bootPrd = null;
 			if(stgDefModified == true && stgDefLocation != null)
-            {
-                bootPrd = new PRD(stgDefLocation);
-                for (int i = 0; i < bootPrd.files.Count; i++)
-                {
-                    var fName = bootPrd.fileNames[i];
-                    if (fName == "ge_stagedef.bin")
-                    {
-                        bootPrd.files[i] = stgDef.GetBytes();
-                    }
-                }
+			{
+				bootPrd = new PRD(stgDefLocation);
+				for (int i = 0; i < bootPrd.files.Count; i++)
+				{
+					var fName = bootPrd.fileNames[i];
+					if (fName == "ge_stagedef.bin")
+					{
+						bootPrd.files[i] = stgDef.GetBytes();
+					}
+				}
 
-                //Make sure we have a backup if it's not there already
-                backupFileName = Path.Combine(backupFolderLocation, "k_boot.prd");
+				//Make sure we have a backup if it's not there already
+				backupFileName = Path.Combine(backupFolderLocation, "k_boot.prd");
 				if (!File.Exists(backupFileName))
 				{
 					File.Copy(Path.Combine(gameFolderLocation, "k_boot.prd"), backupFileName);
@@ -662,12 +924,130 @@ namespace OverEasy
 				}
 				temp.Collapsed = true;
 			}
+
+			if (loadedBillySetEnemies?.setEnemies?.Count != 0)
+			{
+				temp = activeNode.CreateChild();
+				temp.SetText(0, "Set Enemy Objects");
+				temp.SetMetadata(0, 2);
+				for (int i = 0; i < loadedBillySetEnemies.setEnemies.Count; i++)
+				{
+					var obj = loadedBillySetEnemies.setEnemies[i];
+					var objNode = temp.CreateChild();
+					objNode.SetText(0, GetEnemyName(true, obj));
+
+					//Node type
+					objNode.SetMetadata(0, 3);
+					//Node's original object id
+					objNode.SetMetadata(1, i);
+					//Node's object category
+					objNode.SetMetadata(2, 4);
+					//Attach a model instance
+					var modelNode = LoadBillySetEnemyModel(obj);
+					modelNode.SetMeta("treeItem", objNode);
+					objNode.SetMetadata(3, modelNode);
+
+					modelNode.RotationDegrees = new Vector3((float)(NinjaConstants.FromBAMSValueToDegrees * obj.BAMSRotation.X), (float)(NinjaConstants.FromBAMSValueToDegrees * obj.BAMSRotation.Y), (float)(NinjaConstants.FromBAMSValueToDegrees * obj.BAMSRotation.Z));
+					modelNode.Position = new Vector3(obj.Position.X, obj.Position.Y, obj.Position.Z);
+					modelRoot.AddChild(modelNode);
+				}
+				temp.Collapsed = true;
+			}
+		}
+
+		private static void CachePlayerModelsPC()
+		{
+			var billy = new GEPlayer(File.ReadAllBytes(GetAssetPath("ge_player1.arc")));
+			var rolly = new GEPlayer(File.ReadAllBytes(GetAssetPath("ge_player2.arc")));
+			var chick = new GEPlayer(File.ReadAllBytes(GetAssetPath("ge_player3.arc")));
+			var bantam = new GEPlayer(File.ReadAllBytes(GetAssetPath("ge_player4.arc")));
+
+			CacheModel("player_1", billy.models[0], billy.texnames, billy.gvm, false);
+			CacheModel("player_2", rolly.models[0], rolly.texnames, rolly.gvm, false);
+			CacheModel("player_3", chick.models[0], chick.texnames, chick.gvm, false);
+			CacheModel("player_4", bantam.models[0], bantam.texnames, bantam.gvm, false);
+		}
+
+		private static Node3D CacheModel(string name, NJSObject nj, NJTextureList njtl, PuyoFile gvm, bool forceAdd)
+		{
+			ModelConversion.LoadGVM(name, gvm, out var gvmTextures, out var gvrAlphaTypes);
+			var modelNode = ModelConversion.NinjaToGDModel(name, nj, njtl, gvmTextures, gvrAlphaTypes);
+			CreateObjectCollision(modelNode);
+			if (forceAdd || !modelDictionary.ContainsKey(name))
+			{
+				modelDictionary.Add(name, modelNode);
+			}
+
+			return modelNode;
+		}
+
+		private static void CacheEnemyModelsPC()
+		{
+			foreach (var set in ObjectVariants.enemyFileMap)
+			{
+				//Load textures
+				string texturePath = null;
+				switch(set.Key)
+				{
+					case "ar_ene_yellow_boss_green.arc":
+						texturePath = GetAssetPath("ene_yellow_boss.gvm");
+						break;
+					case "ar_ene_red_boss.arc":
+						texturePath = GetAssetPath("ene_red_boss_dino.gvm");
+						break;
+					default:
+						texturePath = GetAssetPath(set.Key.Replace(".arc", ".gvm").Replace("ar_", ""));
+						break;
+
+				}
+				ModelConversion.LoadGVM(set.Key, new PuyoFile(File.ReadAllBytes(texturePath)), out var gvmTextures, out var gvrAlphaTypes);
+				if (gvmTextures[0].ResourceName == "am064_e00bstex01.gvr")
+				{
+					string eyespath = GetAssetPath("ene_eye.gvm");
+					if (File.Exists(eyespath))
+					{
+						ModelConversion.LoadGVM(set.Key, new PuyoFile(File.ReadAllBytes(eyespath)), out var eyeTextures, out var eyeAlphaTypes);
+						gvmTextures[0] = eyeTextures[0];
+					}
+
+				}
+
+				//Load models
+				var modelPath = GetAssetPath(set.Key);
+				if (File.Exists(modelPath))
+				{
+					var arc = new ArEnemy(File.ReadAllBytes(modelPath));
+					NJSObject nj = null;
+					NJTextureList njtl = null;
+
+					switch (set.Key)
+					{
+						case "ar_ene_am02.arc":
+							nj = arc.models[1];
+							njtl = arc.texList[0];
+							break;
+						default:
+							nj = arc.models[0];
+							njtl = arc.texList[0];
+							break;
+					}
+					GD.Print(modelPath);
+					var modelNode = ModelConversion.NinjaToGDModel(set.Key, nj, njtl, gvmTextures, gvrAlphaTypes);
+					CreateObjectCollision(modelNode);
+
+					string enemyRef = $"enemy_{set.Value}";
+					if (!modelDictionary.ContainsKey(enemyRef))
+					{
+						modelDictionary.Add(enemyRef, modelNode);
+					}
+				}
+
+			}
 		}
 
 		private static Node3D LoadBillySpawnModel(int spawnId)
 		{
-			var name = "redDefaultBox";
-			Color color = new Color(1, 0, 0, 1);
+			var name = $"player_{spawnId + 1}";
 
 			Node3D modelNode;
 			if (modelDictionary.ContainsKey(name))
@@ -676,6 +1056,36 @@ namespace OverEasy
 			}
 			else
 			{
+				Color color = new Color(1, 0, 0, 1);
+				modelNode = ModelConversion.CreateDefaultObjectModel(name, color);
+				((MeshInstance3D)modelNode.GetChild(0)).CreateTrimeshCollision();
+				var staticBody = ((StaticBody3D)modelNode.GetChild(0).GetChild(0));
+				var child = ((CollisionShape3D)staticBody.GetChild(0));
+				child.Disabled = false;
+				staticBody.CollisionLayer = 1;
+				staticBody.CollisionMask = 1;
+				modelDictionary.Add(name, modelNode);
+			}
+
+			return modelNode;
+		}
+
+		private static Node3D LoadBillySetEnemyModel(SetEnemy ene)
+		{
+			var name = $"enemy_{ene.enemyId.ToString("X")}";
+			if(ene.enemyId == 0x101)
+			{
+				name += $"_{ene.int_38}";
+			}
+
+			Node3D modelNode;
+			if (modelDictionary.ContainsKey(name))
+			{
+				modelNode = ModelConversion.GDModelClone(modelDictionary[name]);
+			}
+			else
+			{
+				Color color = new Color(1, 1, 0, 1);
 				modelNode = ModelConversion.CreateDefaultObjectModel(name, color);
 				((MeshInstance3D)modelNode.GetChild(0)).CreateTrimeshCollision();
 				var staticBody = ((StaticBody3D)modelNode.GetChild(0).GetChild(0));
@@ -691,13 +1101,7 @@ namespace OverEasy
 
 		private static Node3D LoadBillyObjectModel(SetObj obj, bool designObj)
 		{
-			var name = "blueDefaultBox";
-			Color color = new Color(0, 0, 1, 1);
-			if (designObj)
-			{
-				color = new Color(0, 1, 1, 1);
-				name = "greenDefaultBox";
-			}
+			string name = obj.objectId.ToString();
 
 			Node3D modelNode;
 			if (modelDictionary.ContainsKey(name))
@@ -706,17 +1110,63 @@ namespace OverEasy
 			}
 			else
 			{
-				modelNode = ModelConversion.CreateDefaultObjectModel(name, color);
-				((MeshInstance3D)modelNode.GetChild(0)).CreateTrimeshCollision();
-				var staticBody = ((StaticBody3D)modelNode.GetChild(0).GetChild(0));
-				var child = ((CollisionShape3D)staticBody.GetChild(0));
-				child.Disabled = false;
-				staticBody.CollisionLayer = 1;
-				staticBody.CollisionMask = 1;
-				modelDictionary.Add(name, modelNode);
+				switch(obj.objectId)
+				{
+					default:
+						NJTextureList texList;
+						using (MemoryStream ms = new MemoryStream(File.ReadAllBytes(@"C:\Program Files (x86)\SEGA\Billy Hatcher_\ge_animal_c1.glk_out\y_anic_iwhale_base.gjt")))
+						using (BufferedStreamReaderBE<MemoryStream> sr = new BufferedStreamReaderBE<MemoryStream>(ms))
+						{
+							sr.Seek(8, SeekOrigin.Begin);
+							sr._BEReadActive = true;
+							texList = new NJTextureList(sr, 8);
+						}
+
+						var gvm = new PuyoFile(File.ReadAllBytes(@"C:\Program Files (x86)\SEGA\Billy Hatcher_\ge_animal_c1.glk_out\y_anic_iwhale_base.gvm"));
+						ModelConversion.LoadGVM(name, gvm, out var gvmTextures, out var gvrAlphaTypes);
+						modelNode = ModelConversion.NinjaToGDModel(name,
+							ModelConversion.ReadNJ(File.ReadAllBytes(@"C:\Program Files (x86)\SEGA\Billy Hatcher_\ge_animal_c1.glk_out\y_anic_iwhale_base.gj"), AquaModelLibrary.Data.Ninja.Model.NinjaVariant.Ginja, true, 0),
+							texList, gvmTextures, gvrAlphaTypes);
+
+
+						name = "blueDefaultBox";
+						Color color = new Color(0, 0, 1, 1);
+						if (designObj)
+						{
+							color = new Color(0, 1, 1, 1);
+							name = "greenDefaultBox";
+						}
+						modelNode = ModelConversion.CreateDefaultObjectModel(name, color);
+
+						//Set up collision
+						CreateObjectCollision(modelNode);
+						break;
+				}
+
+				if(!modelDictionary.ContainsKey(name))
+				{
+					modelDictionary.Add(name, modelNode);
+				}
 			}
 
 			return modelNode;
+		}
+
+		private static void CreateObjectCollision(Node3D modelNode)
+		{
+			var children = modelNode.GetChildren();
+			foreach (var nodeChild in children)
+			{
+				if (nodeChild is MeshInstance3D meshChild)
+				{
+					meshChild.CreateTrimeshCollision();
+					var staticBody = (StaticBody3D)meshChild.GetChild(0);
+					var collChild = ((CollisionShape3D)staticBody.GetChild(0));
+					collChild.Disabled = false;
+					staticBody.CollisionLayer = 1;
+					staticBody.CollisionMask = 1;
+				}
+			}
 		}
 
 		public static string GetObjectName(bool isNode, SetObj obj)
@@ -757,12 +1207,46 @@ namespace OverEasy
 			}
 		}
 
+		public static string GetEnemyName(bool isNode, SetEnemy obj)
+		{
+			string nodeAddition = "";
+			if (isNode)
+			{
+				nodeAddition = "Type ";
+			}
+
+			if(obj.enemyId == 0x101)
+			{
+				switch (obj.int_38)
+				{
+					case 0:
+					case 1:
+					case 2:
+					case 3:
+					case 4:
+						return $"Zako - {ObjectVariants.zakoCrows[obj.int_38]}";
+					default:
+						return $"Zako - Out of range";
+				}
+			}
+
+			if (cachedBillySetEnemyDefinitions.ContainsKey(obj.enemyId))
+			{
+				return cachedBillySetEnemyDefinitions[obj.enemyId].EnemyName;
+			}
+			else
+			{
+				return $"Enemy {nodeAddition}0x{obj.enemyId:X}";
+			}
+		}
+
 		public static void TransformFromGizmoBilly(Vector3? pos, Quaternion? rot, Vector3? scale)
 		{
 			switch(currentEditorType)
 			{
 				case EditingType.BillySetObj:
 				case EditingType.BillySetDesign:
+				case EditingType.BillySetEnemy:
 					if(pos != null)
 					{
 						SetVec3SchemaValues("ObjectPosition", (Vector3)pos);

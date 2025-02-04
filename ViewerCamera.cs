@@ -674,7 +674,8 @@ public partial class ViewerCamera : Camera3D
 							{
 								OverEasyGlobals.PreviousMouseSelectionPointRidCache.Add((Godot.Rid)result["rid"]);
 								var parentNode = ((Node3D)result["collider"]).GetParent().GetParent();
-								orbitFocusNode = (Node3D)parentNode;
+
+                                orbitFocusNode = (Node3D)parentNode;
 								if(cameraMode == CameraMode.Orbit)
 								{
 									TrySetOrbitCam();
