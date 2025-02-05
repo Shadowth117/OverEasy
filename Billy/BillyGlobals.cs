@@ -159,6 +159,7 @@ namespace OverEasy
 
 			//Load common object models, enemies, items. May want to do this in the initial load step
 			var battleCommonPRD = new PRD(File.ReadAllBytes(GetAssetPath("k_battle_common.prd")));
+			PuyoFile eyeTextures = null;
 			for (int i = 0; i < battleCommonPRD.files.Count; i++)
 			{
 				switch(battleCommonPRD.fileNames[i])
@@ -179,6 +180,9 @@ namespace OverEasy
 						var bantam = new GEPlayer(battleCommonPRD.files[i]);
 						CacheModel("player_4", bantam.models[0], bantam.texnames, bantam.gvm, false);
 						break;
+					case "ene_eye.gvm":
+						eyeTextures = new PuyoFile(battleCommonPRD.files[i]);
+						break;
 				}
 			}
 
@@ -187,18 +191,16 @@ namespace OverEasy
 			for (int i = 0; i < currentPRD.files.Count; i++)
 			{
 				//Hold Enemy GVM
-				if (currentPRD.fileNames[i].ToLower().StartsWith("ar_"))
+				if (ObjectVariants.enemyFileMap.ContainsKey(currentPRD.fileNames[i].ToLower()))
 				{
-					if (Path.GetExtension(currentPRD.fileNames[i].ToLower()) == ".gvm")
-					{
-						enemyGVMDict.Add(Path.GetFileNameWithoutExtension(currentPRD.fileNames[i].ToLower()), new PuyoFile(currentPRD.files[i]));
-					} else if (Path.GetExtension(currentPRD.fileNames[i].ToLower()) == ".arc")
-					{
-						enemyArchiveDict.Add(Path.GetFileNameWithoutExtension(currentPRD.fileNames[i].ToLower().Replace("ar_", "")), new ArEnemy(currentPRD.files[i]));
-					}
-				} else
-				//Load High Quality Player Model
-				if(currentPRD.fileNames[i] == "ge_player1.arc")
+					enemyArchiveDict.Add(Path.GetFileNameWithoutExtension(currentPRD.fileNames[i].ToLower().Replace("ar_", "")), new ArEnemy(currentPRD.files[i]));
+				}
+				else if (currentPRD.fileNames[i].ToLower().StartsWith("ene_") && Path.GetExtension(currentPRD.fileNames[i].ToLower()) == ".gvm")
+				{
+					enemyGVMDict.Add(Path.GetFileNameWithoutExtension(currentPRD.fileNames[i].ToLower()), new PuyoFile(currentPRD.files[i]));
+				}
+				else //Load High Quality Player Model
+				if (currentPRD.fileNames[i] == "ge_player1.arc")
 				{
 					var billy = new GEPlayer(currentPRD.files[i]);
 					CacheModel("player_1", billy.models[0], billy.texnames, billy.gvm, true);
@@ -260,6 +262,13 @@ namespace OverEasy
 			//Load enemies
 			foreach(var pair in enemyArchiveDict)
 			{
+				for(int i = 0; i < pair.Value.texList[0].texNames.Count; i++)
+				{
+					if (pair.Value.texList[0].texNames[i] == "am064_e00bstex01")
+					{
+						enemyGVMDict[pair.Key].Entries[i] = eyeTextures.Entries[0];
+					}
+				}
 				CacheModel($"enemy_{ObjectVariants.enemyFileMap[$"ar_{pair.Key}.arc"]}", pair.Value.models[0], pair.Value.texList[0], enemyGVMDict[pair.Key], false);
 			}
 
@@ -754,12 +763,12 @@ namespace OverEasy
 			string backupFileName;
 			string setName = stgDef.defs[currentMissionId].setObjFilename;
 			string setDesignName = stgDef.defs[currentMissionId].setDesignFilename;
-            string setEnemyName = stgDef.defs[currentMissionId].setEnemyFilename;
-            int setFileId = -1;
+			string setEnemyName = stgDef.defs[currentMissionId].setEnemyFilename;
+			int setFileId = -1;
 			int setDesignId = -1;
 			int setEnemyId = -1;
 
-            for (int i = 0; i < currentPRD.fileNames.Count; i++)
+			for (int i = 0; i < currentPRD.fileNames.Count; i++)
 			{
 				if (currentPRD.fileNames[i] == setName)
 				{
@@ -784,8 +793,8 @@ namespace OverEasy
 			}
 			if (setEnemyId != -1)
 			{
-                currentPRD.files[setEnemyId] = loadedBillySetEnemies.GetBytes();
-            }
+				currentPRD.files[setEnemyId] = loadedBillySetEnemies.GetBytes();
+			}
 
 			//StageDef
 			string stgDefLocation = null;
@@ -985,7 +994,7 @@ namespace OverEasy
 			CreateObjectCollision(modelNode);
 			if (forceAdd || !modelDictionary.ContainsKey(name))
 			{
-				modelDictionary.Add(name, modelNode);
+				modelDictionary[name] = modelNode;
 			}
 
 			return modelNode;
