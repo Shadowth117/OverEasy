@@ -11,10 +11,10 @@ public partial class GUIArea : Area2D
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
     {
-        OverEasyGlobals.setDataTree.Modulate = new Color(0.7f, 0.7f, 0.7f, 0.4f);
-        OverEasyGlobals.objectScrollContainer.Modulate = new Color(0.7f, 0.7f, 0.7f, 0.4f);
-        OverEasyGlobals.dummyTree.Modulate = new Color(0.7f, 0.7f, 0.7f, 0.4f);
-        
+        OverEasyGlobals.setDataTree.Modulate = OverEasyGlobals.mainFillColorInactive;
+        OverEasyGlobals.objectScrollContainer.Modulate = OverEasyGlobals.mainFillColorInactive;
+        OverEasyGlobals.dummyTree.Modulate = OverEasyGlobals.mainFillColorInactive;
+
         bool inside = false;
 		var mousePos = GetGlobalMousePosition();
         foreach (var child in GetChildren())
@@ -31,11 +31,11 @@ public partial class GUIArea : Area2D
                 {
                     if(child == OverEasyGlobals.setDataTreeCollision)
                     {
-                        OverEasyGlobals.setDataTree.Modulate = new Color(0.7f, 0.7f, 0.7f, 1);
+                        OverEasyGlobals.setDataTree.Modulate = OverEasyGlobals.mainFillColorActive;
                     } else if (child == OverEasyGlobals.objectPanelCollision)
                     {
-                        OverEasyGlobals.objectScrollContainer.Modulate = new Color(0.7f, 0.7f, 0.7f, 1);
-                        OverEasyGlobals.dummyTree.Modulate = new Color(0.7f, 0.7f, 0.7f, 1f);
+                        OverEasyGlobals.objectScrollContainer.Modulate = OverEasyGlobals.mainFillColorActive;
+                        OverEasyGlobals.dummyTree.Modulate = OverEasyGlobals.mainFillColorActive;
                     }
                     inside = true;
                     break;

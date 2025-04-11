@@ -8,7 +8,7 @@ namespace OverEasy.Controls
         public override void _Ready()
         {
             this.Visible = false;
-            this.Modulate = new Color(0.7f, 0.7f, 0.7f, 0.4f);
+            this.Modulate = OverEasyGlobals.mainFillColorInactive;
             OverEasyGlobals.dummyTree = this;
         }
 

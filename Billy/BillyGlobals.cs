@@ -7,6 +7,7 @@ using ArchiveLib;
 using Godot;
 using OverEasy.Billy;
 using OverEasy.TextInfo;
+using OverEasy.Util;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -27,8 +28,13 @@ namespace OverEasy
 		public static Node3D daySkybox = null;
 		public static Node3D nightSkybox = null;
 		public static DayNightToggle dayNightToggle = null;
-		
-		public static void SetCameraSettingsBilly()
+		public static DirectionalLight3D billyDirectionalLight = null;
+
+        public static PRD currentPRD = null;
+        public static PRD currentCommonPRD = null;
+		public static SetLightParam currentLightsParam = null;
+
+        public static void SetCameraSettingsBilly()
 		{
 			ViewerCamera.SCROLL_SPEED = 1000;
 			ViewerCamera.ZOOM_SPEED = 500;
@@ -44,9 +50,24 @@ namespace OverEasy
 			ViewerCamera.FREECAM_VELOCITY_MULTIPLIER = 400;
 		}
 
+        private static void ResetBillyLoadedData()
+        {
+			currentLightsParam = null;
+            billyDirectionalLight.Dispose();
+			billyDirectionalLight = null;
+            stgDef = null;
+            currentPRD = null;
+			currentCommonPRD = null;
+            loadedBillySetObjects = null;
+            cachedBillySetObjDefinitions.Clear();
+            cachedBillySetEnemyDefinitions.Clear();
+        }
+        
 		private static void LoadInitialDataBilly()
 		{
-			LoadMapNames("TextInfo\\BillyMapNames.txt");
+			billyDirectionalLight = new DirectionalLight3D();
+			modelRoot.GetParent().AddChild(billyDirectionalLight);
+            LoadMapNames("TextInfo\\BillyMapNames.txt");
 			LoadSetObjTemplates("TextInfo\\BillyObjDefinitions\\");
 			LoadSetEnemyTemplates("TextInfo\\BillyEnemyDefinitions\\");
 			if (!ReadBillyGEStageDef(modFolderLocation))
@@ -91,6 +112,35 @@ namespace OverEasy
 			}
 		}
 
+		public static void SetBillyLighting()
+        {
+            var def = stgDef.defs[currentMissionId];
+
+			int lightingId = 0;
+			if(LightingMapping.LightIdMapping.ContainsKey(def.missionName))
+			{
+				lightingId = isDay ? LightingMapping.LightIdMapping[def.missionName][0] : LightingMapping.LightIdMapping[def.missionName][1];
+            }
+			else if(LightingMapping.LightIdMapping.ContainsKey(def.worldName))
+            {
+                lightingId = isDay ? LightingMapping.LightIdMapping[def.worldName][0] : LightingMapping.LightIdMapping[def.worldName][1];
+            }
+			
+			var param = currentLightsParam.lightParams[lightingId];
+			modelRoot.GetWorld3D().Environment.AmbientLightEnergy = 1.0f;
+			modelRoot.GetWorld3D().Environment.AmbientLightSkyContribution = 0;
+            //modelRoot.GetWorld3D().Environment.AmbientLightColor = new Color(param.ambientLightingColor[0] / 255f, param.ambientLightingColor[1] / 255f, param.ambientLightingColor[2] / 255f, (param.ambientLightingColor[3] / 255f));
+            modelRoot.GetWorld3D().Environment.AmbientLightColor = new Color(Mathf.Pow(param.ambientLightingColor[0] / 255f, 2.2f), Mathf.Pow(param.ambientLightingColor[1] / 255f, 2.2f), Mathf.Pow(param.ambientLightingColor[2] / 255f, 2.2f), (param.ambientLightingColor[3] / 255f));
+			//billyDirectionalLight.LightColor = new Color(param.directionalLightingColor[0] / 255f, param.directionalLightingColor[1] / 255f, param.directionalLightingColor[2] / 255f, (param.directionalLightingColor[3] / 255f));
+			billyDirectionalLight.LightColor = new Color(Mathf.Pow(param.directionalLightingColor[0] / 255f, 2.2f), Mathf.Pow(param.directionalLightingColor[1] / 255f, 2.2f), Mathf.Pow(param.directionalLightingColor[2] / 255f, 2.2f), (param.directionalLightingColor[3] / 255f));
+
+			var tfm = Transform3D.Identity;
+			var lightDir = -param.lightDirection;
+			var lookAtTfm = tfm.LookingAt(lightDir.ToGVec3(), Godot.Vector3.Up, true);
+
+            billyDirectionalLight.Quaternion = lookAtTfm.Basis.GetRotationQuaternion();
+        }
+
 		private static void LazyLoadBillyPC()
 		{
 			var def = stgDef.defs[currentMissionId];
@@ -128,7 +178,15 @@ namespace OverEasy
 				loadedBillySetEnemies = new SetEnemyList(File.ReadAllBytes(setEnemyFilePath));
 			}
 
-			string lndPath = GetAssetPath(def.lndFilename);
+			//Load Light Param
+			string setLightParamFilePath = GetAssetPath("set_light_param.bin");
+            if (File.Exists(setLightParamFilePath))
+            {
+                currentLightsParam = new SetLightParam(File.ReadAllBytes(setLightParamFilePath));
+            }
+			SetBillyLighting();
+
+            string lndPath = GetAssetPath(def.lndFilename);
 			if (File.Exists(lndPath))
 			{
 				modelRoot.AddChild(Billy.ModelConversion.LNDToGDModel(def.lndFilename, new LND(File.ReadAllBytes(lndPath))));
@@ -157,9 +215,12 @@ namespace OverEasy
 			currentArhiveFilename = $"k_{prdMissionname}.prd";
 			currentPRD = new PRD(File.ReadAllBytes(GetAssetPath(currentArhiveFilename)));
 
-			//Load common object models, enemies, items. May want to do this in the initial load step
 			var battleCommonPRD = new PRD(File.ReadAllBytes(GetAssetPath("k_battle_common.prd")));
-			PuyoFile eyeTextures = null;
+            var stageCommonPRD = new PRD(File.ReadAllBytes(GetAssetPath("k_stage_common.prd")));
+            var bossCommonPRD = new PRD(File.ReadAllBytes(GetAssetPath("k_boss_common.prd")));
+
+            //Load common object models, enemies, items. May want to do this in the initial load step
+            PuyoFile eyeTextures = null;
 			for (int i = 0; i < battleCommonPRD.files.Count; i++)
 			{
 				switch(battleCommonPRD.fileNames[i])
@@ -184,9 +245,34 @@ namespace OverEasy
 						eyeTextures = new PuyoFile(battleCommonPRD.files[i]);
 						break;
 				}
-			}
+            }
 
-			Dictionary<string, ArEnemy> enemyArchiveDict = new Dictionary<string, ArEnemy>();
+			//Certain files use certain common PRDs
+            if (prdMissionname.Contains("battle"))
+            {
+				currentCommonPRD = battleCommonPRD;
+            }
+            else if (prdMissionname.Contains("boss"))
+            {
+				currentCommonPRD = bossCommonPRD;
+            }
+            else
+            {
+				currentCommonPRD = stageCommonPRD;
+            }
+			for(int i = 0; i < currentCommonPRD.files.Count; i++)
+			{
+				switch(currentCommonPRD.fileNames[i])
+				{
+					case "set_light_param.bin":
+						currentLightsParam = new SetLightParam(currentCommonPRD.files[i]);
+                        break;
+
+                }
+            }
+            SetBillyLighting();
+
+            Dictionary<string, ArEnemy> enemyArchiveDict = new Dictionary<string, ArEnemy>();
 			Dictionary<string, PuyoFile> enemyGVMDict = new Dictionary<string, PuyoFile>();
 			for (int i = 0; i < currentPRD.files.Count; i++)
 			{
@@ -269,7 +355,13 @@ namespace OverEasy
 						enemyGVMDict[pair.Key].Entries[i] = eyeTextures.Entries[0];
 					}
 				}
-				CacheModel($"enemy_{ObjectVariants.enemyFileMap[$"ar_{pair.Key}.arc"]}", pair.Value.models[0], pair.Value.texList[0], enemyGVMDict[pair.Key], false);
+				var model = pair.Value.models[0];
+
+                if (pair.Key == "ene_am02")
+				{
+					model = pair.Value.models[1];
+                }
+                CacheModel($"enemy_{ObjectVariants.enemyFileMap[$"ar_{pair.Key}.arc"]}", model, pair.Value.texList[0], enemyGVMDict[pair.Key], false);
 			}
 
 			//Set skybox setting
@@ -1050,7 +1142,6 @@ namespace OverEasy
 							njtl = arc.texList[0];
 							break;
 					}
-					GD.Print(modelPath);
 					var modelNode = ModelConversion.NinjaToGDModel(set.Key, nj, njtl, gvmTextures, gvrAlphaTypes);
 					CreateObjectCollision(modelNode);
 
@@ -1102,6 +1193,11 @@ namespace OverEasy
 			{
 				modelNode = ModelConversion.GDModelClone(modelDictionary[name]);
 			}
+			else if(ene.enemyId == 0)
+			{
+				modelNode = new Node3D();
+                modelDictionary.Add(name, modelNode);
+            }
 			else
 			{
 				Color color = new Color(1, 1, 0, 1);
@@ -1126,8 +1222,13 @@ namespace OverEasy
 			if (modelDictionary.ContainsKey(name))
 			{
 				modelNode = ModelConversion.GDModelClone(modelDictionary[name]);
-			}
-			else
+            }
+            else if (obj.objectId == 0)
+            {
+                modelNode = new Node3D();
+                modelDictionary.Add(name, modelNode);
+            }
+            else
 			{
 				switch(obj.objectId)
 				{

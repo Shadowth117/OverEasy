@@ -9,7 +9,7 @@ public partial class SetDataTree : Tree
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		this.Modulate = new Color(0.7f, 0.7f, 0.7f, 0.4f);
+		this.Modulate = OverEasyGlobals.mainFillColorInactive;
 		OverEasyGlobals.setDataTree = this;
 		this.Columns = 4;
 		this.SetColumnExpand(0, true);

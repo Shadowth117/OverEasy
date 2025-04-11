@@ -1,4 +1,3 @@
-using AquaModelLibrary.Data.AM2.BorderBreakPS4;
 using AquaModelLibrary.Data.BillyHatcher;
 using AquaModelLibrary.Data.BillyHatcher.LNDH;
 using AquaModelLibrary.Data.Ninja;
@@ -19,8 +18,22 @@ using Material = Godot.Material;
 namespace OverEasy.Billy
 {
 	public class ModelConversion
-	{
-		public static void BillyModeNightToggle(Node parentNode)
+    {
+        public static void BillyModeNightToggleParent(Node3D parentNode)
+        {
+			OverEasyGlobals.SetBillyLighting();
+
+            if (parentNode is MeshInstance3D)
+            {
+                BillyModeNightToggleMesh((ArrayMesh)((MeshInstance3D)parentNode).Mesh);
+            }
+            var nodes = parentNode.GetChildren();
+            foreach (var node in nodes)
+            {
+                BillyModeNightToggle(node);
+            }
+        }
+        public static void BillyModeNightToggle(Node parentNode)
 		{
 			if (parentNode is MeshInstance3D)
 			{
@@ -96,11 +109,12 @@ namespace OverEasy.Billy
 			Node3D root = new Node3D();
 			MeshInstance3D meshInst = new MeshInstance3D();
 			var box = new BoxMesh();
-			box.Size = new Vector3(20, 20, 20);
+			box.Size = new Vector3(10, 10, 10);
 			var mat = new StandardMaterial3D();
 			mat.AlbedoColor = color;
 			mat.BlendMode = BaseMaterial3D.BlendModeEnum.Mix;
 			mat.ShadingMode = BaseMaterial3D.ShadingModeEnum.PerVertex;
+			mat.DisableAmbientLight = false;
 			box.Material = mat;
 			meshInst.Mesh = box;
 			root.AddChild(meshInst);
@@ -263,22 +277,23 @@ namespace OverEasy.Billy
 					for(int i = 0; i < tempTri.faceVerts.Count; i++)
 					{
 						var faceVtxl = tempTri.faceVerts[i];
-						foreach(var vertPos in faceVtxl.vertPositions)
+						for(int j = faceVtxl.vertPositions.Count - 1; j >= 0; j--)
 						{
-							vertPosList.Add(vertPos.ToGVec3());
-						}
-						foreach (var vertNrm in faceVtxl.vertNormals)
-						{
-							vertNrmList.Add(vertNrm.ToGVec3());
-						}
-						foreach (var vertUv in faceVtxl.uv1List)
-						{
-							vertUvList.Add(vertUv.ToGVec2());
-						}
-						foreach (var vertColor in faceVtxl.vertColors)
-						{
-							vertClrList.Add(new Color(vertColor[2] / 255f, vertColor[1] / 255f, vertColor[0] / 255f, vertColor[3] / 255f));
-						}
+							vertPosList.Add(faceVtxl.vertPositions[j].ToGVec3());
+                        }
+                        for (int j = faceVtxl.vertNormals.Count - 1; j >= 0; j--)
+                        {
+                            vertNrmList.Add(faceVtxl.vertNormals[j].ToGVec3());
+                        }
+                        for (int j = faceVtxl.uv1List.Count - 1; j >= 0; j--)
+                        {
+                            vertUvList.Add(faceVtxl.uv1List[j].ToGVec2());
+                        }
+                        for (int j = faceVtxl.vertColors.Count - 1; j >= 0; j--)
+                        {
+							var vertColor = faceVtxl.vertColors[j];
+                            vertClrList.Add(new Color(Mathf.Pow(vertColor[2] / 255f, 2.2f), Mathf.Pow(vertColor[1] / 255f, 2.2f), Mathf.Pow(vertColor[0] / 255f, 2.2f), vertColor[3] / 255f));
+                        }
 					}
 					if(vertPosList.Count > 0)
 					{
@@ -301,7 +316,8 @@ namespace OverEasy.Billy
 					StandardMaterial3D gdMaterial = new StandardMaterial3D();
 					gdMaterial.VertexColorUseAsAlbedo = true;
 					gdMaterial.ShadingMode = BaseMaterial3D.ShadingModeEnum.PerPixel;
-					gdMaterial.CullMode = BaseMaterial3D.CullModeEnum.Front;
+					gdMaterial.CullMode = BaseMaterial3D.CullModeEnum.Back;
+					
 					var matId = tempTri.matIdList.Count > 0 ? tempTri.matIdList[0] : 0;
 					if(testAqo.tempMats.Count > 0)
 					{
@@ -396,7 +412,7 @@ namespace OverEasy.Billy
 					string modelName = modelSet.name;
 					Node3D node = new Node3D();
 					node.Name = modelName;
-					AddARCLNDModelData(lnd, modelSet.model, node, gvmTextures, gvrAlphaTypes);
+					AddARCLNDModelData(lnd, modelSet.model, node, gvmTextures, gvrAlphaTypes, false);
 					if (node.Name.ToString().ToLower() == "sphere000")
 					{
 						OverEasyGlobals.daySkybox = node;
@@ -416,7 +432,7 @@ namespace OverEasy.Billy
 					string modelName = $"{modelSet.GetHashCode()}_{modelSet.MPLAnimId}";
 					Node3D node = new Node3D();
 					node.Name = modelName;
-					AddARCLNDModelData(lnd, modelSet.model, node, gvmTextures, gvrAlphaTypes);
+					AddARCLNDModelData(lnd, modelSet.model, node, gvmTextures, gvrAlphaTypes, true);
 					var bnd = modelSet.model.arcBoundingList[0];
 					var pos = bnd.Position;
 					//We want the radians, so we leave it like this
@@ -470,7 +486,7 @@ namespace OverEasy.Billy
 			}
 		}
 
-		private static void AddARCLNDModelData(LND lnd, ARCLNDModel mdl, Node3D modelParent, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes)
+		private static void AddARCLNDModelData(LND lnd, ARCLNDModel mdl, Node3D modelParent, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes, bool forceShaded)
 		{
 			for (int i = 0; i < mdl.arcMeshDataList.Count; i++)
 			{
@@ -492,13 +508,14 @@ namespace OverEasy.Billy
 					StandardMaterial3D gdMaterial = new StandardMaterial3D();
 					gdMaterial.VertexColorUseAsAlbedo = true;
 
-					/*
-					if ((mat.entry.RenderFlags & (ARCLNDRenderFlags.EnableLighting)) == 0)
+                    gdMaterial.ShadingMode = BaseMaterial3D.ShadingModeEnum.PerPixel;
+                    if (!((mat.entry.RenderFlags & (ARCLNDRenderFlags.RFUnknown0x2)) == 0) && forceShaded == false)
 					{
 						gdMaterial.ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded;
-					}*/
-					gdMaterial.ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded;
-					if ((mat.entry.RenderFlags & (ARCLNDRenderFlags.TwoSided)) > 0)
+					}
+					gdMaterial.CullMode = BaseMaterial3D.CullModeEnum.Front;
+
+                    if ((mat.entry.RenderFlags & (ARCLNDRenderFlags.TwoSided)) > 0)
 					{
 						gdMaterial.CullMode = BaseMaterial3D.CullModeEnum.Disabled;
 					}
@@ -540,11 +557,11 @@ namespace OverEasy.Billy
 			LNDVertContainer billyData = new LNDVertContainer();
 			if (faceData.triIndicesList0.Count > 0)
 			{
-				AddFromARCPolyData(model, faceData.triIndicesList0, faceData.triIndicesListStarts0, faceData.flags, 0, billyData);
+				AddFromARCPolyData(model, faceData.triIndicesList0, faceData.triIndicesListStarts0, faceData.flags, 1, billyData);
 			}
 			if (faceData.triIndicesList1.Count > 0)
 			{
-				AddFromARCPolyData(model, faceData.triIndicesList1, faceData.triIndicesListStarts1, faceData.flags, 1, billyData);
+				AddFromARCPolyData(model, faceData.triIndicesList1, faceData.triIndicesListStarts1, faceData.flags, 0, billyData);
 			}
 
 			if (billyData.posList.Count > 0)
@@ -635,15 +652,15 @@ namespace OverEasy.Billy
 			if ((flags & ArcLndVertType.VertColor) > 0)
 			{
 				var billyColor = mdl.arcVertDataSetList[0].VertColorData[faceIds[i]];
-				billyData.colors.Add(new Color(billyColor[0] / 255f, billyColor[1] / 255f, billyColor[2] / 255f, billyColor[3] / 255f));
+				billyData.colors.Add(new Color(Mathf.Pow(billyColor[0] / 255f, 2.2f), Mathf.Pow(billyColor[1] / 255f, 2.2f), Mathf.Pow(billyColor[2] / 255f, 2.2f), billyColor[3] / 255f));
 
 				if (mdl.arcAltVertColorList.Count > 0 && mdl.arcAltVertColorList[0]?.VertColorData.Count > 0)
 				{
 					billyColor = mdl.arcAltVertColorList[0]?.VertColorData[faceIds[i]];
-					billyData.color2s.Add(billyColor[0] / 255f);
-					billyData.color2s.Add(billyColor[1] / 255f);
-					billyData.color2s.Add(billyColor[2] / 255f);
-					billyData.color2s.Add(billyColor[3] / 255f);
+					billyData.color2s.Add(Mathf.Pow(billyColor[0] / 255f, 2.2f));
+					billyData.color2s.Add(Mathf.Pow(billyColor[1] / 255f, 2.2f));
+					billyData.color2s.Add(Mathf.Pow(billyColor[2] / 255f, 2.2f));
+					billyData.color2s.Add(Mathf.Pow(billyColor[3] / 255f, 2.2f));
 				}
 				i++;
 			}

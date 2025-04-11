@@ -1,4 +1,3 @@
-using AquaModelLibrary.Data.BillyHatcher;
 using Godot;
 using OverEasy.Billy;
 using OverEasy.Editor;
@@ -75,7 +74,6 @@ namespace OverEasy
 
 		public static int currentObjectId = -1;
 		public static int currentArchiveFileId = -1;
-		public static PRD currentPRD = null;
 		public static string currentArhiveFilename = null;
 		public static int currentMissionId = -1;
 		public static string editorRootDirectory = null;
@@ -83,6 +81,9 @@ namespace OverEasy
 
 		public static Godot.Collections.Array<Rid> PreviousMouseSelectionPointRidCache = new Godot.Collections.Array<Rid>();
 		public static Vector2 PreviousMouseSelectionPoint = new Vector2(-MouseNotMovedThresholdX - 1, -MouseNotMovedThresholdY - 1);
+
+		public static Color mainFillColorInactive = new Color(0.7F, 0.7F, 0.7F, 0.6F); 
+		public static Color mainFillColorActive = new Color(0.7F, 0.7F, 0.7F, 1.2F); 
 
 		public static bool CanAccess3d
 		{
@@ -213,7 +214,7 @@ namespace OverEasy
 			{
 				nightSkybox.Visible = !isDay;
 			}
-			ModelConversion.BillyModeNightToggle(modelRoot);
+			ModelConversion.BillyModeNightToggleParent(modelRoot);
 		}
 
 		public static void CopyModFiles()
@@ -388,39 +389,44 @@ namespace OverEasy
 		/// Resets editor data when we try to load a new project to avoid shenanigans.
 		/// </summary>
 		public static void ResetLoadedData(string path)
-		{
-			ResetTransformGizmo();
-			modFolderLocation = null;
-			allowedToUpdate = false;
+        {
+            ResetTransformGizmo();
+			modelRoot.GetWorld3D().Environment = new Godot.Environment();
+            modFolderLocation = null;
+            allowedToUpdate = false;
 
-			currentObjectId = -1;
-			currentArchiveFileId = -1;
-			currentPRD = null;
-			currentArhiveFilename = null;
-			currentMissionId = -1;
-			currentObjectTreeItem = null;
-			stgDef = null;
-			loadedBillySetObjects = null;
-			cachedBillySetObjDefinitions.Clear();
-			cachedBillySetEnemyDefinitions.Clear();
-			currentEditorType = EditingType.None;
-			var objDataContainer = (VBoxContainer)objectScrollContainer.GetChild(0);
-			foreach (var obj in activeObjectEditorObjects)
-			{
-				//Assume the object is in there. If it's not, we have some problems.
-				objDataContainer.RemoveChild(obj.Value);
-			}
-			activeObjectEditorObjects.Clear();
+            currentObjectId = -1;
+            currentArchiveFileId = -1;
+            currentArhiveFilename = null;
+            currentMissionId = -1;
+            currentObjectTreeItem = null;
+            currentEditorType = EditingType.None;
 
-			if (setDataTree != null)
-			{
-				setDataTree.Clear();
-			}
+            switch (gameType)
+            {
+                case GameType.BillyPC:
+                case GameType.BillyGC:
+                    ResetBillyLoadedData();
+                    break;
+            }
 
-			ClearModelAndTextureData();
-		}
+            var objDataContainer = (VBoxContainer)objectScrollContainer.GetChild(0);
+            foreach (var obj in activeObjectEditorObjects)
+            {
+                //Assume the object is in there. If it's not, we have some problems.
+                objDataContainer.RemoveChild(obj.Value);
+            }
+            activeObjectEditorObjects.Clear();
 
-		public static void ResetTransformGizmo()
+            if (setDataTree != null)
+            {
+                setDataTree.Clear();
+            }
+
+            ClearModelAndTextureData();
+        }
+
+        public static void ResetTransformGizmo()
 		{
 			TransformGizmo.SetCurrentTransformType(Gizmo.TransformType.None);
 			TransformGizmo.Reparent(TransformGizmo.GetTree().Root, false);

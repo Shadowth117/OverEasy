@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bp17fc5qsd0m8"]
 
-[ext_resource type="Script" path="res://ViewerCamera.cs" id="1_v584a"]
+[ext_resource type="Script" uid="uid://cjkdw2ymoy0xs" path="res://ViewerCamera.cs" id="1_v584a"]
 
 [node name="Target" type="Node3D"]
 
