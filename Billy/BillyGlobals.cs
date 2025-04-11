@@ -3,6 +3,7 @@ using AquaModelLibrary.Data.BillyHatcher.ARCData;
 using AquaModelLibrary.Data.BillyHatcher.SetData;
 using AquaModelLibrary.Data.Ninja;
 using AquaModelLibrary.Data.Ninja.Model;
+using AquaModelLibrary.Data.PSO2.Aqua;
 using ArchiveLib;
 using Godot;
 using OverEasy.Billy;
@@ -30,11 +31,11 @@ namespace OverEasy
 		public static DayNightToggle dayNightToggle = null;
 		public static DirectionalLight3D billyDirectionalLight = null;
 
-        public static PRD currentPRD = null;
-        public static PRD currentCommonPRD = null;
+		public static PRD currentPRD = null;
+		public static PRD currentCommonPRD = null;
 		public static SetLightParam currentLightsParam = null;
 
-        public static void SetCameraSettingsBilly()
+		public static void SetCameraSettingsBilly()
 		{
 			ViewerCamera.SCROLL_SPEED = 1000;
 			ViewerCamera.ZOOM_SPEED = 500;
@@ -50,24 +51,24 @@ namespace OverEasy
 			ViewerCamera.FREECAM_VELOCITY_MULTIPLIER = 400;
 		}
 
-        private static void ResetBillyLoadedData()
-        {
+		private static void ResetBillyLoadedData()
+		{
 			currentLightsParam = null;
-            billyDirectionalLight.Dispose();
+			billyDirectionalLight.Dispose();
 			billyDirectionalLight = null;
-            stgDef = null;
-            currentPRD = null;
+			stgDef = null;
+			currentPRD = null;
 			currentCommonPRD = null;
-            loadedBillySetObjects = null;
-            cachedBillySetObjDefinitions.Clear();
-            cachedBillySetEnemyDefinitions.Clear();
-        }
-        
+			loadedBillySetObjects = null;
+			cachedBillySetObjDefinitions.Clear();
+			cachedBillySetEnemyDefinitions.Clear();
+		}
+		
 		private static void LoadInitialDataBilly()
 		{
 			billyDirectionalLight = new DirectionalLight3D();
 			modelRoot.GetParent().AddChild(billyDirectionalLight);
-            LoadMapNames("TextInfo\\BillyMapNames.txt");
+			LoadMapNames("TextInfo\\BillyMapNames.txt");
 			LoadSetObjTemplates("TextInfo\\BillyObjDefinitions\\");
 			LoadSetEnemyTemplates("TextInfo\\BillyEnemyDefinitions\\");
 			if (!ReadBillyGEStageDef(modFolderLocation))
@@ -113,33 +114,34 @@ namespace OverEasy
 		}
 
 		public static void SetBillyLighting()
-        {
-            var def = stgDef.defs[currentMissionId];
+		{
+			var def = stgDef.defs[currentMissionId];
 
 			int lightingId = 0;
 			if(LightingMapping.LightIdMapping.ContainsKey(def.missionName))
 			{
 				lightingId = isDay ? LightingMapping.LightIdMapping[def.missionName][0] : LightingMapping.LightIdMapping[def.missionName][1];
-            }
+			}
 			else if(LightingMapping.LightIdMapping.ContainsKey(def.worldName))
-            {
-                lightingId = isDay ? LightingMapping.LightIdMapping[def.worldName][0] : LightingMapping.LightIdMapping[def.worldName][1];
-            }
-			
+			{
+				lightingId = isDay ? LightingMapping.LightIdMapping[def.worldName][0] : LightingMapping.LightIdMapping[def.worldName][1];
+			}
+
+			billyDirectionalLight.LightColor = new Color(0,0,0,0);
 			var param = currentLightsParam.lightParams[lightingId];
+
+			RenderingServer.SetDefaultClearColor(new Color(param.ambientLightingColor[0] / 255f, param.ambientLightingColor[1] / 255f, param.ambientLightingColor[2] / 255f, (param.ambientLightingColor[3] / 255f)));
+			
 			modelRoot.GetWorld3D().Environment.AmbientLightEnergy = 1.0f;
 			modelRoot.GetWorld3D().Environment.AmbientLightSkyContribution = 0;
-            //modelRoot.GetWorld3D().Environment.AmbientLightColor = new Color(param.ambientLightingColor[0] / 255f, param.ambientLightingColor[1] / 255f, param.ambientLightingColor[2] / 255f, (param.ambientLightingColor[3] / 255f));
-            modelRoot.GetWorld3D().Environment.AmbientLightColor = new Color(Mathf.Pow(param.ambientLightingColor[0] / 255f, 2.2f), Mathf.Pow(param.ambientLightingColor[1] / 255f, 2.2f), Mathf.Pow(param.ambientLightingColor[2] / 255f, 2.2f), (param.ambientLightingColor[3] / 255f));
-			//billyDirectionalLight.LightColor = new Color(param.directionalLightingColor[0] / 255f, param.directionalLightingColor[1] / 255f, param.directionalLightingColor[2] / 255f, (param.directionalLightingColor[3] / 255f));
-			billyDirectionalLight.LightColor = new Color(Mathf.Pow(param.directionalLightingColor[0] / 255f, 2.2f), Mathf.Pow(param.directionalLightingColor[1] / 255f, 2.2f), Mathf.Pow(param.directionalLightingColor[2] / 255f, 2.2f), (param.directionalLightingColor[3] / 255f));
-
+			billyDirectionalLight.LightColor = new Color(param.directionalLightingColor[0] / 255f, param.directionalLightingColor[1] / 255f, param.directionalLightingColor[2] / 255f, (param.directionalLightingColor[3] / 255f));
 			var tfm = Transform3D.Identity;
 			var lightDir = -param.lightDirection;
 			var lookAtTfm = tfm.LookingAt(lightDir.ToGVec3(), Godot.Vector3.Up, true);
 
-            billyDirectionalLight.Quaternion = lookAtTfm.Basis.GetRotationQuaternion();
-        }
+			billyDirectionalLight.Quaternion = lookAtTfm.Basis.GetRotationQuaternion();
+			
+		}
 
 		private static void LazyLoadBillyPC()
 		{
@@ -163,30 +165,40 @@ namespace OverEasy
 			{
 				loadedBillySetDesignObjects = new SetObjList(File.ReadAllBytes(setDesignFilePath));
 			}
-
+			else
+			{
+				loadedBillySetDesignObjects = null;
+			}
+			
 			//Load Set Objects
 			string setObjFilePath = GetAssetPath(def.setObjFilename);
 			if (File.Exists(setObjFilePath))
 			{
 				loadedBillySetObjects = new SetObjList(File.ReadAllBytes(setObjFilePath));
 			}
-
+			else {
+				loadedBillySetObjects = null;
+			}
+			
 			//Load Set Enemies
 			string setEnemyFilePath = GetAssetPath(def.setEnemyFilename);
 			if (File.Exists(setEnemyFilePath))
 			{
 				loadedBillySetEnemies = new SetEnemyList(File.ReadAllBytes(setEnemyFilePath));
+			} else
+			{
+				loadedBillySetEnemies = null;
 			}
 
 			//Load Light Param
 			string setLightParamFilePath = GetAssetPath("set_light_param.bin");
-            if (File.Exists(setLightParamFilePath))
-            {
-                currentLightsParam = new SetLightParam(File.ReadAllBytes(setLightParamFilePath));
-            }
+			if (File.Exists(setLightParamFilePath))
+			{
+				currentLightsParam = new SetLightParam(File.ReadAllBytes(setLightParamFilePath));
+			}
 			SetBillyLighting();
 
-            string lndPath = GetAssetPath(def.lndFilename);
+			string lndPath = GetAssetPath(def.lndFilename);
 			if (File.Exists(lndPath))
 			{
 				modelRoot.AddChild(Billy.ModelConversion.LNDToGDModel(def.lndFilename, new LND(File.ReadAllBytes(lndPath))));
@@ -216,63 +228,63 @@ namespace OverEasy
 			currentPRD = new PRD(File.ReadAllBytes(GetAssetPath(currentArhiveFilename)));
 
 			var battleCommonPRD = new PRD(File.ReadAllBytes(GetAssetPath("k_battle_common.prd")));
-            var stageCommonPRD = new PRD(File.ReadAllBytes(GetAssetPath("k_stage_common.prd")));
-            var bossCommonPRD = new PRD(File.ReadAllBytes(GetAssetPath("k_boss_common.prd")));
+			var stageCommonPRD = new PRD(File.ReadAllBytes(GetAssetPath("k_stage_common.prd")));
+			var bossCommonPRD = new PRD(File.ReadAllBytes(GetAssetPath("k_boss_common.prd")));
 
-            //Load common object models, enemies, items. May want to do this in the initial load step
-            PuyoFile eyeTextures = null;
+			//Load common object models, enemies, items. May want to do this in the initial load step
+			PuyoFile eyeTextures = null;
 			for (int i = 0; i < battleCommonPRD.files.Count; i++)
 			{
 				switch(battleCommonPRD.fileNames[i])
 				{
 					case "ge_player1l.arc":
 						var billy = new GEPlayer(battleCommonPRD.files[i]);
-						CacheModel("player_1", billy.models[0], billy.texnames, billy.gvm, false);
+						CachePlayerModel("player_1", billy, false);
 						break;
 					case "ge_player2l.arc":
 						var rolly = new GEPlayer(battleCommonPRD.files[i]);
-						CacheModel("player_2", rolly.models[0], rolly.texnames, rolly.gvm, false);
+						CachePlayerModel("player_2", rolly, false);
 						break;
 					case "ge_player3l.arc":
 						var chick = new GEPlayer(battleCommonPRD.files[i]);
-						CacheModel("player_3", chick.models[0], chick.texnames, chick.gvm, false);
+						CachePlayerModel("player_3", chick, false);
 						break;
 					case "ge_player4l.arc":
 						var bantam = new GEPlayer(battleCommonPRD.files[i]);
-						CacheModel("player_4", bantam.models[0], bantam.texnames, bantam.gvm, false);
+						CachePlayerModel("player_4", bantam, false);
 						break;
 					case "ene_eye.gvm":
 						eyeTextures = new PuyoFile(battleCommonPRD.files[i]);
 						break;
 				}
-            }
+			}
 
 			//Certain files use certain common PRDs
-            if (prdMissionname.Contains("battle"))
-            {
+			if (prdMissionname.Contains("battle"))
+			{
 				currentCommonPRD = battleCommonPRD;
-            }
-            else if (prdMissionname.Contains("boss"))
-            {
+			}
+			else if (prdMissionname.Contains("boss"))
+			{
 				currentCommonPRD = bossCommonPRD;
-            }
-            else
-            {
+			}
+			else
+			{
 				currentCommonPRD = stageCommonPRD;
-            }
+			}
 			for(int i = 0; i < currentCommonPRD.files.Count; i++)
 			{
 				switch(currentCommonPRD.fileNames[i])
 				{
 					case "set_light_param.bin":
 						currentLightsParam = new SetLightParam(currentCommonPRD.files[i]);
-                        break;
+						break;
 
-                }
-            }
-            SetBillyLighting();
+				}
+			}
+			SetBillyLighting();
 
-            Dictionary<string, ArEnemy> enemyArchiveDict = new Dictionary<string, ArEnemy>();
+			Dictionary<string, ArEnemy> enemyArchiveDict = new Dictionary<string, ArEnemy>();
 			Dictionary<string, PuyoFile> enemyGVMDict = new Dictionary<string, PuyoFile>();
 			for (int i = 0; i < currentPRD.files.Count; i++)
 			{
@@ -289,22 +301,22 @@ namespace OverEasy
 				if (currentPRD.fileNames[i] == "ge_player1.arc")
 				{
 					var billy = new GEPlayer(currentPRD.files[i]);
-					CacheModel("player_1", billy.models[0], billy.texnames, billy.gvm, true);
+					CachePlayerModel("player_1", billy, true);
 				}
 				else if (currentPRD.fileNames[i] == "ge_player2.arc")
 				{
 					var rolly = new GEPlayer(currentPRD.files[i]);
-					CacheModel("player_2", rolly.models[0], rolly.texnames, rolly.gvm, true);
+					CachePlayerModel("player_2", rolly, true);
 				}
 				else if (currentPRD.fileNames[i] == "ge_player3.arc")
 				{
 					var chick = new GEPlayer(currentPRD.files[i]);
-					CacheModel("player_3", chick.models[0], chick.texnames, chick.gvm, true);
+					CachePlayerModel("player_3", chick, true);
 				}
 				else if (currentPRD.fileNames[i] == "ge_player4.arc")
 				{
 					var bantam = new GEPlayer(currentPRD.files[i]);
-					CacheModel("player_4", bantam.models[0], bantam.texnames, bantam.gvm, true);
+					CachePlayerModel("player_4", bantam, true);
 				}
 				else
 
@@ -357,11 +369,11 @@ namespace OverEasy
 				}
 				var model = pair.Value.models[0];
 
-                if (pair.Key == "ene_am02")
+				if (pair.Key == "ene_am02")
 				{
 					model = pair.Value.models[1];
-                }
-                CacheModel($"enemy_{ObjectVariants.enemyFileMap[$"ar_{pair.Key}.arc"]}", model, pair.Value.texList[0], enemyGVMDict[pair.Key], false);
+				}
+				CacheModel($"enemy_{ObjectVariants.enemyFileMap[$"ar_{pair.Key}.arc"]}", model, pair.Value.texList[0], enemyGVMDict[pair.Key], false);
 			}
 
 			//Set skybox setting
@@ -938,6 +950,8 @@ namespace OverEasy
 			temp = activeNode.CreateChild();
 			temp.SetText(0, "Player Spawnpoints");
 			temp.SetMetadata(0, 2);
+
+			Node3D p1Node = null;
 			for(int i = 0; i < 4; i++)
 			{
 				StageDef.PlayerStart start;
@@ -975,8 +989,14 @@ namespace OverEasy
 				modelNode.RotationDegrees = new Vector3(0, start.rotation, 0);
 				modelNode.Position = new Vector3(start.playerPosition.X, start.playerPosition.Y, start.playerPosition.Z);
 				modelRoot.AddChild(modelNode);
+
+				if(i == 0)
+				{
+					p1Node = modelNode;
+				}
 			}
 			temp.Collapsed = true;
+			PutCameraOnObject(p1Node);
 
 			if (loadedBillySetObjects != null && loadedBillySetObjects?.setObjs?.Count != 0)
 			{
@@ -1007,7 +1027,7 @@ namespace OverEasy
 				temp.Collapsed = true;
 			}
 
-			if (loadedBillySetDesignObjects?.setObjs?.Count != 0)
+			if (loadedBillySetDesignObjects != null && loadedBillySetDesignObjects?.setObjs?.Count != 0)
 			{
 				temp = activeNode.CreateChild();
 				temp.SetText(0, "Set Design Objects");
@@ -1036,7 +1056,7 @@ namespace OverEasy
 				temp.Collapsed = true;
 			}
 
-			if (loadedBillySetEnemies?.setEnemies?.Count != 0)
+			if (loadedBillySetEnemies != null && loadedBillySetEnemies?.setEnemies?.Count != 0)
 			{
 				temp = activeNode.CreateChild();
 				temp.SetText(0, "Set Enemy Objects");
@@ -1073,10 +1093,50 @@ namespace OverEasy
 			var chick = new GEPlayer(File.ReadAllBytes(GetAssetPath("ge_player3.arc")));
 			var bantam = new GEPlayer(File.ReadAllBytes(GetAssetPath("ge_player4.arc")));
 
-			CacheModel("player_1", billy.models[0], billy.texnames, billy.gvm, false);
-			CacheModel("player_2", rolly.models[0], rolly.texnames, rolly.gvm, false);
-			CacheModel("player_3", chick.models[0], chick.texnames, chick.gvm, false);
-			CacheModel("player_4", bantam.models[0], bantam.texnames, bantam.gvm, false);
+			CachePlayerModel("player_1", billy, false);
+			CachePlayerModel("player_2", rolly, false);
+			CachePlayerModel("player_3", chick, false);
+			CachePlayerModel("player_4", bantam, false);
+		}
+		private static Node3D CachePlayerModel(string name, GEPlayer player, bool forceAdd)
+		{
+			ModelConversion.LoadGVM(name, player.gvm, out var gvmTextures, out var gvrAlphaTypes);
+			AquaNode playerAqn = new AquaNode();
+			var modelNode = ModelConversion.NinjaToGDModel(name, player.models[0], player.texnames, gvmTextures, gvrAlphaTypes, playerAqn);
+			var combNode = ModelConversion.NinjaToGDModel(name, player.models[1], player.texnames, gvmTextures, gvrAlphaTypes, null);
+			var faceNode = ModelConversion.NinjaToGDModel(name, player.models[2], player.texnames, gvmTextures, gvrAlphaTypes, null);
+			var leftHandNode = ModelConversion.NinjaToGDModel(name, player.models[3], player.texnames, gvmTextures, gvrAlphaTypes, null);
+			var rightHandNode = ModelConversion.NinjaToGDModel(name, player.models[4], player.texnames, gvmTextures, gvrAlphaTypes, null);
+
+			foreach(var childNode in combNode.GetChildren())
+			{
+				childNode.Reparent(modelNode);
+				((MeshInstance3D)childNode).Position += playerAqn.nodeList[55].GetInverseBindPoseMatrixInverted().Translation.ToGVec3();
+            }
+            foreach (var childNode in faceNode.GetChildren())
+            {
+                childNode.Reparent(modelNode);
+                ((MeshInstance3D)childNode).Position += playerAqn.nodeList[57].GetInverseBindPoseMatrixInverted().Translation.ToGVec3();
+            }
+            foreach (var childNode in leftHandNode.GetChildren())
+            {
+                childNode.Reparent(modelNode);
+                ((MeshInstance3D)childNode).RotateY(Mathf.Pi);
+                ((MeshInstance3D)childNode).Position += playerAqn.nodeList[47].GetInverseBindPoseMatrixInverted().Translation.ToGVec3();
+            }
+            foreach (var childNode in rightHandNode.GetChildren())
+            {
+                childNode.Reparent(modelNode);
+                ((MeshInstance3D)childNode).Position += playerAqn.nodeList[37].GetInverseBindPoseMatrixInverted().Translation.ToGVec3();
+            }
+
+			CreateObjectCollision(modelNode);
+			if (forceAdd || !modelDictionary.ContainsKey(name))
+			{
+				modelDictionary[name] = modelNode;
+			}
+
+			return modelNode;
 		}
 
 		private static Node3D CacheModel(string name, NJSObject nj, NJTextureList njtl, PuyoFile gvm, bool forceAdd)
@@ -1196,8 +1256,8 @@ namespace OverEasy
 			else if(ene.enemyId == 0)
 			{
 				modelNode = new Node3D();
-                modelDictionary.Add(name, modelNode);
-            }
+				modelDictionary.Add(name, modelNode);
+			}
 			else
 			{
 				Color color = new Color(1, 1, 0, 1);
@@ -1216,19 +1276,19 @@ namespace OverEasy
 
 		private static Node3D LoadBillyObjectModel(SetObj obj, bool designObj)
 		{
-			string name = obj.objectId.ToString();
+			string name = $"object_{obj.objectId}";
 
 			Node3D modelNode;
 			if (modelDictionary.ContainsKey(name))
 			{
 				modelNode = ModelConversion.GDModelClone(modelDictionary[name]);
-            }
-            else if (obj.objectId == 0)
-            {
-                modelNode = new Node3D();
-                modelDictionary.Add(name, modelNode);
-            }
-            else
+			}
+			else if (obj.objectId == 0)
+			{
+				modelNode = new Node3D();
+				modelDictionary.Add(name, modelNode);
+			}
+			else
 			{
 				switch(obj.objectId)
 				{
@@ -1237,7 +1297,7 @@ namespace OverEasy
 						Color color = new Color(0, 0, 1, 1);
 						if (designObj)
 						{
-							color = new Color(0, 1, 1, 1);
+							color = new Color(0, 1, 0, 1);
 							name = "greenDefaultBox";
 						}
 						modelNode = ModelConversion.CreateDefaultObjectModel(name, color);
@@ -1258,18 +1318,30 @@ namespace OverEasy
 
 		private static void CreateObjectCollision(Node3D modelNode)
 		{
+			List<MeshInstance3D> meshInstances = new List<MeshInstance3D>();
+			GetObjectMeshInstances(modelNode, meshInstances);
+
+			foreach (var meshInst in meshInstances)
+			{
+				meshInst.CreateTrimeshCollision();
+				var staticBody = (StaticBody3D)meshInst.GetChild(0);
+				var collChild = ((CollisionShape3D)staticBody.GetChild(0));
+				collChild.Disabled = false;
+				staticBody.CollisionLayer = 1;
+				staticBody.CollisionMask = 1;
+			}
+		}
+
+		private static void GetObjectMeshInstances(Node modelNode, List<MeshInstance3D> meshInstances)
+		{
 			var children = modelNode.GetChildren();
 			foreach (var nodeChild in children)
 			{
 				if (nodeChild is MeshInstance3D meshChild)
 				{
-					meshChild.CreateTrimeshCollision();
-					var staticBody = (StaticBody3D)meshChild.GetChild(0);
-					var collChild = ((CollisionShape3D)staticBody.GetChild(0));
-					collChild.Disabled = false;
-					staticBody.CollisionLayer = 1;
-					staticBody.CollisionMask = 1;
+					meshInstances.Add(meshChild);
 				}
+				GetObjectMeshInstances(nodeChild, meshInstances);
 			}
 		}
 

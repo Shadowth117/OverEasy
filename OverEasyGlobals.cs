@@ -391,6 +391,11 @@ namespace OverEasy
 		public static void ResetLoadedData(string path)
         {
             ResetTransformGizmo();
+			if(modelRoot.GetWorld3D().Environment != null)
+            {
+				modelRoot.GetWorld3D().Environment.Dispose();
+				modelRoot.GetWorld3D().Environment = null;
+            }
 			modelRoot.GetWorld3D().Environment = new Godot.Environment();
             modFolderLocation = null;
             allowedToUpdate = false;
@@ -593,6 +598,7 @@ namespace OverEasy
 				//Mission Node
 				case 1:
 					ResetTransformGizmo();
+					ViewCamera.SetToFreecam();
 					foreach (TreeItem item in setDataTree.GetRoot().GetChildren())
 					{
 						if (item == activeNode)
@@ -650,28 +656,37 @@ namespace OverEasy
 				//mission Node Data Type - SetObject, Camera, etc.
 				case 2:
 					break;
-				//Object Node
-				case 3:
-					currentObjectId = activeNode.GetMetadata(1).AsInt32();
-					currentEditorType = (EditingType)(activeNode.GetMetadata(2).AsInt32());
-					currentObjectTreeItem = activeNode;
-					var activeNode3d = (Node3D)activeNode.GetMetadata(3);
-					TransformGizmo.Reparent(activeNode3d, false);
-					TransformGizmo.SetCurrentTransformType(OverEasy.Editor.Gizmo.TransformType.Translation);
-					ViewCamera.orbitFocusNode = activeNode3d;
-					ViewCamera.TrySetOrbitCam();
-					ViewCamera.oneTimeProcessTransform = true;
-					LoadSetObject();
-					setDataTree.ScrollToItem(activeNode);
-					ViewCamera.ToggleMode();
-					break;
-			}
+                //Object Node
+                case 3:
+                    currentObjectId = activeNode.GetMetadata(1).AsInt32();
+                    currentEditorType = (EditingType)(activeNode.GetMetadata(2).AsInt32());
+                    currentObjectTreeItem = activeNode;
+
+                    //Position camera on object
+                    var activeNode3d = (Node3D)activeNode.GetMetadata(3);
+                    PutCameraOnObject(activeNode3d);
+
+                    //Load object GUI controls
+                    LoadSetObject();
+                    setDataTree.ScrollToItem(activeNode);
+                    break;
+            }
 		}
 
-		/// <summary>
-		/// Method for lazy loading area data. Should be called upon expansion of a node.
-		/// </summary>
-		public static void LazyLoadAreaData()
+        private static void PutCameraOnObject(Node3D activeNode3d)
+        {
+            TransformGizmo.Reparent(activeNode3d, false);
+            TransformGizmo.SetCurrentTransformType(OverEasy.Editor.Gizmo.TransformType.Translation);
+            ViewCamera.orbitFocusNode = activeNode3d;
+            ViewCamera.TrySetOrbitCam();
+            ViewCamera.oneTimeProcessTransform = true;
+            ViewCamera.ToggleMode();
+        }
+
+        /// <summary>
+        /// Method for lazy loading area data. Should be called upon expansion of a node.
+        /// </summary>
+        public static void LazyLoadAreaData()
 		{
 			switch (gameType)
 			{

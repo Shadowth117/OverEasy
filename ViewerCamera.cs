@@ -542,25 +542,30 @@ public partial class ViewerCamera : Camera3D
 	public void ToggleMode()
 	{
 		if (cameraMode == CameraMode.Orbit)
-		{
-			cameraMode = CameraMode.Freecam;
-			this.Reparent(GetTree().Root);
-			//Adjust targetNode while it's not parented
-			targetNode.GlobalRotation = new Vector3(0, targetNode.GlobalRotation.Y, targetNode.GlobalRotation.Z);
-			targetNode.Reparent(GetTree().Root, true);
-
-			//Reparent back to targetNode after its adjustment
-			this.Reparent(targetNode);
-			freecamTotalPitch = -(this.Rotation.X * 180 / Mathf.Pi);
-		}
-		else if (cameraMode == CameraMode.Freecam)
+        {
+            SetToFreecam();
+        }
+        else if (cameraMode == CameraMode.Freecam)
 		{
 			cameraMode = CameraMode.Orbit;
 			TrySetOrbitCam();
 		}
 	}
 
-	public bool TrySetOrbitCam()
+    public void SetToFreecam()
+    {
+        cameraMode = CameraMode.Freecam;
+        this.Reparent(GetTree().Root);
+        //Adjust targetNode while it's not parented
+        targetNode.GlobalRotation = new Vector3(0, targetNode.GlobalRotation.Y, targetNode.GlobalRotation.Z);
+        targetNode.Reparent(GetTree().Root, true);
+
+        //Reparent back to targetNode after its adjustment
+        this.Reparent(targetNode);
+        freecamTotalPitch = -(this.Rotation.X * 180 / Mathf.Pi);
+    }
+
+    public bool TrySetOrbitCam()
 	{
 		if (orbitFocusNode != null)
 		{
@@ -675,7 +680,7 @@ public partial class ViewerCamera : Camera3D
 								OverEasyGlobals.PreviousMouseSelectionPointRidCache.Add((Godot.Rid)result["rid"]);
 								var parentNode = ((Node3D)result["collider"]).GetParent().GetParent();
 
-                                orbitFocusNode = (Node3D)parentNode;
+								orbitFocusNode = (Node3D)parentNode;
 								if(cameraMode == CameraMode.Orbit)
 								{
 									TrySetOrbitCam();

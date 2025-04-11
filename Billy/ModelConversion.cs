@@ -4,6 +4,7 @@ using AquaModelLibrary.Data.Ninja;
 using AquaModelLibrary.Data.Ninja.Model;
 using AquaModelLibrary.Data.Ninja.Motion;
 using AquaModelLibrary.Data.PSO2.Aqua;
+using AquaModelLibrary.Data.PSO2.Aqua.AquaNodeData;
 using AquaModelLibrary.Data.PSO2.Aqua.AquaObjectData;
 using AquaModelLibrary.Helpers.Readers;
 using ArchiveLib;
@@ -22,24 +23,18 @@ namespace OverEasy.Billy
         public static void BillyModeNightToggleParent(Node3D parentNode)
         {
 			OverEasyGlobals.SetBillyLighting();
-
-            if (parentNode is MeshInstance3D)
-            {
-                BillyModeNightToggleMesh((ArrayMesh)((MeshInstance3D)parentNode).Mesh);
-            }
-            var nodes = parentNode.GetChildren();
-            foreach (var node in nodes)
-            {
-                BillyModeNightToggle(node);
-            }
+			BillyModeNightToggle(parentNode);
         }
         public static void BillyModeNightToggle(Node parentNode)
 		{
-			if (parentNode is MeshInstance3D)
-			{
-				BillyModeNightToggleMesh((ArrayMesh)((MeshInstance3D)parentNode).Mesh);
-			}
-			var nodes = parentNode.GetChildren();
+            if (parentNode is MeshInstance3D)
+            {
+                if (((MeshInstance3D)parentNode).Mesh is ArrayMesh)
+                {
+                    BillyModeNightToggleMesh((ArrayMesh)((MeshInstance3D)parentNode).Mesh);
+                }
+            }
+            var nodes = parentNode.GetChildren();
 			foreach (var node in nodes)
 			{
 				BillyModeNightToggle(node);
@@ -114,7 +109,6 @@ namespace OverEasy.Billy
 			mat.AlbedoColor = color;
 			mat.BlendMode = BaseMaterial3D.BlendModeEnum.Mix;
 			mat.ShadingMode = BaseMaterial3D.ShadingModeEnum.PerVertex;
-			mat.DisableAmbientLight = false;
 			box.Material = mat;
 			meshInst.Mesh = box;
 			root.AddChild(meshInst);
@@ -191,7 +185,7 @@ namespace OverEasy.Billy
 		/// <summary>
 		/// Returns a Node3D containing a mesh instances with the model's arraymesh and a skeleton equivalent to the NJSObject nodes of the provided model.
 		/// </summary>
-		public static Node3D NinjaToGDModel(string name, NJSObject nj, NJTextureList texList, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes)
+		public static Node3D NinjaToGDModel(string name, NJSObject nj, NJTextureList texList, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes, AquaNode aqn = null)
 		{
 			Node3D root = new Node3D();
 			root.Name = name;
@@ -210,13 +204,13 @@ namespace OverEasy.Billy
 				fullVertList.ProcessToPSO2Weights();
 			}
 
-			IterateNJSObject(nj, fullVertList, ref nodeId, -1, root, skeleton, System.Numerics.Matrix4x4.Identity, texList, gvrTextures, gvrAlphaTypes);
+			IterateNJSObject(nj, fullVertList, ref nodeId, -1, root, skeleton, System.Numerics.Matrix4x4.Identity, texList, gvrTextures, gvrAlphaTypes, aqn);
 
 			return root;
 		}
 
 		private static void IterateNJSObject(NJSObject nj, VTXL fullVertList, ref int nodeId, int parentId, Node3D modelRoot, Skeleton3D skel,
-			System.Numerics.Matrix4x4 parentMatrix, NJTextureList texList, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes)
+			System.Numerics.Matrix4x4 parentMatrix, NJTextureList texList, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes, AquaNode aqn = null)
 		{
 			int currentNodeId = nodeId;
 			string boneName = $"Node_{nodeId}";
@@ -242,6 +236,28 @@ namespace OverEasy.Billy
 			mat *= rotation;
 			mat *= System.Numerics.Matrix4x4.CreateTranslation(nj.pos);
 			mat = mat * parentMatrix;
+
+			if(aqn != null)
+            {
+                NODE aqNode = new NODE();
+                aqNode.boneShort1 = 0x1C0;
+                aqNode.animatedFlag = 1;
+                aqNode.parentId = parentId;
+                aqNode.nextSibling = -1;
+                aqNode.firstChild = -1;
+                aqNode.unkNode = -1;
+                aqNode.pos = nj.pos;
+                aqNode.eulRot = new System.Numerics.Vector3((float)(nj.rot.X * 180 / Math.PI),
+                    (float)(nj.rot.Y * 180 / Math.PI), (float)(nj.rot.Z * 180 / Math.PI));
+                aqNode.scale = nj.scale;
+                System.Numerics.Matrix4x4.Invert(mat, out var invMat);
+                aqNode.m1 = new System.Numerics.Vector4(invMat.M11, invMat.M12, invMat.M13, invMat.M14);
+                aqNode.m2 = new System.Numerics.Vector4(invMat.M21, invMat.M22, invMat.M23, invMat.M24);
+                aqNode.m3 = new System.Numerics.Vector4(invMat.M31, invMat.M32, invMat.M33, invMat.M34);
+                aqNode.m4 = new System.Numerics.Vector4(invMat.M41, invMat.M42, invMat.M43, invMat.M44);
+                aqNode.boneName.SetString(aqn.nodeList.Count.ToString());
+                aqn.nodeList.Add(aqNode);
+            }
 
 			if (nj.mesh != null)
 			{
@@ -316,7 +332,7 @@ namespace OverEasy.Billy
 					StandardMaterial3D gdMaterial = new StandardMaterial3D();
 					gdMaterial.VertexColorUseAsAlbedo = true;
 					gdMaterial.ShadingMode = BaseMaterial3D.ShadingModeEnum.PerPixel;
-					gdMaterial.CullMode = BaseMaterial3D.CullModeEnum.Back;
+					gdMaterial.CullMode = BaseMaterial3D.CullModeEnum.Disabled;
 					
 					var matId = tempTri.matIdList.Count > 0 ? tempTri.matIdList[0] : 0;
 					if(testAqo.tempMats.Count > 0)
@@ -357,13 +373,13 @@ namespace OverEasy.Billy
 			if(nj.childObject != null)
 			{
 				nodeId++;
-				IterateNJSObject(nj.childObject, fullVertList, ref nodeId, currentNodeId, modelRoot, skel, mat, texList, gvrTextures, gvrAlphaTypes);
+				IterateNJSObject(nj.childObject, fullVertList, ref nodeId, currentNodeId, modelRoot, skel, mat, texList, gvrTextures, gvrAlphaTypes, aqn);
 			}
 
 			if(nj.siblingObject != null)
 			{
 				nodeId++;
-				IterateNJSObject(nj.siblingObject, fullVertList, ref nodeId, parentId, modelRoot, skel, parentMatrix, texList, gvrTextures, gvrAlphaTypes);
+				IterateNJSObject(nj.siblingObject, fullVertList, ref nodeId, parentId, modelRoot, skel, parentMatrix, texList, gvrTextures, gvrAlphaTypes, aqn);
 			}
 		}
 

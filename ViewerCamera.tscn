@@ -5,6 +5,7 @@
 [node name="Target" type="Node3D"]
 
 [node name="ViewerCamera" type="Camera3D" parent="." node_paths=PackedStringArray("targetNode")]
+fov = 45.0
 far = 40000.0
 script = ExtResource("1_v584a")
 targetNode = NodePath("..")
