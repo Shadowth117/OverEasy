@@ -182,12 +182,33 @@ namespace OverEasy.Billy
 			return new NJSObject(sr, variant, sr._BEReadActive, offset);
 		}
 
+		public static List<Texture2D> GetTextureSubset(List<Texture2D> textureList, NJTextureList texList, List<int> alphaTypes, out List<int> newAlphaTypes)
+		{
+			List<Texture2D> newTextures = new List<Texture2D>();
+			newAlphaTypes = new List<int>();
+			for(int i = 0; i < textureList.Count; i++)
+			{
+				if (texList.texNames.Contains(Path.GetFileNameWithoutExtension(textureList[i].ResourceName)))
+				{
+					newTextures.Add(textureList[i]);
+					newAlphaTypes.Add(alphaTypes[i]);
+
+                }
+			}
+
+			return newTextures;
+		}
+
 		/// <summary>
 		/// Returns a Node3D containing a mesh instances with the model's arraymesh and a skeleton equivalent to the NJSObject nodes of the provided model.
+		/// Note that providing a rootTfm input will NOT transform bones by it!
 		/// </summary>
-		public static Node3D NinjaToGDModel(string name, NJSObject nj, NJTextureList texList, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes, AquaNode aqn = null)
+		public static Node3D NinjaToGDModel(string name, NJSObject nj, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes, AquaNode aqn = null, System.Numerics.Matrix4x4? baseTfm = null, Node3D root = null, System.Numerics.Matrix4x4? rootTfm = null)
 		{
-			Node3D root = new Node3D();
+			if(root == null)
+            {
+                root = new Node3D();
+            }
 			root.Name = name;
 			
 			Skeleton3D skeleton = new Skeleton3D();
@@ -204,13 +225,21 @@ namespace OverEasy.Billy
 				fullVertList.ProcessToPSO2Weights();
 			}
 
-			IterateNJSObject(nj, fullVertList, ref nodeId, -1, root, skeleton, System.Numerics.Matrix4x4.Identity, texList, gvrTextures, gvrAlphaTypes, aqn);
+			if(baseTfm == null)
+			{
+				baseTfm = System.Numerics.Matrix4x4.Identity;
+            }
+            if (rootTfm == null)
+            {
+                rootTfm = System.Numerics.Matrix4x4.Identity;
+            }
+            IterateNJSObject(nj, fullVertList, ref nodeId, -1, root, skeleton, (System.Numerics.Matrix4x4)baseTfm, gvrTextures, gvrAlphaTypes, (System.Numerics.Matrix4x4)rootTfm, aqn);
 
 			return root;
 		}
 
 		private static void IterateNJSObject(NJSObject nj, VTXL fullVertList, ref int nodeId, int parentId, Node3D modelRoot, Skeleton3D skel,
-			System.Numerics.Matrix4x4 parentMatrix, NJTextureList texList, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes, AquaNode aqn = null)
+			System.Numerics.Matrix4x4 parentMatrix, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes, System.Numerics.Matrix4x4 rootTfm, AquaNode aqn = null)
 		{
 			int currentNodeId = nodeId;
 			string boneName = $"Node_{nodeId}";
@@ -328,13 +357,13 @@ namespace OverEasy.Billy
 						arrays[(int)Mesh.ArrayType.Color] = vertClrList.ToArray();
 					}
 
-					//Set up material
-					StandardMaterial3D gdMaterial = new StandardMaterial3D();
+                    //Set up material
+                    StandardMaterial3D gdMaterial = new StandardMaterial3D();
+                    var matId = tempTri.matIdList.Count > 0 ? tempTri.matIdList[0] : 0;
 					gdMaterial.VertexColorUseAsAlbedo = true;
 					gdMaterial.ShadingMode = BaseMaterial3D.ShadingModeEnum.PerPixel;
 					gdMaterial.CullMode = BaseMaterial3D.CullModeEnum.Disabled;
 					
-					var matId = tempTri.matIdList.Count > 0 ? tempTri.matIdList[0] : 0;
 					if(testAqo.tempMats.Count > 0)
 					{
 						var texId = Int32.Parse(testAqo.tempMats[matId].texNames[0]);
@@ -363,8 +392,13 @@ namespace OverEasy.Billy
 					}
 					mesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, arrays, null, null);
 					mesh.SurfaceSetMaterial(0, gdMaterial);
+
 					//Final assignment steps
 					meshInst.Mesh = mesh;
+					System.Numerics.Matrix4x4.Decompose(rootTfm, out var scale, out var rot, out var pos);
+					meshInst.Scale = scale.ToGVec3();
+					meshInst.Quaternion = rot.ToGQuat();
+					meshInst.Position = pos.ToGVec3();
 					modelRoot.AddChild(meshInst);
 				}
 
@@ -373,13 +407,13 @@ namespace OverEasy.Billy
 			if(nj.childObject != null)
 			{
 				nodeId++;
-				IterateNJSObject(nj.childObject, fullVertList, ref nodeId, currentNodeId, modelRoot, skel, mat, texList, gvrTextures, gvrAlphaTypes, aqn);
+				IterateNJSObject(nj.childObject, fullVertList, ref nodeId, currentNodeId, modelRoot, skel, mat, gvrTextures, gvrAlphaTypes, rootTfm, aqn);
 			}
 
 			if(nj.siblingObject != null)
 			{
 				nodeId++;
-				IterateNJSObject(nj.siblingObject, fullVertList, ref nodeId, parentId, modelRoot, skel, parentMatrix, texList, gvrTextures, gvrAlphaTypes, aqn);
+				IterateNJSObject(nj.siblingObject, fullVertList, ref nodeId, parentId, modelRoot, skel, parentMatrix, gvrTextures, gvrAlphaTypes, rootTfm, aqn);
 			}
 		}
 
@@ -473,9 +507,13 @@ namespace OverEasy.Billy
 			return root;
 		}
 
-		public static void LoadGVM(string name, PuyoFile gvm, out List<Texture2D> gvmTextures, out List<int> gvrAlphaTypes)
+		public static void LoadGVM(string name, PuyoFile gvm, out List<Texture2D> gvmTextures, out List<int> gvrAlphaTypes, List<int> diffuseAsAlphalist = null)
 		{
-			gvmTextures = new List<Texture2D>();
+			if(diffuseAsAlphalist == null)
+            {
+                diffuseAsAlphalist = new List<int>();
+            }
+            gvmTextures = new List<Texture2D>();
 			gvrAlphaTypes = new List<int>();
 			for (int i = 0; i < gvm.Entries.Count; i++)
 			{
@@ -487,8 +525,19 @@ namespace OverEasy.Billy
 					var temp = texArray[t + 2];
 					texArray[t + 2] = texArray[t];
 					texArray[t] = temp;
+
+					if (diffuseAsAlphalist.Contains(i))
+					{
+						texArray[t + 3] = (byte)Math.Min((texArray[t] + texArray[t + 1] + texArray[t + 2]) / 3, 255);
+					}
 				}
-				gvrAlphaTypes.Add(GetGvrAlphaType(tex.DataFormat));
+				if (diffuseAsAlphalist.Contains(i))
+				{
+					gvrAlphaTypes.Add(2);
+				} else
+                {
+                    gvrAlphaTypes.Add(GetGvrAlphaType(tex.DataFormat));
+                }
 
 				var img = Godot.Image.CreateFromData(tex.TextureWidth, tex.TextureHeight, false, Image.Format.Rgba8, texArray);
 				img.GenerateMipmaps();

@@ -9,10 +9,13 @@ using Godot;
 using OverEasy.Billy;
 using OverEasy.TextInfo;
 using OverEasy.Util;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace OverEasy
 {
@@ -153,11 +156,14 @@ namespace OverEasy
 			SetCameraSettingsBilly();
 			ClearModelAndTextureData();
 
-			//Load Player Models
-			CachePlayerModelsPC();
+            //Load Player Models
+            BillyModelIO.CachePlayerModelsPC();
 
-			//Load Enemy Models
-			CacheEnemyModelsPC();
+            //Load Enemy Models
+            BillyModelIO.CacheEnemyModelsPC();
+
+            //Load Object Models
+            BillyModelIO.CacheObjectModelsPC();
 
 			//Load Set Design
 			string setDesignFilePath = GetAssetPath(def.setDesignFilename);
@@ -239,19 +245,19 @@ namespace OverEasy
 				{
 					case "ge_player1l.arc":
 						var billy = new GEPlayer(battleCommonPRD.files[i]);
-						CachePlayerModel("player_1", billy, false);
+						BillyModelIO.CachePlayerModel("player_1", billy, false);
 						break;
 					case "ge_player2l.arc":
 						var rolly = new GEPlayer(battleCommonPRD.files[i]);
-						CachePlayerModel("player_2", rolly, false);
+                        BillyModelIO.CachePlayerModel("player_2", rolly, false);
 						break;
 					case "ge_player3l.arc":
 						var chick = new GEPlayer(battleCommonPRD.files[i]);
-						CachePlayerModel("player_3", chick, false);
+                        BillyModelIO.CachePlayerModel("player_3", chick, false);
 						break;
 					case "ge_player4l.arc":
 						var bantam = new GEPlayer(battleCommonPRD.files[i]);
-						CachePlayerModel("player_4", bantam, false);
+                        BillyModelIO.CachePlayerModel("player_4", bantam, false);
 						break;
 					case "ene_eye.gvm":
 						eyeTextures = new PuyoFile(battleCommonPRD.files[i]);
@@ -301,22 +307,22 @@ namespace OverEasy
 				if (currentPRD.fileNames[i] == "ge_player1.arc")
 				{
 					var billy = new GEPlayer(currentPRD.files[i]);
-					CachePlayerModel("player_1", billy, true);
+                    BillyModelIO.CachePlayerModel("player_1", billy, true);
 				}
 				else if (currentPRD.fileNames[i] == "ge_player2.arc")
 				{
 					var rolly = new GEPlayer(currentPRD.files[i]);
-					CachePlayerModel("player_2", rolly, true);
+                    BillyModelIO.CachePlayerModel("player_2", rolly, true);
 				}
 				else if (currentPRD.fileNames[i] == "ge_player3.arc")
 				{
 					var chick = new GEPlayer(currentPRD.files[i]);
-					CachePlayerModel("player_3", chick, true);
+                    BillyModelIO.CachePlayerModel("player_3", chick, true);
 				}
 				else if (currentPRD.fileNames[i] == "ge_player4.arc")
 				{
 					var bantam = new GEPlayer(currentPRD.files[i]);
-					CachePlayerModel("player_4", bantam, true);
+                    BillyModelIO.CachePlayerModel("player_4", bantam, true);
 				}
 				else
 
@@ -373,7 +379,7 @@ namespace OverEasy
 				{
 					model = pair.Value.models[1];
 				}
-				CacheModel($"enemy_{ObjectVariants.enemyFileMap[$"ar_{pair.Key}.arc"]}", model, pair.Value.texList[0], enemyGVMDict[pair.Key], false);
+                BillyModelIO.CacheModel($"enemy_{ObjectVariants.enemyFileMap[$"ar_{pair.Key}.arc"]}", model, pair.Value.texList[0], enemyGVMDict[pair.Key], false);
 			}
 
 			//Set skybox setting
@@ -983,7 +989,7 @@ namespace OverEasy
 				//Node's object category
 				objNode.SetMetadata(2, 3);
 				//Attach a model instance
-				var modelNode = LoadBillySpawnModel(i);
+				var modelNode = BillyModelIO.LoadBillySpawnModel(i);
 				modelNode.SetMeta("treeItem", objNode);
 				objNode.SetMetadata(3, modelNode);
 				modelNode.RotationDegrees = new Vector3(0, start.rotation, 0);
@@ -1016,7 +1022,7 @@ namespace OverEasy
 					//Node's object category
 					objNode.SetMetadata(2, 1);
 					//Attach a model instance
-					var modelNode = LoadBillyObjectModel(obj, false);
+					var modelNode = BillyModelIO.LoadBillyObjectModel(obj, false);
 					modelNode.SetMeta("treeItem", objNode);
 					objNode.SetMetadata(3, modelNode);
 
@@ -1045,7 +1051,7 @@ namespace OverEasy
 					//Node's object category
 					objNode.SetMetadata(2, 2);
 					//Attach a model instance
-					var modelNode = LoadBillyObjectModel(obj, true);
+					var modelNode = BillyModelIO.LoadBillyObjectModel(obj, true);
 					modelNode.SetMeta("treeItem", objNode);
 					objNode.SetMetadata(3, modelNode);
 
@@ -1074,7 +1080,7 @@ namespace OverEasy
 					//Node's object category
 					objNode.SetMetadata(2, 4);
 					//Attach a model instance
-					var modelNode = LoadBillySetEnemyModel(obj);
+					var modelNode = BillyModelIO.LoadBillySetEnemyModel(obj);
 					modelNode.SetMeta("treeItem", objNode);
 					objNode.SetMetadata(3, modelNode);
 
@@ -1086,264 +1092,7 @@ namespace OverEasy
 			}
 		}
 
-		private static void CachePlayerModelsPC()
-		{
-			var billy = new GEPlayer(File.ReadAllBytes(GetAssetPath("ge_player1.arc")));
-			var rolly = new GEPlayer(File.ReadAllBytes(GetAssetPath("ge_player2.arc")));
-			var chick = new GEPlayer(File.ReadAllBytes(GetAssetPath("ge_player3.arc")));
-			var bantam = new GEPlayer(File.ReadAllBytes(GetAssetPath("ge_player4.arc")));
 
-			CachePlayerModel("player_1", billy, false);
-			CachePlayerModel("player_2", rolly, false);
-			CachePlayerModel("player_3", chick, false);
-			CachePlayerModel("player_4", bantam, false);
-		}
-		private static Node3D CachePlayerModel(string name, GEPlayer player, bool forceAdd)
-		{
-			ModelConversion.LoadGVM(name, player.gvm, out var gvmTextures, out var gvrAlphaTypes);
-			AquaNode playerAqn = new AquaNode();
-			var modelNode = ModelConversion.NinjaToGDModel(name, player.models[0], player.texnames, gvmTextures, gvrAlphaTypes, playerAqn);
-			var combNode = ModelConversion.NinjaToGDModel(name, player.models[1], player.texnames, gvmTextures, gvrAlphaTypes, null);
-			var faceNode = ModelConversion.NinjaToGDModel(name, player.models[2], player.texnames, gvmTextures, gvrAlphaTypes, null);
-			var leftHandNode = ModelConversion.NinjaToGDModel(name, player.models[3], player.texnames, gvmTextures, gvrAlphaTypes, null);
-			var rightHandNode = ModelConversion.NinjaToGDModel(name, player.models[4], player.texnames, gvmTextures, gvrAlphaTypes, null);
-
-			foreach(var childNode in combNode.GetChildren())
-			{
-				childNode.Reparent(modelNode);
-				((MeshInstance3D)childNode).Position += playerAqn.nodeList[55].GetInverseBindPoseMatrixInverted().Translation.ToGVec3();
-            }
-            foreach (var childNode in faceNode.GetChildren())
-            {
-                childNode.Reparent(modelNode);
-                ((MeshInstance3D)childNode).Position += playerAqn.nodeList[57].GetInverseBindPoseMatrixInverted().Translation.ToGVec3();
-            }
-            foreach (var childNode in leftHandNode.GetChildren())
-            {
-                childNode.Reparent(modelNode);
-                ((MeshInstance3D)childNode).RotateY(Mathf.Pi);
-                ((MeshInstance3D)childNode).Position += playerAqn.nodeList[47].GetInverseBindPoseMatrixInverted().Translation.ToGVec3();
-            }
-            foreach (var childNode in rightHandNode.GetChildren())
-            {
-                childNode.Reparent(modelNode);
-                ((MeshInstance3D)childNode).Position += playerAqn.nodeList[37].GetInverseBindPoseMatrixInverted().Translation.ToGVec3();
-            }
-
-			CreateObjectCollision(modelNode);
-			if (forceAdd || !modelDictionary.ContainsKey(name))
-			{
-				modelDictionary[name] = modelNode;
-			}
-
-			return modelNode;
-		}
-
-		private static Node3D CacheModel(string name, NJSObject nj, NJTextureList njtl, PuyoFile gvm, bool forceAdd)
-		{
-			ModelConversion.LoadGVM(name, gvm, out var gvmTextures, out var gvrAlphaTypes);
-			var modelNode = ModelConversion.NinjaToGDModel(name, nj, njtl, gvmTextures, gvrAlphaTypes);
-			CreateObjectCollision(modelNode);
-			if (forceAdd || !modelDictionary.ContainsKey(name))
-			{
-				modelDictionary[name] = modelNode;
-			}
-
-			return modelNode;
-		}
-
-		private static void CacheEnemyModelsPC()
-		{
-			foreach (var set in ObjectVariants.enemyFileMap)
-			{
-				//Load textures
-				string texturePath = null;
-				switch(set.Key)
-				{
-					case "ar_ene_yellow_boss_green.arc":
-						texturePath = GetAssetPath("ene_yellow_boss.gvm");
-						break;
-					case "ar_ene_red_boss.arc":
-						texturePath = GetAssetPath("ene_red_boss_dino.gvm");
-						break;
-					default:
-						texturePath = GetAssetPath(set.Key.Replace(".arc", ".gvm").Replace("ar_", ""));
-						break;
-
-				}
-				ModelConversion.LoadGVM(set.Key, new PuyoFile(File.ReadAllBytes(texturePath)), out var gvmTextures, out var gvrAlphaTypes);
-				if (gvmTextures[0].ResourceName == "am064_e00bstex01.gvr")
-				{
-					string eyespath = GetAssetPath("ene_eye.gvm");
-					if (File.Exists(eyespath))
-					{
-						ModelConversion.LoadGVM(set.Key, new PuyoFile(File.ReadAllBytes(eyespath)), out var eyeTextures, out var eyeAlphaTypes);
-						gvmTextures[0] = eyeTextures[0];
-					}
-
-				}
-
-				//Load models
-				var modelPath = GetAssetPath(set.Key);
-				if (File.Exists(modelPath))
-				{
-					var arc = new ArEnemy(File.ReadAllBytes(modelPath));
-					NJSObject nj = null;
-					NJTextureList njtl = null;
-
-					switch (set.Key)
-					{
-						case "ar_ene_am02.arc":
-							nj = arc.models[1];
-							njtl = arc.texList[0];
-							break;
-						default:
-							nj = arc.models[0];
-							njtl = arc.texList[0];
-							break;
-					}
-					var modelNode = ModelConversion.NinjaToGDModel(set.Key, nj, njtl, gvmTextures, gvrAlphaTypes);
-					CreateObjectCollision(modelNode);
-
-					string enemyRef = $"enemy_{set.Value}";
-					if (!modelDictionary.ContainsKey(enemyRef))
-					{
-						modelDictionary.Add(enemyRef, modelNode);
-					}
-				}
-
-			}
-		}
-
-		private static Node3D LoadBillySpawnModel(int spawnId)
-		{
-			var name = $"player_{spawnId + 1}";
-
-			Node3D modelNode;
-			if (modelDictionary.ContainsKey(name))
-			{
-				modelNode = ModelConversion.GDModelClone(modelDictionary[name]);
-			}
-			else
-			{
-				Color color = new Color(1, 0, 0, 1);
-				modelNode = ModelConversion.CreateDefaultObjectModel(name, color);
-				((MeshInstance3D)modelNode.GetChild(0)).CreateTrimeshCollision();
-				var staticBody = ((StaticBody3D)modelNode.GetChild(0).GetChild(0));
-				var child = ((CollisionShape3D)staticBody.GetChild(0));
-				child.Disabled = false;
-				staticBody.CollisionLayer = 1;
-				staticBody.CollisionMask = 1;
-				modelDictionary.Add(name, modelNode);
-			}
-
-			return modelNode;
-		}
-
-		private static Node3D LoadBillySetEnemyModel(SetEnemy ene)
-		{
-			var name = $"enemy_{ene.enemyId.ToString("X")}";
-			if(ene.enemyId == 0x101)
-			{
-				name += $"_{ene.int_38}";
-			}
-
-			Node3D modelNode;
-			if (modelDictionary.ContainsKey(name))
-			{
-				modelNode = ModelConversion.GDModelClone(modelDictionary[name]);
-			}
-			else if(ene.enemyId == 0)
-			{
-				modelNode = new Node3D();
-				modelDictionary.Add(name, modelNode);
-			}
-			else
-			{
-				Color color = new Color(1, 1, 0, 1);
-				modelNode = ModelConversion.CreateDefaultObjectModel(name, color);
-				((MeshInstance3D)modelNode.GetChild(0)).CreateTrimeshCollision();
-				var staticBody = ((StaticBody3D)modelNode.GetChild(0).GetChild(0));
-				var child = ((CollisionShape3D)staticBody.GetChild(0));
-				child.Disabled = false;
-				staticBody.CollisionLayer = 1;
-				staticBody.CollisionMask = 1;
-				modelDictionary.Add(name, modelNode);
-			}
-
-			return modelNode;
-		}
-
-		private static Node3D LoadBillyObjectModel(SetObj obj, bool designObj)
-		{
-			string name = $"object_{obj.objectId}";
-
-			Node3D modelNode;
-			if (modelDictionary.ContainsKey(name))
-			{
-				modelNode = ModelConversion.GDModelClone(modelDictionary[name]);
-			}
-			else if (obj.objectId == 0)
-			{
-				modelNode = new Node3D();
-				modelDictionary.Add(name, modelNode);
-			}
-			else
-			{
-				switch(obj.objectId)
-				{
-					default:
-						name = "blueDefaultBox";
-						Color color = new Color(0, 0, 1, 1);
-						if (designObj)
-						{
-							color = new Color(0, 1, 0, 1);
-							name = "greenDefaultBox";
-						}
-						modelNode = ModelConversion.CreateDefaultObjectModel(name, color);
-
-						//Set up collision
-						CreateObjectCollision(modelNode);
-						break;
-				}
-
-				if(!modelDictionary.ContainsKey(name))
-				{
-					modelDictionary.Add(name, modelNode);
-				}
-			}
-
-			return modelNode;
-		}
-
-		private static void CreateObjectCollision(Node3D modelNode)
-		{
-			List<MeshInstance3D> meshInstances = new List<MeshInstance3D>();
-			GetObjectMeshInstances(modelNode, meshInstances);
-
-			foreach (var meshInst in meshInstances)
-			{
-				meshInst.CreateTrimeshCollision();
-				var staticBody = (StaticBody3D)meshInst.GetChild(0);
-				var collChild = ((CollisionShape3D)staticBody.GetChild(0));
-				collChild.Disabled = false;
-				staticBody.CollisionLayer = 1;
-				staticBody.CollisionMask = 1;
-			}
-		}
-
-		private static void GetObjectMeshInstances(Node modelNode, List<MeshInstance3D> meshInstances)
-		{
-			var children = modelNode.GetChildren();
-			foreach (var nodeChild in children)
-			{
-				if (nodeChild is MeshInstance3D meshChild)
-				{
-					meshInstances.Add(meshChild);
-				}
-				GetObjectMeshInstances(nodeChild, meshInstances);
-			}
-		}
 
 		public static string GetObjectName(bool isNode, SetObj obj)
 		{
