@@ -101,7 +101,7 @@ namespace OverEasy.Billy
             return modelNode;
         }
 
-        public static Node3D LoadBillySetEnemyModel(SetEnemy ene)
+        public static Node3D LoadBillySetEnemyModel(SetEnemy ene, Node3D modelNode = null)
         {
             var name = $"enemy_{ene.enemyId.ToString("X")}";
             if (ene.enemyId == 0x101)
@@ -109,20 +109,26 @@ namespace OverEasy.Billy
                 name += $"_{ene.int_38}";
             }
 
-            Node3D modelNode;
+            //If it's not null, we clean up the node.
+            if (modelNode != null)
+            {
+                CleanModelNode(modelNode);
+            }
             if (OverEasyGlobals.modelDictionary.ContainsKey(name))
             {
-                modelNode = ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary[name]);
+                modelNode = ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary[name], modelNode);
             }
             else if (ene.enemyId == 0)
             {
-                modelNode = new Node3D();
-                OverEasyGlobals.modelDictionary.Add(name, modelNode);
+                if (modelNode == null)
+                {
+                    modelNode = new Node3D();
+                }
             }
             else
             {
                 Color color = new Color(1, 1, 0, 1);
-                modelNode = ModelConversion.CreateDefaultObjectModel(name, color);
+                modelNode = ModelConversion.CreateDefaultObjectModel(name, color, modelNode);
                 ((MeshInstance3D)modelNode.GetChild(0)).CreateTrimeshCollision();
                 var staticBody = ((StaticBody3D)modelNode.GetChild(0).GetChild(0));
                 var child = ((CollisionShape3D)staticBody.GetChild(0));
@@ -135,7 +141,7 @@ namespace OverEasy.Billy
             return modelNode;
         }
 
-        public static Node3D LoadBillyObjectModel(SetObj obj, bool designObj)
+        public static Node3D LoadBillyObjectModel(SetObj obj, bool designObj, Node3D modelNode = null)
         {
             string name = $"object_{obj.objectId}";
 
@@ -144,15 +150,21 @@ namespace OverEasy.Billy
                 name += $"_{obj.intProperty1}";
             }
 
-            Node3D modelNode;
+            //If it's not null, we clean up the node.
+            if(modelNode != null)
+            {
+                CleanModelNode(modelNode);
+            }
             if (OverEasyGlobals.modelDictionary.ContainsKey(name))
             {
-                modelNode = ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary[name]);
+                modelNode = ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary[name], modelNode);
             }
             else if (obj.objectId == 0)
             {
-                modelNode = new Node3D();
-                OverEasyGlobals.modelDictionary.Add(name, modelNode);
+                if(modelNode == null)
+                {
+                    modelNode = new Node3D();
+                }
             }
             else
             {
@@ -166,7 +178,7 @@ namespace OverEasy.Billy
                             color = new Color(0, 1, 0, 1);
                             name = "greenDefaultBox";
                         }
-                        modelNode = ModelConversion.CreateDefaultObjectModel(name, color);
+                        modelNode = ModelConversion.CreateDefaultObjectModel(name, color, modelNode);
 
                         //Set up collision
                         CreateObjectCollision(modelNode);
@@ -180,6 +192,24 @@ namespace OverEasy.Billy
             }
 
             return modelNode;
+        }
+
+        public static void CleanModelNode(Node3D modelNode)
+        {
+            foreach (var child in modelNode.GetChildren())
+            {
+                //Do not kill the camera
+                if(child == OverEasyGlobals.TransformGizmo)
+                {
+                    continue;
+                }
+                //Set visibility so this appears more immediately seamless
+                if (child is Node3D child3d)
+                {
+                    child3d.Visible = false;
+                }
+                child.QueueFree();
+            }
         }
 
         public static void CreateObjectCollision(Node3D modelNode)

@@ -676,25 +676,26 @@ namespace OverEasy
 			stgDefModified = true;
 		}
 
-		public static void UpdateBillySetObjects(SetObjList setObjList, int objectId)
+		public static void UpdateBillySetObjects(SetObjList setObjList, int objectId, bool isDesignObject)
 		{
 			//Gather some initial values
 			var objPosition = GetVec3SchemaValues("ObjectPosition");
 			var objRotation = GetVec3SchemaValues("ObjectRotation");
 
-			//Update 3d representation
-			var parentNode = (Node3D)TransformGizmo.GetParent();
-			parentNode.GlobalPosition = new Vector3(objPosition.X, objPosition.Y, objPosition.Z);
-			parentNode.RotationDegrees = new Vector3(objRotation.X, objRotation.Y, objRotation.Z);
-
 			//Gather current object values
+			bool shouldReloadModel = false;
 			var objRaw = setObjList.setObjs[objectId];
 			foreach (var objSet in activeObjectEditorObjects)
 			{
 				switch (objSet.Key)
 				{
 					case "ObjectId":
-						objRaw.objectId = (int)GetSpinBoxValue("ObjectId");
+						var objIdValue = (int)GetSpinBoxValue("ObjectId");
+                        if (objRaw.objectId != objIdValue)
+						{
+							shouldReloadModel = true;
+                            objRaw.objectId = objIdValue;
+                        }
 						break;
 					case "ObjectPosition":
 						objRaw.Position = objPosition;
@@ -704,7 +705,12 @@ namespace OverEasy
 							(int)(NinjaConstants.ToBAMSValueFromDegrees * objRotation.Y), (int)(NinjaConstants.ToBAMSValueFromDegrees * objRotation.Z));
 						break;
 					case "IntProperty1":
-						objRaw.intProperty1 = (int)GetSpinBoxValue("IntProperty1");
+						var intProperty1Value = (int)GetSpinBoxValue("IntProperty1");
+                        if (objRaw.objectId == 11 && objRaw.intProperty1 != intProperty1Value)
+                        {
+                            shouldReloadModel = true;
+                            objRaw.intProperty1 = intProperty1Value;
+                        }
 						break;
 					case "IntProperty2":
 						objRaw.intProperty2 = (int)GetSpinBoxValue("IntProperty2");
@@ -740,10 +746,19 @@ namespace OverEasy
 						objRaw.btProperty4 = (byte)GetSpinBoxValue("ByteProperty4");
 						break;
 				}
-			}
+            }
 
-			//Insert over original file object values
-			setObjList.setObjs[objectId] = objRaw;
+            //Update 3d representation
+            var parentNode = (Node3D)TransformGizmo.GetParent();
+            if (shouldReloadModel)
+			{
+				BillyModelIO.LoadBillyObjectModel(objRaw, isDesignObject, parentNode);
+			}
+            parentNode.GlobalPosition = new Vector3(objPosition.X, objPosition.Y, objPosition.Z);
+            parentNode.RotationDegrees = new Vector3(objRotation.X, objRotation.Y, objRotation.Z);
+
+            //Insert over original file object values
+            setObjList.setObjs[objectId] = objRaw;
 		}
 
 		public static void UpdateBillySetEnemies(int objectId)
@@ -752,19 +767,20 @@ namespace OverEasy
 			var objPosition = GetVec3SchemaValues("ObjectPosition");
 			var objRotation = GetVec3SchemaValues("ObjectRotation");
 
-			//Update 3d representation
-			var parentNode = (Node3D)TransformGizmo.GetParent();
-			parentNode.GlobalPosition = new Vector3(objPosition.X, objPosition.Y, objPosition.Z);
-			parentNode.RotationDegrees = new Vector3(objRotation.X, objRotation.Y, objRotation.Z);
-
 			//Gather current object values
+			bool shouldReloadModel = false;
 			var objRaw = loadedBillySetEnemies.setEnemies[objectId];
 			foreach (var objSet in activeObjectEditorObjects)
 			{
 				switch (objSet.Key)
 				{
 					case "ObjectId":
-						objRaw.enemyId = (int)GetSpinBoxValue("ObjectId");
+						var idValue = (int)GetSpinBoxValue("ObjectId");
+                        if (objRaw.enemyId != idValue)
+                        {
+							shouldReloadModel = true;
+                            objRaw.enemyId = idValue;
+                        }
 						break;
 					case "ObjectPosition":
 						objRaw.Position = objPosition;
@@ -795,7 +811,12 @@ namespace OverEasy
 						objRaw.int_34 = (int)GetSpinBoxValue("Int_34");
 						break;
 					case "Int_38":
-						objRaw.int_38 = (int)GetSpinBoxValue("Int_38");
+						var int38Value = (int)GetSpinBoxValue("Int_38");
+                        if (objRaw.int_38 != int38Value)
+                        {
+                            shouldReloadModel = true;
+                            objRaw.int_38 = int38Value;
+                        }
 						break;
 					case "Int_3C":
 						objRaw.int_3C = (int)GetSpinBoxValue("Int_3C");
@@ -813,10 +834,19 @@ namespace OverEasy
 						objRaw.flt_4C = (int)GetSpinBoxValue("Flt_4C");
 						break;
 				}
-			}
+            }
 
-			//Insert over original file object values
-			loadedBillySetEnemies.setEnemies[objectId] = objRaw;
+            //Update 3d representation
+            var parentNode = (Node3D)TransformGizmo.GetParent();
+            if (shouldReloadModel)
+            {
+                BillyModelIO.LoadBillySetEnemyModel(objRaw, parentNode);
+            }
+            parentNode.GlobalPosition = new Vector3(objPosition.X, objPosition.Y, objPosition.Z);
+            parentNode.RotationDegrees = new Vector3(objRotation.X, objRotation.Y, objRotation.Z);
+
+            //Insert over original file object values
+            loadedBillySetEnemies.setEnemies[objectId] = objRaw;
 		}
 
 		/// <summary>

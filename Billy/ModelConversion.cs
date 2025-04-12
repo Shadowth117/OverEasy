@@ -99,9 +99,12 @@ namespace OverEasy.Billy
 			}
 		}
 
-		public static Node3D CreateDefaultObjectModel(string name, Color color)
+		public static Node3D CreateDefaultObjectModel(string name, Color color, Node3D root = null)
 		{
-			Node3D root = new Node3D();
+			if(root == null)
+			{
+                root = new Node3D();
+            }
 			MeshInstance3D meshInst = new MeshInstance3D();
 			var box = new BoxMesh();
 			box.Size = new Vector3(10, 10, 10);
@@ -116,9 +119,12 @@ namespace OverEasy.Billy
 			return root;
 		}
 
-		public static Node3D GDModelClone(Node3D modelNode)
+		public static Node3D GDModelClone(Node3D modelNode, Node3D root = null)
 		{
-			Node3D root = new Node3D();
+			if(root == null)
+            {
+                root = new Node3D();
+            }
 			foreach(var child in modelNode.GetChildren())
 			{
 				root.AddChild(child.Duplicate());

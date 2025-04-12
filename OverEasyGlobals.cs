@@ -370,19 +370,27 @@ namespace OverEasy
 		}
 
 		private static void ClearModelAndTextureData()
-		{
+        {
+            foreach (var child in modelRoot.GetChildren())
+            {
+                modelRoot.RemoveChild(child);
+                child.QueueFree();
+            }
+            modelDictionary.Clear();
+            foreach (var set in globalTexturePool)
+			{
+				set.Value.Dispose();
+			}
 			globalTexturePool.Clear();
 			foreach (var set in orderedTextureArchivePools)
 			{
+				foreach(var tex in set.Value)
+				{
+					tex.Dispose();
+				}
 				set.Value.Clear();
 			}
 			orderedTextureArchivePools.Clear();
-			foreach (var child in modelRoot.GetChildren())
-			{
-				modelRoot.RemoveChild(child);
-				child.QueueFree();
-			}
-			modelDictionary.Clear();
 		}
 
 		/// <summary>
@@ -397,6 +405,7 @@ namespace OverEasy
 				modelRoot.GetWorld3D().Environment = null;
             }
 			modelRoot.GetWorld3D().Environment = new Godot.Environment();
+			//Project level environment color is NOT reset, but we may want to just set that with the game
             modFolderLocation = null;
             allowedToUpdate = false;
 
@@ -531,11 +540,11 @@ namespace OverEasy
 				switch (currentEditorType)
 				{
 					case EditingType.BillySetObj:
-						UpdateBillySetObjects(loadedBillySetObjects, currentObjectId);
+						UpdateBillySetObjects(loadedBillySetObjects, currentObjectId, false);
 						LoadBillySetObjectTemplateInfo(loadedBillySetObjects);
 						break;
 					case EditingType.BillySetDesign:
-						UpdateBillySetObjects(loadedBillySetDesignObjects, currentObjectId);
+						UpdateBillySetObjects(loadedBillySetDesignObjects, currentObjectId, true);
 						LoadBillySetObjectTemplateInfo(loadedBillySetDesignObjects);
 						break;
 					case EditingType.BillySpawnPoint:
