@@ -10,12 +10,12 @@ namespace OverEasy.TextInfo
         /// </summary>
         public static Dictionary<string, int[]> LightIdMapping = new Dictionary<string, int[]>()
         {
-            { "green", new int[]{ 0, 11 } },
-            { "blue", new int[]{ 1, 12 } },
-            { "red", new int[]{ 2, 13 } },
+            { "green", new int[]{ 1, 11 } },
+            { "blue", new int[]{ 2, 12 } },
+            { "red", new int[]{ 3, 13 } },
             { "purple", new int[]{ 4, 14 } },
             { "orange", new int[]{ 5, 15 } },
-            { "yellow", new int[]{ 35, 16 } },
+            { "yellow", new int[]{ 36, 16 } },
             { "last", new int[]{ 7, 17 } },
             { "yellow_underground", new int[]{ 6, 6 } },
             { "battle_green", new int[]{ 121, 121 } },

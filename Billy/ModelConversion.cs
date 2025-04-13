@@ -6,6 +6,7 @@ using AquaModelLibrary.Data.Ninja.Motion;
 using AquaModelLibrary.Data.PSO2.Aqua;
 using AquaModelLibrary.Data.PSO2.Aqua.AquaNodeData;
 using AquaModelLibrary.Data.PSO2.Aqua.AquaObjectData;
+using AquaModelLibrary.Data.PSO2.Aqua.AquaObjectData.Intermediary;
 using AquaModelLibrary.Helpers.Readers;
 using ArchiveLib;
 using Godot;
@@ -421,6 +422,98 @@ namespace OverEasy.Billy
 				nodeId++;
 				IterateNJSObject(nj.siblingObject, fullVertList, ref nodeId, parentId, modelRoot, skel, parentMatrix, gvrTextures, gvrAlphaTypes, rootTfm, aqn);
 			}
+		}
+
+		public static Node3D MC2ToGDModel(string name, MC2 mc2)
+		{
+			Node3D modelRoot = new Node3D();
+
+            MeshInstance3D meshInst = new MeshInstance3D();
+            ArrayMesh mesh = new ArrayMesh();
+            var arrays = new Godot.Collections.Array();
+            arrays.Resize((int)Mesh.ArrayType.Max);
+
+            int m = 0;
+            List<Vector3> vertPosList = new List<Vector3>();
+            List<Vector3> vertNrmList = new List<Vector3>();
+            List<Vector2> vertUvList = new List<Vector2>();
+            List<Color> vertClrList = new List<Color>();
+            foreach (var poly in mc2.faceData)
+            {
+				vertPosList.Add(poly.vert0Value.ToGVec3());
+				vertPosList.Add(poly.vert1Value.ToGVec3());
+				vertPosList.Add(poly.vert2Value.ToGVec3());
+				vertNrmList.Add(poly.faceNormal.ToGVec3());
+				vertNrmList.Add(poly.faceNormal.ToGVec3());
+				vertNrmList.Add(poly.faceNormal.ToGVec3());
+				vertUvList.Add(new Vector2(0, 1));
+				vertUvList.Add(new Vector2(0, 1));
+				vertUvList.Add(new Vector2(0, 1));
+				Color color = new Color(0.45f, 0.45f, 0.45f);
+
+				if((poly.flagSet0 & MC2.FlagSet0.Lava) > 0)
+				{
+					color = new Color(1, 0.184f, 0);
+				} 
+				else if((poly.flagSet1 & MC2.FlagSet1.Quicksand) > 0)
+                {
+                    color = new Color(1, 1, 0);
+                }
+                else if ((poly.flagSet1 & MC2.FlagSet1.Drown) > 0)
+                {
+                    color = new Color(0, 0.415f, 1);
+                }
+                else if ((poly.flagSet0 & MC2.FlagSet0.Death) > 0)
+                {
+                    color = new Color(0.1f, 0.1f, 0.1f);
+                }
+				else if ((poly.flagSet1 & MC2.FlagSet1.Snow) > 0)
+				{
+                    color = new Color(1f, 1f, 1f);
+                }
+                else if ((poly.flagSet0 & MC2.FlagSet0.Slide) > 0)
+                {
+                    color = new Color(1f, 0.5f, 0f);
+                }
+                else if ((poly.flagSet1 & MC2.FlagSet1.DefaultGround) > 0)
+                {
+                    color = new Color(0.75f, 0.75f, 0.75f);
+                }
+
+                vertClrList.Add(color);
+                vertClrList.Add(color);
+                vertClrList.Add(color);
+            }
+            if (vertPosList.Count > 0)
+            {
+                arrays[(int)Mesh.ArrayType.Vertex] = vertPosList.ToArray();
+            }
+            if (vertNrmList.Count > 0)
+            {
+                arrays[(int)Mesh.ArrayType.Normal] = vertNrmList.ToArray();
+            }
+            if (vertUvList.Count > 0)
+            {
+                arrays[(int)Mesh.ArrayType.TexUV] = vertUvList.ToArray();
+            }
+            if (vertClrList.Count > 0)
+            {
+                arrays[(int)Mesh.ArrayType.Color] = vertClrList.ToArray();
+            }                    
+			
+			//Set up material
+            StandardMaterial3D gdMaterial = new StandardMaterial3D();
+            gdMaterial.VertexColorUseAsAlbedo = true;
+            gdMaterial.ShadingMode = BaseMaterial3D.ShadingModeEnum.PerPixel;
+            gdMaterial.CullMode = BaseMaterial3D.CullModeEnum.Disabled;
+            gdMaterial.Transparency = BaseMaterial3D.TransparencyEnum.Disabled;
+
+            mesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, arrays, null, null);
+            mesh.SurfaceSetMaterial(0, gdMaterial);
+            meshInst.Mesh = mesh;
+            modelRoot.AddChild(meshInst);
+
+            return modelRoot;
 		}
 
 		public static int GetGvrAlphaType(GvrDataFormat format)

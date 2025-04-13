@@ -31,6 +31,8 @@ namespace OverEasy
 		public static VBoxContainer Vector3SchemaTemplate = null;
 		public static VBoxContainer Vector4SchemaTemplate = null;
 
+		public static DisplayButton DisplayBtn = null;
+
 		public static CollisionShape2D MenuBarCollision = null;
 		public static CollisionShape2D setDataTreeCollision = null;
 		public static CollisionShape2D setDataTreeButtonCollision = null;
@@ -62,6 +64,8 @@ namespace OverEasy
 		public static Tree setDataTree = null;
 		public static Tree dummyTree = null;
 		public static Node3D modelRoot = null;
+		public static List<Node3D> terrainModels = new List<Node3D>();
+		public static List<Node3D> terrainCollision = new List<Node3D>();
 
 		public static bool setDataTreeItemActivatedSet = false;
 		public static ScrollContainer objectScrollContainer = null;
@@ -70,7 +74,7 @@ namespace OverEasy
 		public static Dictionary<string, Container> activeObjectEditorObjects = new Dictionary<string, Container>();
 		public static Dictionary<string, Node3D> modelDictionary = new Dictionary<string, Node3D>();
 
-        public static EditingType currentEditorType = EditingType.None;
+		public static EditingType currentEditorType = EditingType.None;
 
 		public static int currentObjectId = -1;
 		public static int currentArchiveFileId = -1;
@@ -369,27 +373,43 @@ namespace OverEasy
 			}
 		}
 
-        /// <summary>
-        /// Method for handling what happens when we select an option under the Edit menu
-        /// </summary>
-        public static void OnEditButtonMenuSelection(long id)
-        {
-            switch (id)
-            {
-                case 0:
+		/// <summary>
+		/// Method for handling what happens when we select an option under the Edit menu
+		/// </summary>
+		public static void OnEditButtonMenuSelection(long id)
+		{
+			switch (id)
+			{
+				case 0:
 					CopyObjectData();
-                    break;
-                case 1:
+					break;
+				case 1:
 					PasteTransformData();
-                    break;
-                case 2:
-                    PasteNonTransformData();
-                    break;
-                case 3:
+					break;
+				case 2:
+					PasteNonTransformData();
+					break;
+				case 3:
 					PasteFullObjectData();
-                    break;
-            }
-        }
+					break;
+			}
+		}
+
+		public static void OnDisplayButtonMenuSelection(int id)
+		{
+			DisplayBtn.GetPopup().SetItemChecked(id, !DisplayBtn.GetPopup().IsItemChecked(id));
+			var showTerrain = DisplayBtn.GetPopup().IsItemChecked(0);
+			var showCollision = DisplayBtn.GetPopup().IsItemChecked(1);
+
+			foreach(var trn in terrainModels)
+			{
+				trn.Visible = showTerrain;
+			}
+			foreach (var trn in terrainCollision)
+			{
+				trn.Visible = showCollision;
+			}
+		}
 
 		public static void CopyObjectData()
 		{
@@ -404,29 +424,29 @@ namespace OverEasy
 			}
 		}
 
-        public static void PasteTransformData()
-        {
-            switch (gameType)
-            {
-                case GameType.BillyPC:
-                case GameType.BillyGC:
-                    BillyPasteTransformData();
-                    break;
-            }
-        }
+		public static void PasteTransformData()
+		{
+			switch (gameType)
+			{
+				case GameType.BillyPC:
+				case GameType.BillyGC:
+					BillyPasteTransformData();
+					break;
+			}
+		}
 
-        public static void PasteNonTransformData()
-        {
-            switch (gameType)
-            {
-                case GameType.BillyPC:
-                case GameType.BillyGC:
-                    BillyPasteNonTransformData();
-                    break;
-            }
-        }
+		public static void PasteNonTransformData()
+		{
+			switch (gameType)
+			{
+				case GameType.BillyPC:
+				case GameType.BillyGC:
+					BillyPasteNonTransformData();
+					break;
+			}
+		}
 
-        public static void PasteFullObjectData()
+		public static void PasteFullObjectData()
 		{
 			switch (gameType)
 			{
@@ -437,15 +457,17 @@ namespace OverEasy
 			}
 		}
 
-        private static void ClearModelAndTextureData()
+		private static void ClearModelAndTextureData()
         {
+            terrainModels.Clear();
+            terrainCollision.Clear();
             foreach (var child in modelRoot.GetChildren())
-            {
-                modelRoot.RemoveChild(child);
-                child.QueueFree();
-            }
-            modelDictionary.Clear();
-            foreach (var set in globalTexturePool)
+			{
+				modelRoot.RemoveChild(child);
+				child.QueueFree();
+			}
+			modelDictionary.Clear();
+			foreach (var set in globalTexturePool)
 			{
 				set.Value.Dispose();
 			}
@@ -465,51 +487,53 @@ namespace OverEasy
 		/// Resets editor data when we try to load a new project to avoid shenanigans.
 		/// </summary>
 		public static void ResetLoadedData(string path)
-        {
+		{
 			ViewCamera.SetToFreecam();
-            ResetTransformGizmo();
+			ResetTransformGizmo();
+			terrainModels.Clear();
+			terrainCollision.Clear();
 			if(modelRoot.GetWorld3D().Environment != null)
-            {
+			{
 				modelRoot.GetWorld3D().Environment.Dispose();
 				modelRoot.GetWorld3D().Environment = null;
-            }
+			}
 			modelRoot.GetWorld3D().Environment = new Godot.Environment();
 			//Project level environment color is NOT reset, but we may want to just set that with the game
-            modFolderLocation = null;
-            allowedToUpdate = false;
+			modFolderLocation = null;
+			allowedToUpdate = false;
 
-            currentObjectId = -1;
-            currentArchiveFileId = -1;
-            currentArhiveFilename = null;
-            currentMissionId = -1;
-            currentObjectTreeItem = null;
-            currentEditorType = EditingType.None;
+			currentObjectId = -1;
+			currentArchiveFileId = -1;
+			currentArhiveFilename = null;
+			currentMissionId = -1;
+			currentObjectTreeItem = null;
+			currentEditorType = EditingType.None;
 
-            switch (gameType)
-            {
-                case GameType.BillyPC:
-                case GameType.BillyGC:
-                    ResetBillyLoadedData();
-                    break;
-            }
+			switch (gameType)
+			{
+				case GameType.BillyPC:
+				case GameType.BillyGC:
+					ResetBillyLoadedData();
+					break;
+			}
 
-            var objDataContainer = (VBoxContainer)objectScrollContainer.GetChild(0);
-            foreach (var obj in activeObjectEditorObjects)
-            {
-                //Assume the object is in there. If it's not, we have some problems.
-                objDataContainer.RemoveChild(obj.Value);
-            }
-            activeObjectEditorObjects.Clear();
+			var objDataContainer = (VBoxContainer)objectScrollContainer.GetChild(0);
+			foreach (var obj in activeObjectEditorObjects)
+			{
+				//Assume the object is in there. If it's not, we have some problems.
+				objDataContainer.RemoveChild(obj.Value);
+			}
+			activeObjectEditorObjects.Clear();
 
-            if (setDataTree != null)
-            {
-                setDataTree.Clear();
-            }
+			if (setDataTree != null)
+			{
+				setDataTree.Clear();
+			}
 
-            ClearModelAndTextureData();
-        }
+			ClearModelAndTextureData();
+		}
 
-        public static void ResetTransformGizmo()
+		public static void ResetTransformGizmo()
 		{
 			TransformGizmo.SetCurrentTransformType(Gizmo.TransformType.None);
 			TransformGizmo.Reparent(TransformGizmo.GetTree().Root, false);
@@ -621,8 +645,8 @@ namespace OverEasy
 						break;
 					case EditingType.BillySetEnemy:
 						UpdateBillySetEnemies(currentObjectId);
-                        LoadBillySetEnemyTemplateInfo();
-                        break;
+						LoadBillySetEnemyTemplateInfo();
+						break;
 				}
 				SetGizmoWorldStatus(TransformGizmoWorld);
 			}
@@ -735,37 +759,37 @@ namespace OverEasy
 				//mission Node Data Type - SetObject, Camera, etc.
 				case 2:
 					break;
-                //Object Node
-                case 3:
-                    currentObjectId = activeNode.GetMetadata(1).AsInt32();
-                    currentEditorType = (EditingType)(activeNode.GetMetadata(2).AsInt32());
-                    currentObjectTreeItem = activeNode;
+				//Object Node
+				case 3:
+					currentObjectId = activeNode.GetMetadata(1).AsInt32();
+					currentEditorType = (EditingType)(activeNode.GetMetadata(2).AsInt32());
+					currentObjectTreeItem = activeNode;
 
-                    //Position camera on object
-                    var activeNode3d = (Node3D)activeNode.GetMetadata(3);
-                    PutCameraOnObject(activeNode3d);
+					//Position camera on object
+					var activeNode3d = (Node3D)activeNode.GetMetadata(3);
+					PutCameraOnObject(activeNode3d);
 
-                    //Load object GUI controls
-                    LoadSetObject();
-                    setDataTree.ScrollToItem(activeNode);
-                    break;
-            }
+					//Load object GUI controls
+					LoadSetObject();
+					setDataTree.ScrollToItem(activeNode);
+					break;
+			}
 		}
 
-        private static void PutCameraOnObject(Node3D activeNode3d)
-        {
-            TransformGizmo.Reparent(activeNode3d, false);
-            TransformGizmo.SetCurrentTransformType(OverEasy.Editor.Gizmo.TransformType.Translation);
-            ViewCamera.orbitFocusNode = activeNode3d;
-            ViewCamera.TrySetOrbitCam();
-            ViewCamera.oneTimeProcessTransform = true;
-            ViewCamera.ToggleMode();
-        }
+		private static void PutCameraOnObject(Node3D activeNode3d)
+		{
+			TransformGizmo.Reparent(activeNode3d, false);
+			TransformGizmo.SetCurrentTransformType(OverEasy.Editor.Gizmo.TransformType.Translation);
+			ViewCamera.orbitFocusNode = activeNode3d;
+			ViewCamera.TrySetOrbitCam();
+			ViewCamera.oneTimeProcessTransform = true;
+			ViewCamera.ToggleMode();
+		}
 
-        /// <summary>
-        /// Method for lazy loading area data. Should be called upon expansion of a node.
-        /// </summary>
-        public static void LazyLoadAreaData()
+		/// <summary>
+		/// Method for lazy loading area data. Should be called upon expansion of a node.
+		/// </summary>
+		public static void LazyLoadAreaData()
 		{
 			switch (gameType)
 			{
@@ -807,23 +831,23 @@ namespace OverEasy
 			}
 		}
 
-        public static void LoadSetEnemyTemplates(string setEnemyDefinitionsReference)
-        {
-            var definitions = Directory.GetFiles(Path.Combine(editorRootDirectory, setEnemyDefinitionsReference));
-            foreach (var defPath in definitions)
-            {
-                var fileName = Path.GetFileNameWithoutExtension(defPath);
-                if (Int32.TryParse(fileName, out int id))
-                {
-                    cachedBillySetEnemyDefinitions.Add(id, JsonSerializer.Deserialize<TextInfo.SetEnemyDefinition>(File.ReadAllText(defPath)));
-                }
-            }
-        }
+		public static void LoadSetEnemyTemplates(string setEnemyDefinitionsReference)
+		{
+			var definitions = Directory.GetFiles(Path.Combine(editorRootDirectory, setEnemyDefinitionsReference));
+			foreach (var defPath in definitions)
+			{
+				var fileName = Path.GetFileNameWithoutExtension(defPath);
+				if (Int32.TryParse(fileName, out int id))
+				{
+					cachedBillySetEnemyDefinitions.Add(id, JsonSerializer.Deserialize<TextInfo.SetEnemyDefinition>(File.ReadAllText(defPath)));
+				}
+			}
+		}
 
-        /// <summary>
-        /// For files where we want to prioritize the modified path vs the game path, but load the game path as a fallback
-        /// </summary>
-        public static string GetAssetPath(string fileName)
+		/// <summary>
+		/// For files where we want to prioritize the modified path vs the game path, but load the game path as a fallback
+		/// </summary>
+		public static string GetAssetPath(string fileName)
 		{
 			if (fileName == "" || fileName == null)
 			{

@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using static Godot.TileSet;
 
 namespace OverEasy
 {
@@ -420,7 +421,18 @@ namespace OverEasy
             string lndPath = GetAssetPath(def.lndFilename);
             if (File.Exists(lndPath))
             {
-                modelRoot.AddChild(Billy.ModelConversion.LNDToGDModel(def.lndFilename, new LND(File.ReadAllBytes(lndPath))));
+                var lnd = Billy.ModelConversion.LNDToGDModel(def.lndFilename, new LND(File.ReadAllBytes(lndPath)));
+                lnd.Visible = DisplayBtn.GetPopup().IsItemChecked(0);
+                terrainModels.Add(lnd);
+                modelRoot.AddChild(lnd);
+            }
+            string mc2Path = GetAssetPath(def.mc2Filename);
+            if (File.Exists(mc2Path))
+            {
+                var mc2 = Billy.ModelConversion.MC2ToGDModel(def.mc2Filename, new MC2(File.ReadAllBytes(mc2Path)));
+                mc2.Visible = DisplayBtn.GetPopup().IsItemChecked(1);
+                terrainCollision.Add(mc2);
+                modelRoot.AddChild(mc2);
             }
 
             if (daySkybox != null)
@@ -565,12 +577,21 @@ namespace OverEasy
                 //Load Stage Model
                 if (currentPRD.fileNames[i] == def.lndFilename)
                 {
-                    modelRoot.AddChild(Billy.ModelConversion.LNDToGDModel(def.lndFilename, new LND(currentPRD.files[i])));
+                    var lnd = Billy.ModelConversion.LNDToGDModel(def.lndFilename, new LND(currentPRD.files[i]));
+                    lnd.Visible = DisplayBtn.GetPopup().IsItemChecked(0);
+                    terrainModels.Add(lnd);
+                    modelRoot.AddChild(lnd);
                 }
-
                 //Load Stage Object models (We need to link these somehow...)
 
                 //Load Stage Collision Model
+                if (currentPRD.fileNames[i] == def.mc2Filename)
+                {
+                    var mc2 = Billy.ModelConversion.MC2ToGDModel(def.mc2Filename, new MC2(currentPRD.files[i]));
+                    mc2.Visible = DisplayBtn.GetPopup().IsItemChecked(1);
+                    terrainCollision.Add(mc2);
+                    modelRoot.AddChild(mc2);
+                }
 
                 //Load Stage Path
 
@@ -591,11 +612,34 @@ namespace OverEasy
                 }
                 var model = pair.Value.models[0];
 
-                if (pair.Key == "ene_am02")
+                switch (pair.Key)
                 {
-                    model = pair.Value.models[1];
+                    case "ene_am02":
+                    case "ene_blue_boss":
+                    case "ene_orange_boss":
+                        model = pair.Value.models[1];
+                        BillyModelIO.CacheModel($"enemy_{ObjectVariants.enemyFileMap[$"ar_{pair.Key}.arc"]}", model, pair.Value.texList[0], enemyGVMDict[pair.Key], false);
+                        break;
+                    case "ene_purple_boss":
+                        model = pair.Value.models[32];
+                        BillyModelIO.CacheModel($"enemy_{ObjectVariants.enemyFileMap[$"ar_{pair.Key}.arc"]}", model, pair.Value.texList[0], enemyGVMDict[pair.Key], false);
+                        break;
+                    case "ene_last_ex_boss":
+                        var modelRef = $"enemy_{ObjectVariants.enemyFileMap[$"ar_{pair.Key}.arc"]}";
+                        ModelConversion.LoadGVM(modelRef, enemyGVMDict[pair.Key], out var gvmTextures, out var gvrAlphaTypes);
+                        var modelNode = ModelConversion.NinjaToGDModel(modelRef, pair.Value.models[5], gvmTextures, gvrAlphaTypes);
+                        modelNode = ModelConversion.NinjaToGDModel(modelRef, pair.Value.models[6], gvmTextures, gvrAlphaTypes, null, null, modelNode);
+                        BillyModelIO.CreateObjectCollision(modelNode);
+                        if(!modelDictionary.ContainsKey(modelRef))
+                        {
+                            modelDictionary[modelRef] = modelNode;
+                        }
+                        break;
+                    default:
+                        BillyModelIO.CacheModel($"enemy_{ObjectVariants.enemyFileMap[$"ar_{pair.Key}.arc"]}", model, pair.Value.texList[0], enemyGVMDict[pair.Key], false);
+                        break;
                 }
-                BillyModelIO.CacheModel($"enemy_{ObjectVariants.enemyFileMap[$"ar_{pair.Key}.arc"]}", model, pair.Value.texList[0], enemyGVMDict[pair.Key], false);
+
             }
 
             //Set skybox setting

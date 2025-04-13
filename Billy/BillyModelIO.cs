@@ -278,7 +278,6 @@ namespace OverEasy.Billy
 
         public static void CacheGeobjCommon(GEObj_Stage commonGeo)
         {
-            //List<int> diffuseAsAlphaList = new List<int> {  };
             List<int> diffuseAsAlphaList = new List<int> { 15, 16, 27, 28 };
             ModelConversion.LoadGVM("geobjCommon", commonGeo.gvm, out var gvmTextures, out var gvrAlphaTypes, diffuseAsAlphaList);
 
