@@ -15,7 +15,7 @@ namespace OverEasy.TextInfo
             { "red", new int[]{ 3, 13 } },
             { "purple", new int[]{ 4, 14 } },
             { "orange", new int[]{ 5, 15 } },
-            { "yellow", new int[]{ 36, 16 } },
+            { "yellow", new int[]{ 35, 16 } },
             { "last", new int[]{ 7, 17 } },
             { "yellow_underground", new int[]{ 6, 6 } },
             { "battle_green", new int[]{ 121, 121 } },
