@@ -369,7 +369,75 @@ namespace OverEasy
 			}
 		}
 
-		private static void ClearModelAndTextureData()
+        /// <summary>
+        /// Method for handling what happens when we select an option under the Edit menu
+        /// </summary>
+        public static void OnEditButtonMenuSelection(long id)
+        {
+            switch (id)
+            {
+                case 0:
+					CopyObjectData();
+                    break;
+                case 1:
+					PasteTransformData();
+                    break;
+                case 2:
+                    PasteNonTransformData();
+                    break;
+                case 3:
+					PasteFullObjectData();
+                    break;
+            }
+        }
+
+		public static void CopyObjectData()
+		{
+			switch(gameType)
+			{
+				case GameType.BillyPC:
+				case GameType.BillyGC:
+					BillyCopyObjectData();
+					break;
+				default:
+					throw new NotImplementedException();
+			}
+		}
+
+        public static void PasteTransformData()
+        {
+            switch (gameType)
+            {
+                case GameType.BillyPC:
+                case GameType.BillyGC:
+                    BillyPasteTransformData();
+                    break;
+            }
+        }
+
+        public static void PasteNonTransformData()
+        {
+            switch (gameType)
+            {
+                case GameType.BillyPC:
+                case GameType.BillyGC:
+                    BillyPasteNonTransformData();
+                    break;
+            }
+        }
+
+        public static void PasteFullObjectData()
+		{
+			switch (gameType)
+			{
+				case GameType.BillyPC:
+				case GameType.BillyGC:
+					BillyPasteFullObjectData();
+					break;
+			}
+		}
+
+        private static void ClearModelAndTextureData()
         {
             foreach (var child in modelRoot.GetChildren())
             {
@@ -398,6 +466,7 @@ namespace OverEasy
 		/// </summary>
 		public static void ResetLoadedData(string path)
         {
+			ViewCamera.SetToFreecam();
             ResetTransformGizmo();
 			if(modelRoot.GetWorld3D().Environment != null)
             {
@@ -552,7 +621,8 @@ namespace OverEasy
 						break;
 					case EditingType.BillySetEnemy:
 						UpdateBillySetEnemies(currentObjectId);
-						break;
+                        LoadBillySetEnemyTemplateInfo();
+                        break;
 				}
 				SetGizmoWorldStatus(TransformGizmoWorld);
 			}

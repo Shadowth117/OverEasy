@@ -52,18 +52,31 @@ namespace OverEasy.Billy
                     NJSObject nj = null;
                     NJTextureList njtl = null;
 
+                    Node3D modelNode;
                     switch (set.Key)
                     {
                         case "ar_ene_am02.arc":
+                        case "ar_ene_blue_boss.arc":
+                        case "ar_ene_orange_boss.arc":
                             nj = arc.models[1];
                             njtl = arc.texList[0];
+                            modelNode = ModelConversion.NinjaToGDModel(set.Key, nj, gvmTextures, gvrAlphaTypes);
+                            break;
+                        case "ar_ene_purple_boss.arc":
+                            nj = arc.models[32];
+                            njtl = arc.texList[0];
+                            modelNode = ModelConversion.NinjaToGDModel(set.Key, nj, gvmTextures, gvrAlphaTypes);
+                            break;
+                        case "ar_ene_last_ex_boss.arc":
+                            modelNode = ModelConversion.NinjaToGDModel(set.Key, arc.models[5], gvmTextures, gvrAlphaTypes);
+                            modelNode = ModelConversion.NinjaToGDModel(set.Key, arc.models[6], gvmTextures, gvrAlphaTypes, null, null, modelNode);
                             break;
                         default:
                             nj = arc.models[0];
                             njtl = arc.texList[0];
+                            modelNode = ModelConversion.NinjaToGDModel(set.Key, nj, gvmTextures, gvrAlphaTypes);
                             break;
                     }
-                    var modelNode = ModelConversion.NinjaToGDModel(set.Key, nj, gvmTextures, gvrAlphaTypes);
                     CreateObjectCollision(modelNode);
 
                     string enemyRef = $"enemy_{set.Value}";
@@ -196,19 +209,34 @@ namespace OverEasy.Billy
 
         public static void CleanModelNode(Node3D modelNode)
         {
+            bool reAddCamera = false;
+            bool reAddTransform = false;
+            if(modelNode == OverEasyGlobals.ViewCamera.targetNode.GetParent())
+            {
+                reAddCamera = true;
+                OverEasyGlobals.ViewCamera.ToggleMode();
+            }
+            if(modelNode == OverEasyGlobals.TransformGizmo.GetParent())
+            {
+                reAddTransform = true;
+                OverEasyGlobals.TransformGizmo.Reparent(OverEasyGlobals.TransformGizmo.GetTree().Root, true);
+            }
             foreach (var child in modelNode.GetChildren())
             {
-                //Do not kill the camera
-                if(child == OverEasyGlobals.TransformGizmo)
-                {
-                    continue;
-                }
                 //Set visibility so this appears more immediately seamless
                 if (child is Node3D child3d)
                 {
                     child3d.Visible = false;
                 }
                 child.QueueFree();
+            }
+            if(reAddTransform)
+            {
+                OverEasyGlobals.TransformGizmo.Reparent(modelNode, true);
+            }
+            if (reAddCamera)
+            {
+                OverEasyGlobals.ViewCamera.ToggleMode();
             }
         }
 

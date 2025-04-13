@@ -272,10 +272,11 @@ public partial class ViewerCamera : Camera3D
 	{
 		if(Input.IsMouseButtonPressed(MouseButton.Left) && (OverEasyGlobals.CanAccess3d || mouseLeftClickedIn3d))
 		{
+			this.GetViewport().GuiReleaseFocus();
 			var mousePosition = OverEasyGlobals.setDataTree.GetGlobalMousePosition();
 			if(dragButtonHeld)
 			{
-				if (isDragging == false && !mousePosition.IsEqualApprox(dragStart))
+                if (isDragging == false && !mousePosition.IsEqualApprox(dragStart))
 				{
 					dragStartPosition = OverEasyGlobals.TransformGizmo.GlobalPosition.ToSNVec3();
 					if(OverEasyGlobals.TransformGizmoWorld)
@@ -393,8 +394,9 @@ public partial class ViewerCamera : Camera3D
 	private void _ProcessTransformation(double delta)
 	{
 		if (OverEasyGlobals.CanAccess3d || mouseRightClickedIn3d || oneTimeProcessTransform)
-		{
-			switch (cameraMode)
+        {
+            this.GetViewport().GuiReleaseFocus();
+            switch (cameraMode)
 			{
 				case CameraMode.Orbit:
 					_ProcessOrbit(delta);
