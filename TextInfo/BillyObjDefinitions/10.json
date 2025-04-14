@@ -1,0 +1,15 @@
+{
+  "ObjectName": "Scenery",
+  "ObjectId": 10,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Model2 id",
+  "IntProperty1Hint": "The id of the model in either the common geobj file or the stage's specific geobj file, depending on the value in the next field.'",
+  "IntProperty2": "IsGeobjCommonModel",
+  "IntProperty2Hint": "A value of 1 means the model for this will be pulled from the common geobj, otherwise it will be sourced from the world specific geobj",
+  "FloatProperty1": "Scale modifier"
+}

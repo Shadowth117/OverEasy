@@ -440,10 +440,10 @@ namespace OverEasy.Billy
             List<Color> vertClrList = new List<Color>();
             foreach (var poly in mc2.faceData)
             {
-				vertPosList.Add(poly.vert0Value.ToGVec3());
+                vertPosList.Add(poly.vert2Value.ToGVec3());
 				vertPosList.Add(poly.vert1Value.ToGVec3());
-				vertPosList.Add(poly.vert2Value.ToGVec3());
-				vertNrmList.Add(poly.faceNormal.ToGVec3());
+                vertPosList.Add(poly.vert0Value.ToGVec3());
+                vertNrmList.Add(poly.faceNormal.ToGVec3());
 				vertNrmList.Add(poly.faceNormal.ToGVec3());
 				vertNrmList.Add(poly.faceNormal.ToGVec3());
 				vertUvList.Add(new Vector2(0, 1));
@@ -513,10 +513,42 @@ namespace OverEasy.Billy
             meshInst.Mesh = mesh;
             modelRoot.AddChild(meshInst);
 
-            return modelRoot;
-		}
+			//Masks and layers are checked at the bit level. Ex. Setting this 3 would have it conflict with 1 (objects) or 2 (transform gizmo)
+			CreateObjectCollision(modelRoot, 4, 4);
 
-		public static int GetGvrAlphaType(GvrDataFormat format)
+            return modelRoot;
+        }
+
+        public static void CreateObjectCollision(Node3D modelNode, uint layerId = 1, uint maskId = 1)
+        {
+            List<MeshInstance3D> meshInstances = new List<MeshInstance3D>();
+            GetObjectMeshInstances(modelNode, meshInstances);
+
+            foreach (var meshInst in meshInstances)
+            {
+                meshInst.CreateTrimeshCollision();
+                var staticBody = (StaticBody3D)meshInst.GetChild(0);
+                var collChild = ((CollisionShape3D)staticBody.GetChild(0));
+                collChild.Disabled = false;
+                staticBody.CollisionLayer = layerId;
+                staticBody.CollisionMask = maskId;
+            }
+        }
+
+        public static void GetObjectMeshInstances(Node modelNode, List<MeshInstance3D> meshInstances)
+        {
+            var children = modelNode.GetChildren();
+            foreach (var nodeChild in children)
+            {
+                if (nodeChild is MeshInstance3D meshChild)
+                {
+                    meshInstances.Add(meshChild);
+                }
+                GetObjectMeshInstances(nodeChild, meshInstances);
+            }
+        }
+
+        public static int GetGvrAlphaType(GvrDataFormat format)
 		{
 			switch (format)
 			{

@@ -8,6 +8,7 @@ using OverEasy.TextInfo;
 using System.Collections.Generic;
 using System.IO;
 using AquaModelLibrary.Data.PSO2.Aqua;
+using AquaModelLibrary.Data.BillyHatcher;
 
 namespace OverEasy.Billy
 {
@@ -77,7 +78,7 @@ namespace OverEasy.Billy
                             modelNode = ModelConversion.NinjaToGDModel(set.Key, nj, gvmTextures, gvrAlphaTypes);
                             break;
                     }
-                    CreateObjectCollision(modelNode);
+                    ModelConversion.CreateObjectCollision(modelNode);
 
                     string enemyRef = $"enemy_{set.Value}";
                     if (!OverEasyGlobals.modelDictionary.ContainsKey(enemyRef))
@@ -158,9 +159,19 @@ namespace OverEasy.Billy
         {
             string name = $"object_{obj.objectId}";
 
-            if(obj.objectId == 11)
+            switch(obj.objectId)
             {
-                name += $"_{obj.intProperty1}";
+                case 10:
+                    string objectBank = "Local";
+                    if(obj.intProperty2 == 1)
+                    {
+                        objectBank = "Common";
+                    }
+                    name = $"commGeoM2{objectBank}_{obj.intProperty1}";
+                    break;
+                case 11:
+                    name += $"_{obj.intProperty1}";
+                    break;
             }
 
             //If it's not null, we clean up the node.
@@ -194,7 +205,7 @@ namespace OverEasy.Billy
                         modelNode = ModelConversion.CreateDefaultObjectModel(name, color, modelNode);
 
                         //Set up collision
-                        CreateObjectCollision(modelNode);
+                        ModelConversion.CreateObjectCollision(modelNode);
                         break;
                 }
 
@@ -202,6 +213,17 @@ namespace OverEasy.Billy
                 {
                     OverEasyGlobals.modelDictionary.Add(name, modelNode);
                 }
+            }
+
+            //Handle object scale
+            switch (obj.objectId)
+            {
+                case 11:
+                    modelNode.Scale = obj.intProperty3 == 1 ? new Vector3(2, 2, 2) : new Vector3(1, 1, 1);
+                    break;
+                default:
+                    modelNode.Scale = new Vector3(1, 1, 1);
+                    break;
             }
 
             return modelNode;
@@ -240,40 +262,27 @@ namespace OverEasy.Billy
             }
         }
 
-        public static void CreateObjectCollision(Node3D modelNode)
-        {
-            List<MeshInstance3D> meshInstances = new List<MeshInstance3D>();
-            GetObjectMeshInstances(modelNode, meshInstances);
-
-            foreach (var meshInst in meshInstances)
-            {
-                meshInst.CreateTrimeshCollision();
-                var staticBody = (StaticBody3D)meshInst.GetChild(0);
-                var collChild = ((CollisionShape3D)staticBody.GetChild(0));
-                collChild.Disabled = false;
-                staticBody.CollisionLayer = 1;
-                staticBody.CollisionMask = 1;
-            }
-        }
-
-        public static void GetObjectMeshInstances(Node modelNode, List<MeshInstance3D> meshInstances)
-        {
-            var children = modelNode.GetChildren();
-            foreach (var nodeChild in children)
-            {
-                if (nodeChild is MeshInstance3D meshChild)
-                {
-                    meshInstances.Add(meshChild);
-                }
-                GetObjectMeshInstances(nodeChild, meshInstances);
-            }
-        }
-
-        public static void CacheObjectModelsPC()
+        public static void CacheObjectModelsPC(StageDef.StageDefinition def)
         {
             var commonObjectsPath = OverEasyGlobals.GetAssetPath("geobj_common.arc");
             var commGeobj = new GEObj_Stage(File.ReadAllBytes(commonObjectsPath));
             CacheGeobjCommon(commGeobj);
+
+            var localObjectsPath = OverEasyGlobals.GetAssetPath(def.commonData.objectData);
+            var localGeobj = new GEObj_Stage(File.ReadAllBytes(localObjectsPath));
+            CacheGeobjLocal(localGeobj);
+        }
+
+        public static void CacheGeobjLocal(GEObj_Stage stageGeo)
+        {
+            ModelConversion.LoadGVM("geobjStage", stageGeo.gvm, out var gvmTextures, out var gvrAlphaTypes);
+
+            //Scenery
+            for (int i = 0; i < stageGeo.model2s.Count; i++)
+            {
+                //Model2s all share the same texlist
+                CacheModel($"commGeoM2Local_{i}", stageGeo.model2s[$"model2_{i}"], stageGeo.texList2s["texList2_0"], stageGeo.gvm, false);
+            }
         }
 
         public static void CacheGeobjCommon(GEObj_Stage commonGeo)
@@ -300,13 +309,13 @@ namespace OverEasy.Billy
             var strawberry = ModelConversion.NinjaToGDModel("strawberry", commonGeo.models["model_30"], texList24, fruitAlphaTypes, null, null, strawberryBall, tfm);
             var watermelon = ModelConversion.NinjaToGDModel("watermelon", commonGeo.models["model_31"], texList24, fruitAlphaTypes, null, null, watermelonBall, tfm);
 
-            CreateObjectCollision(apple);
-            CreateObjectCollision(banana);
-            CreateObjectCollision(cherry);
-            CreateObjectCollision(melon);
-            CreateObjectCollision(pineapple);
-            CreateObjectCollision(strawberry);
-            CreateObjectCollision(watermelon);
+            ModelConversion.CreateObjectCollision(apple);
+            ModelConversion.CreateObjectCollision(banana);
+            ModelConversion.CreateObjectCollision(cherry);
+            ModelConversion.CreateObjectCollision(melon);
+            ModelConversion.CreateObjectCollision(pineapple);
+            ModelConversion.CreateObjectCollision(strawberry);
+            ModelConversion.CreateObjectCollision(watermelon);
 
             OverEasyGlobals.modelDictionary["object_11_0"] = apple;
             OverEasyGlobals.modelDictionary["object_11_1"] = banana;
@@ -315,6 +324,13 @@ namespace OverEasy.Billy
             OverEasyGlobals.modelDictionary["object_11_4"] = pineapple;
             OverEasyGlobals.modelDictionary["object_11_5"] = strawberry;
             OverEasyGlobals.modelDictionary["object_11_6"] = watermelon;
+
+            //Scenery
+            for(int i = 0; i < commonGeo.model2s.Count; i++)
+            {
+                //Model2s all share the same texlist
+                CacheModel($"commGeoM2Common_{i}", commonGeo.model2s[$"model2_{i}"], commonGeo.texList2s["texList2_0"], commonGeo.gvm, false);
+            }
         }
 
         public static void CachePlayerModelsPC()
@@ -339,7 +355,7 @@ namespace OverEasy.Billy
             var leftHandNode = ModelConversion.NinjaToGDModel(name, player.models[3], gvmTextures, gvrAlphaTypes, null, null, modelNode, System.Numerics.Matrix4x4.CreateRotationY(Mathf.Pi) * System.Numerics.Matrix4x4.CreateTranslation(playerAqn.nodeList[47].GetInverseBindPoseMatrixInverted().Translation));
             var rightHandNode = ModelConversion.NinjaToGDModel(name, player.models[4], gvmTextures, gvrAlphaTypes, null, null, modelNode, System.Numerics.Matrix4x4.CreateTranslation(playerAqn.nodeList[37].GetInverseBindPoseMatrixInverted().Translation));
 
-            BillyModelIO.CreateObjectCollision(modelNode);
+            ModelConversion.CreateObjectCollision(modelNode);
             if (forceAdd || !OverEasyGlobals.modelDictionary.ContainsKey(name))
             {
                 OverEasyGlobals.modelDictionary[name] = modelNode;
@@ -351,8 +367,10 @@ namespace OverEasy.Billy
         public static Node3D CacheModel(string name, NJSObject nj, NJTextureList njtl, PuyoFile gvm, bool forceAdd)
         {
             ModelConversion.LoadGVM(name, gvm, out var gvmTextures, out var gvrAlphaTypes);
-            var modelNode = ModelConversion.NinjaToGDModel(name, nj, gvmTextures, gvrAlphaTypes);
-            BillyModelIO.CreateObjectCollision(modelNode);
+            var textureSubSet = ModelConversion.GetTextureSubset(gvmTextures, njtl, gvrAlphaTypes, out var fruitAlphaTypes);
+
+            var modelNode = ModelConversion.NinjaToGDModel(name, nj, textureSubSet, fruitAlphaTypes);
+            ModelConversion.CreateObjectCollision(modelNode);
             if (forceAdd || !OverEasyGlobals.modelDictionary.ContainsKey(name))
             {
                 OverEasyGlobals.modelDictionary[name] = modelNode;

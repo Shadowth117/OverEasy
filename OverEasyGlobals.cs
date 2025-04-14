@@ -32,6 +32,7 @@ namespace OverEasy
 		public static VBoxContainer Vector4SchemaTemplate = null;
 
 		public static DisplayButton DisplayBtn = null;
+		public static SettingsButton SettingsBtn = null;
 
 		public static CollisionShape2D MenuBarCollision = null;
 		public static CollisionShape2D setDataTreeCollision = null;
@@ -41,11 +42,11 @@ namespace OverEasy
 
 		public static ViewerCamera ViewCamera = null;
 		public static Gizmo TransformGizmo = null;
-		public static WorldTransformToggle worldTransformToggle = null;
 		/// <summary>
 		/// False for local, true for world
 		/// </summary>
 		public static bool TransformGizmoWorld = false;
+		public static bool WarpCameraToNewSelection = true;
 
 		public static Dictionary<string, Texture2D> globalTexturePool = new Dictionary<string, Texture2D>();
 		public static Dictionary<string, List<Texture2D>> orderedTextureArchivePools = new Dictionary<string, List<Texture2D>>();
@@ -189,12 +190,6 @@ namespace OverEasy
 			PreviousMouseSelectionPointRidCache.Clear();
 		}
 
-		public static void WorldTransformToggle()
-		{
-			TransformGizmoWorld = !TransformGizmoWorld;
-			SetGizmoWorldStatus(TransformGizmoWorld);
-		}
-
 		public static void SetGizmoWorldStatus(bool worldMode)
 		{
 			if(worldMode)
@@ -204,21 +199,6 @@ namespace OverEasy
 			{
 				TransformGizmo.Rotation = new Vector3();
 			}
-		}
-		
-		public static void DayNightToggle()
-		{
-			isDay = !isDay;
-
-			if (daySkybox != null)
-			{
-				daySkybox.Visible = isDay;
-			}
-			if (nightSkybox != null)
-			{
-				nightSkybox.Visible = !isDay;
-			}
-			ModelConversion.BillyModeNightToggleParent(modelRoot);
 		}
 
 		public static void CopyModFiles()
@@ -392,6 +372,9 @@ namespace OverEasy
 				case 3:
 					PasteFullObjectData();
 					break;
+				case 4:
+					DropObjToNearestSolid();
+                    break;
 			}
 		}
 
@@ -409,9 +392,40 @@ namespace OverEasy
 			{
 				trn.Visible = showCollision;
 			}
-		}
+        }
 
-		public static void CopyObjectData()
+        public static void OnSettingsButtonMenuSelection(int id)
+        {
+			var previousIsDay = isDay;
+			var previousTransformGizmoWorld = TransformGizmoWorld;
+
+            SettingsBtn.GetPopup().SetItemChecked(id, !SettingsBtn.GetPopup().IsItemChecked(id));
+            isDay = SettingsBtn.GetPopup().IsItemChecked(0);
+            TransformGizmoWorld = SettingsBtn.GetPopup().IsItemChecked(1);
+            WarpCameraToNewSelection = SettingsBtn.GetPopup().IsItemChecked(2);
+
+			//Handle day/night settings
+			if(previousIsDay != isDay)
+            {
+                if (daySkybox != null)
+                {
+                    daySkybox.Visible = isDay;
+                }
+                if (nightSkybox != null)
+                {
+                    nightSkybox.Visible = !isDay;
+                }
+                ModelConversion.BillyModeNightToggleParent(modelRoot);
+            }
+
+			//World transform toggle
+			if(previousTransformGizmoWorld != TransformGizmoWorld)
+            {
+                SetGizmoWorldStatus(TransformGizmoWorld);
+            }
+        }
+
+        public static void CopyObjectData()
 		{
 			switch(gameType)
 			{
@@ -456,6 +470,21 @@ namespace OverEasy
 					break;
 			}
 		}
+
+		/// <summary>
+		/// Attempts to drop an object from its current position in space to the next lowest solid, if one exists.
+		/// This way, we can place objects flush with the ground rather than having to guesstimate constantly.
+		/// </summary>
+		public static void DropObjToNearestSolid()
+		{
+            switch (gameType)
+            {
+                case GameType.BillyPC:
+                case GameType.BillyGC:
+                    BillyDropObjToNearestSolid();
+                    break;
+            }
+        }
 
 		private static void ClearModelAndTextureData()
         {
@@ -767,7 +796,7 @@ namespace OverEasy
 
 					//Position camera on object
 					var activeNode3d = (Node3D)activeNode.GetMetadata(3);
-					PutCameraOnObject(activeNode3d);
+					HandleEditorObjectsOnselection(activeNode3d);
 
 					//Load object GUI controls
 					LoadSetObject();
@@ -776,14 +805,17 @@ namespace OverEasy
 			}
 		}
 
-		private static void PutCameraOnObject(Node3D activeNode3d)
-		{
-			TransformGizmo.Reparent(activeNode3d, false);
-			TransformGizmo.SetCurrentTransformType(OverEasy.Editor.Gizmo.TransformType.Translation);
-			ViewCamera.orbitFocusNode = activeNode3d;
-			ViewCamera.TrySetOrbitCam();
-			ViewCamera.oneTimeProcessTransform = true;
-			ViewCamera.ToggleMode();
+		private static void HandleEditorObjectsOnselection(Node3D activeNode3d)
+        {
+            TransformGizmo.Reparent(activeNode3d, false);
+            TransformGizmo.SetCurrentTransformType(OverEasy.Editor.Gizmo.TransformType.Translation);
+            if (WarpCameraToNewSelection)
+            {
+                ViewCamera.orbitFocusNode = activeNode3d;
+                ViewCamera.TrySetOrbitCam();
+                ViewCamera.oneTimeProcessTransform = true;
+                ViewCamera.ToggleMode();
+            }
 		}
 
 		/// <summary>

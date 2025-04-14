@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3 uid="uid://e6mmj1a8sstd"]
+[gd_scene load_steps=33 format=3 uid="uid://e6mmj1a8sstd"]
 
 [ext_resource type="Script" uid="uid://d17ij33w188ta" path="res://OverEasyMaster.cs" id="1_pe8jw"]
 [ext_resource type="Script" uid="uid://x770pvm77g4d" path="res://Controls/FileButton.cs" id="1_w33wv"]
@@ -17,11 +17,10 @@
 [ext_resource type="Script" uid="uid://bg6wh3aohw1k7" path="res://ObjectEditors/ColorSchema.cs" id="8_orrkn"]
 [ext_resource type="Script" uid="uid://og6ufarvki2c" path="res://ObjectEditors/Vector2Schema.cs" id="9_w8md7"]
 [ext_resource type="Script" uid="uid://mpswcr4f8cb5" path="res://Controls/EditButton.cs" id="9_wq64o"]
-[ext_resource type="Script" uid="uid://beo0grudrf7x0" path="res://Controls/DayNightToggle.cs" id="9_y4wsg"]
-[ext_resource type="Script" uid="uid://dtxc5s0sohqnl" path="res://Controls/WorldTransformToggle.cs" id="10_05q74"]
 [ext_resource type="Script" uid="uid://ctmnhff03huxl" path="res://Controls/DisplayButton.cs" id="10_24ln1"]
 [ext_resource type="Script" uid="uid://b11w2e2evhk6d" path="res://ObjectEditors/Vector3Schema.cs" id="10_txxg7"]
 [ext_resource type="Script" uid="uid://dvf45nhqs7yen" path="res://ObjectEditors/Vector4Schema.cs" id="11_4sjmf"]
+[ext_resource type="Script" uid="uid://dgxgrilt40d22" path="res://Controls/SettingsButton.cs" id="11_wq64o"]
 [ext_resource type="Script" uid="uid://bf1au68w7c8au" path="res://Controls/DummyTree.cs" id="12_uhepu"]
 [ext_resource type="Script" uid="uid://o83sei1e7b28" path="res://ObjectEditors/LabelSchema.cs" id="12_vva3x"]
 [ext_resource type="PackedScene" uid="uid://bp17fc5qsd0m8" path="res://ViewerCamera.tscn" id="16_wiw1n"]
@@ -120,7 +119,7 @@ script = ExtResource("1_w33wv")
 layout_mode = 2
 size_flags_horizontal = 0
 text = "Edit"
-item_count = 4
+item_count = 5
 popup/item_0/text = "Copy Object Data"
 popup/item_0/id = 0
 popup/item_1/text = "Paste Object Transform"
@@ -129,6 +128,8 @@ popup/item_2/text = "Paste Non-Transform Data"
 popup/item_2/id = 2
 popup/item_3/text = "Paste Full Object Data"
 popup/item_3/id = 3
+popup/item_4/text = "Drop Object To Nearest Solid"
+popup/item_4/id = 4
 script = ExtResource("9_wq64o")
 
 [node name="Display" type="MenuButton" parent="GridContainer/MenuGrid"]
@@ -144,27 +145,26 @@ popup/item_1/checkable = 1
 popup/item_1/id = 1
 script = ExtResource("10_24ln1")
 
+[node name="Settings" type="MenuButton" parent="GridContainer/MenuGrid"]
+layout_mode = 2
+text = "Settings"
+item_count = 3
+popup/item_0/text = "Day/Night Preview Toggle"
+popup/item_0/checkable = 1
+popup/item_0/checked = true
+popup/item_0/id = 0
+popup/item_1/text = "World Transform Toggle"
+popup/item_1/checkable = 1
+popup/item_1/id = 1
+popup/item_2/text = "Warp Camera To Selected Object"
+popup/item_2/checkable = 1
+popup/item_2/checked = true
+popup/item_2/id = 2
+script = ExtResource("11_wq64o")
+
 [node name="Tools" type="MenuButton" parent="GridContainer/MenuGrid"]
 layout_mode = 2
 text = "Tools"
-
-[node name="DayNightToggleLabel" type="Label" parent="GridContainer/MenuGrid"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.903598, 0.903598, 0.903598, 1)
-text = "Day Toggle:"
-
-[node name="DayNightToggle" type="CheckButton" parent="GridContainer/MenuGrid"]
-layout_mode = 2
-button_pressed = true
-script = ExtResource("9_y4wsg")
-
-[node name="WorldTransformToggleLabel" type="Label" parent="GridContainer/MenuGrid"]
-layout_mode = 2
-text = "World Transform Toggle"
-
-[node name="WorldTransformToggle" type="CheckButton" parent="GridContainer/MenuGrid"]
-layout_mode = 2
-script = ExtResource("10_05q74")
 
 [node name="SetDataTree" type="Tree" parent="."]
 layout_mode = 2

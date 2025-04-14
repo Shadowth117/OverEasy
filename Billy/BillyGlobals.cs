@@ -3,18 +3,16 @@ using AquaModelLibrary.Data.BillyHatcher.ARCData;
 using AquaModelLibrary.Data.BillyHatcher.SetData;
 using AquaModelLibrary.Data.DataTypes;
 using AquaModelLibrary.Data.Ninja;
-using AquaModelLibrary.Data.PSO2.Aqua.AquaMotionData;
-using AquaModelLibrary.Data.PSO2.Aqua.AquaObjectData;
 using ArchiveLib;
 using Godot;
 using OverEasy.Billy;
 using OverEasy.TextInfo;
 using OverEasy.Util;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using static Godot.TileSet;
 
 namespace OverEasy
 {
@@ -30,7 +28,6 @@ namespace OverEasy
         public static bool isDay = true;
         public static Node3D daySkybox = null;
         public static Node3D nightSkybox = null;
-        public static DayNightToggle dayNightToggle = null;
         public static DirectionalLight3D billyDirectionalLight = null;
 
         public static PRD currentPRD = null;
@@ -78,7 +75,7 @@ namespace OverEasy
 
         public static void BillyCopyObjectData()
         {
-            switch(currentEditorType)
+            switch (currentEditorType)
             {
                 case EditingType.BillySpawnPoint:
                     clipboardSetObj = null;
@@ -192,12 +189,12 @@ namespace OverEasy
                             newData.Position = tempPos;
                             newData.BAMSRotation = tempRot;
                             loadedBillySetEnemies.setEnemies[currentObjectId] = newData;
-                            LoadBillyEnemy(); 
+                            LoadBillyEnemy();
 
                             var parentNode = (Node3D)TransformGizmo.GetParent();
                             BillyModelIO.LoadBillySetEnemyModel(newData, parentNode);
                             parentNode.GlobalPosition = new Vector3(newData.Position.X, newData.Position.Y, newData.Position.Z);
-                            parentNode.RotationDegrees = new Vector3((float)(NinjaConstants.FromBAMSValueToDegrees * newData.BAMSRotation.X), 
+                            parentNode.RotationDegrees = new Vector3((float)(NinjaConstants.FromBAMSValueToDegrees * newData.BAMSRotation.X),
                                 (float)(NinjaConstants.FromBAMSValueToDegrees * newData.BAMSRotation.Y), (float)(NinjaConstants.FromBAMSValueToDegrees * newData.BAMSRotation.Z));
                         }
                         break;
@@ -218,7 +215,7 @@ namespace OverEasy
                         SetSpinBoxValue("PlayerRotation", clipboardRotation.Value.Y);
                         break;
                     case EditingType.BillySetObj:
-                        if(clipboardSetObj != null)
+                        if (clipboardSetObj != null)
                         {
                             SetObj newData = clipboardSetObj.Value;
                             loadedBillySetObjects.setObjs[currentObjectId] = newData;
@@ -229,7 +226,8 @@ namespace OverEasy
                             parentNode.GlobalPosition = new Vector3(newData.Position.X, newData.Position.Y, newData.Position.Z);
                             parentNode.RotationDegrees = new Vector3((float)(NinjaConstants.FromBAMSValueToDegrees * newData.BAMSRotation.X),
                                 (float)(NinjaConstants.FromBAMSValueToDegrees * newData.BAMSRotation.Y), (float)(NinjaConstants.FromBAMSValueToDegrees * newData.BAMSRotation.Z));
-                        } else
+                        }
+                        else
                         {
                             SetVec3SchemaValues("ObjectPosition", clipboardPosition.Value);
                             SetVec3SchemaValues("ObjectRotation", clipboardRotation.Value);
@@ -272,6 +270,69 @@ namespace OverEasy
                             SetVec3SchemaValues("ObjectPosition", clipboardPosition.Value);
                             SetVec3SchemaValues("ObjectRotation", clipboardRotation.Value);
                         }
+                        break;
+                    case EditingType.None:
+                        break;
+                }
+            }
+        }
+
+        public static void BillyDropObjToNearestSolid()
+        {
+            Vector3 currentPosition = new Vector3();
+            switch (currentEditorType)
+            {
+                case EditingType.BillySpawnPoint:
+                    currentPosition = GetVec3SchemaValues("PlayerPosition").ToGVec3();
+                    break;
+                case EditingType.BillySetObj:
+                case EditingType.BillySetDesign:
+                case EditingType.BillySetEnemy:
+                    currentPosition = GetVec3SchemaValues("ObjectPosition").ToGVec3();
+                    break;
+                case EditingType.None:
+                    return;
+            }
+            var node = (Node3D)TransformGizmo.GetParent();
+            Vector3 end = new Vector3(currentPosition.X, currentPosition.Y - 10000, currentPosition.Z);
+            PhysicsRayQueryParameters3D objQuery = PhysicsRayQueryParameters3D.Create(currentPosition, end, 1);
+            PhysicsRayQueryParameters3D mc2Query = PhysicsRayQueryParameters3D.Create(currentPosition, end, 4);
+            var spaceState = modelRoot.GetWorld3D().DirectSpaceState;
+            var objResult = spaceState.IntersectRay(objQuery);
+            Vector3? finalPos = null;
+
+            if (terrainCollision.Count > 0)
+            {
+                var spaceState2 = terrainCollision[0].GetWorld3D().DirectSpaceState;
+                var mc2Result = spaceState.IntersectRay(mc2Query);
+
+                if (mc2Result.Count > 0)
+                {
+                    finalPos = ((Vector3)mc2Result["position"]);
+                }
+            }
+            
+            if (objResult.Count > 0)
+            {
+                var objResultPos = ((Vector3)objResult["position"]);
+
+                if(finalPos == null || finalPos.Value.Y < objResultPos.Y)
+                {
+                    finalPos = objResultPos;
+                }
+            }
+
+            if(finalPos != null)
+            {
+                switch (currentEditorType)
+                {
+                    case EditingType.BillySpawnPoint:
+                        SetVec3SchemaValues("PlayerPosition", finalPos.Value);
+                        break;
+                    case EditingType.BillySetObj:
+                    case EditingType.BillySetDesign:
+                    case EditingType.BillySetEnemy:
+                        SetVec3SchemaValues("ObjectPosition", finalPos.Value);
                         break;
                     case EditingType.None:
                         break;
@@ -363,7 +424,7 @@ namespace OverEasy
             var def = stgDef.defs[currentMissionId];
             daySkybox = null;
             nightSkybox = null;
-            dayNightToggle.ButtonPressed = true;
+            SettingsBtn.GetPopup().SetItemChecked(0, true);
             isDay = true;
             SetCameraSettingsBilly();
             ClearModelAndTextureData();
@@ -375,7 +436,7 @@ namespace OverEasy
             BillyModelIO.CacheEnemyModelsPC();
 
             //Load Object Models
-            BillyModelIO.CacheObjectModelsPC();
+            BillyModelIO.CacheObjectModelsPC(def);
 
             //Load Set Design
             string setDesignFilePath = GetAssetPath(def.setDesignFilename);
@@ -450,7 +511,7 @@ namespace OverEasy
             var def = stgDef.defs[currentMissionId];
             daySkybox = null;
             nightSkybox = null;
-            dayNightToggle.ButtonPressed = true;
+            SettingsBtn.GetPopup().SetItemChecked(0, true);
             isDay = true;
             SetCameraSettingsBilly();
             ClearModelAndTextureData();
@@ -507,6 +568,10 @@ namespace OverEasy
             {
                 switch (currentCommonPRD.fileNames[i])
                 {
+                    case "geobj_common.arc":
+                        var commonGeobj = new GEObj_Stage(currentPRD.files[i]);
+                        BillyModelIO.CacheGeobjCommon(commonGeobj);
+                        break;
                     case "set_light_param.bin":
                         currentLightsParam = new SetLightParam(currentCommonPRD.files[i]);
                         break;
@@ -582,7 +647,13 @@ namespace OverEasy
                     terrainModels.Add(lnd);
                     modelRoot.AddChild(lnd);
                 }
-                //Load Stage Object models (We need to link these somehow...)
+
+                //Load Stage Object models 
+                if (currentPRD.fileNames[i] == def.commonData.objectData)
+                {
+                    var localGeobj = new GEObj_Stage(currentPRD.files[i]);
+                    BillyModelIO.CacheGeobjLocal(localGeobj);
+                }
 
                 //Load Stage Collision Model
                 if (currentPRD.fileNames[i] == def.mc2Filename)
@@ -629,8 +700,8 @@ namespace OverEasy
                         ModelConversion.LoadGVM(modelRef, enemyGVMDict[pair.Key], out var gvmTextures, out var gvrAlphaTypes);
                         var modelNode = ModelConversion.NinjaToGDModel(modelRef, pair.Value.models[5], gvmTextures, gvrAlphaTypes);
                         modelNode = ModelConversion.NinjaToGDModel(modelRef, pair.Value.models[6], gvmTextures, gvrAlphaTypes, null, null, modelNode);
-                        BillyModelIO.CreateObjectCollision(modelNode);
-                        if(!modelDictionary.ContainsKey(modelRef))
+                        ModelConversion.CreateObjectCollision(modelNode);
+                        if (!modelDictionary.ContainsKey(modelRef))
                         {
                             modelDictionary[modelRef] = modelNode;
                         }
@@ -966,17 +1037,22 @@ namespace OverEasy
                         break;
                     case "IntProperty1":
                         var intProperty1Value = (int)GetSpinBoxValue("IntProperty1");
-                        if (objRaw.objectId == 11 && objRaw.intProperty1 != intProperty1Value)
+                        if ((objRaw.objectId == 11 || objRaw.objectId == 10) && objRaw.intProperty1 != intProperty1Value)
                         {
                             shouldReloadModel = true;
-                            objRaw.intProperty1 = intProperty1Value;
                         }
+                        objRaw.intProperty1 = intProperty1Value;
                         break;
                     case "IntProperty2":
                         objRaw.intProperty2 = (int)GetSpinBoxValue("IntProperty2");
                         break;
                     case "IntProperty3":
-                        objRaw.intProperty3 = (int)GetSpinBoxValue("IntProperty3");
+                        var intProperty3Value = (int)GetSpinBoxValue("IntProperty3");
+                        if (objRaw.objectId == 11 && objRaw.intProperty3 != intProperty3Value)
+                        {
+                            shouldReloadModel = true;
+                        }
+                        objRaw.intProperty3 = intProperty3Value;
                         break;
                     case "IntProperty4":
                         objRaw.intProperty4 = (int)GetSpinBoxValue("IntProperty4");
@@ -1039,8 +1115,8 @@ namespace OverEasy
                         if (objRaw.enemyId != idValue)
                         {
                             shouldReloadModel = true;
-                            objRaw.enemyId = idValue;
                         }
+                        objRaw.enemyId = idValue;
                         break;
                     case "ObjectPosition":
                         objRaw.Position = objPosition;
@@ -1075,8 +1151,8 @@ namespace OverEasy
                         if (objRaw.int_38 != int38Value)
                         {
                             shouldReloadModel = true;
-                            objRaw.int_38 = int38Value;
                         }
+                        objRaw.int_38 = int38Value;
                         break;
                     case "Int_3C":
                         objRaw.int_3C = (int)GetSpinBoxValue("Int_3C");
@@ -1293,7 +1369,7 @@ namespace OverEasy
                 }
             }
             temp.Collapsed = true;
-            PutCameraOnObject(p1Node);
+            HandleEditorObjectsOnselection(p1Node);
 
             if (loadedBillySetObjects != null && loadedBillySetObjects?.setObjs?.Count != 0)
             {

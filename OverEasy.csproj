@@ -34,6 +34,9 @@
     <Content Include="TextInfo\BillyMapNames.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="TextInfo\BillyObjDefinitions\10.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="TextInfo\BillyObjDefinitions\11.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
