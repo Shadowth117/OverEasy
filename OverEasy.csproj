@@ -12,25 +12,63 @@
     <Page Remove="Build\**" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="TextInfo\BillyEnemyDefinitions\2304.json" />
-    <Content Include="TextInfo\BillyEnemyDefinitions\2048.json" />
-    <Content Include="TextInfo\BillyEnemyDefinitions\1792.json" />
-    <Content Include="TextInfo\BillyEnemyDefinitions\1536.json" />
-    <Content Include="TextInfo\BillyEnemyDefinitions\1280.json" />
-    <Content Include="TextInfo\BillyEnemyDefinitions\2.json" />
-    <Content Include="TextInfo\BillyEnemyDefinitions\259.json" />
-    <Content Include="TextInfo\BillyEnemyDefinitions\258.json" />
-    <Content Include="TextInfo\BillyEnemyDefinitions\257.json" />
-    <Content Include="TextInfo\BillyEnemyDefinitions\1024.json" />
-    <Content Include="TextInfo\BillyEnemyDefinitions\768.json" />
-    <Content Include="TextInfo\BillyEnemyDefinitions\512.json" />
-    <Content Include="TextInfo\BillyEnemyDefinitions\266.json" />
-    <Content Include="TextInfo\BillyEnemyDefinitions\265.json" />
-    <Content Include="TextInfo\BillyEnemyDefinitions\264.json" />
-    <Content Include="TextInfo\BillyEnemyDefinitions\263.json" />
-    <Content Include="TextInfo\BillyEnemyDefinitions\262.json" />
-    <Content Include="TextInfo\BillyEnemyDefinitions\261.json" />
-    <Content Include="TextInfo\BillyEnemyDefinitions\260.json" />
+    <Content Include="TextInfo\BillyEnemyDefinitions\2304.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TextInfo\BillyEnemyDefinitions\2048.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TextInfo\BillyEnemyDefinitions\1792.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TextInfo\BillyEnemyDefinitions\1536.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TextInfo\BillyEnemyDefinitions\1280.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TextInfo\BillyEnemyDefinitions\2.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TextInfo\BillyEnemyDefinitions\259.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TextInfo\BillyEnemyDefinitions\258.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TextInfo\BillyEnemyDefinitions\257.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TextInfo\BillyEnemyDefinitions\1024.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TextInfo\BillyEnemyDefinitions\768.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TextInfo\BillyEnemyDefinitions\512.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TextInfo\BillyEnemyDefinitions\266.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TextInfo\BillyEnemyDefinitions\265.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TextInfo\BillyEnemyDefinitions\264.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TextInfo\BillyEnemyDefinitions\263.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TextInfo\BillyEnemyDefinitions\262.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TextInfo\BillyEnemyDefinitions\261.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TextInfo\BillyEnemyDefinitions\260.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="TextInfo\BillyMapNames.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

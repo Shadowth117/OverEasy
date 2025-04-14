@@ -569,7 +569,7 @@ namespace OverEasy
                 switch (currentCommonPRD.fileNames[i])
                 {
                     case "geobj_common.arc":
-                        var commonGeobj = new GEObj_Stage(currentPRD.files[i]);
+                        var commonGeobj = new GEObj_Stage(currentCommonPRD.files[i]);
                         BillyModelIO.CacheGeobjCommon(commonGeobj);
                         break;
                     case "set_light_param.bin":
