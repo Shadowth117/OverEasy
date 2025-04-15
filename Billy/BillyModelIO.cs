@@ -262,26 +262,61 @@ namespace OverEasy.Billy
             }
         }
 
+        public static void CacheTitleObj(ArEnemy titleObj, PuyoFile gvm)
+        {
+            ModelConversion.LoadGVM("titleObj", gvm, out var gvmTextures, out var gvrAlphaTypes);
+            //Small flowers
+            CacheModel("object_4610", titleObj.models[1], titleObj.texList[0], gvm, false);
+            //Big flowers
+            CacheModel("object_4609", titleObj.models[3], titleObj.texList[0], gvm, false);
+            //Tree
+            CacheModel("object_4611", titleObj.models[4], titleObj.texList[0], gvm, false);
+            //Bush
+            CacheModel("object_4608", titleObj.models[2], titleObj.texList[0], gvm, false);
+            //Waterfall
+            //CacheModel("object_4616", titleObj.models[7], titleObj.texList[0], gvm, false);
+            //Water
+            //CacheModel("object_4615", titleObj.models[8], titleObj.texList[0], gvm, false);
+            //Rainbow
+            CacheModel("object_4617", titleObj.models[9], titleObj.texList[0], gvm, false);
+            //Chick
+            CacheModel("object_4612", titleObj.models[0], titleObj.texList[0], gvm, false);
+            //Crow
+            CacheModel("object_4612_1", titleObj.models[5], titleObj.texList[0], gvm, false);
+        }
+
         public static void CacheObjectModelsPC(StageDef.StageDefinition def)
         {
             var commonObjectsPath = OverEasyGlobals.GetAssetPath("geobj_common.arc");
-            var commGeobj = new GEObj_Stage(File.ReadAllBytes(commonObjectsPath));
-            CacheGeobjCommon(commGeobj);
+            if(commonObjectsPath != "")
+            {
+                var commGeobj = new GEObj_Stage(File.ReadAllBytes(commonObjectsPath));
+                CacheGeobjCommon(commGeobj);
+            }
 
-            var localObjectsPath = OverEasyGlobals.GetAssetPath(def.commonData.objectData);
-            var localGeobj = new GEObj_Stage(File.ReadAllBytes(localObjectsPath));
-            CacheGeobjLocal(localGeobj);
+            var objDataFile = def.commonData != null ? def.commonData.objectData : "";
+            var objDefFile = def.commonData != null ? def.commonData.objectDefinition : "";
+            var localObjectsPath = OverEasyGlobals.GetAssetPath(objDataFile);
+            var localObjectsDefPath = OverEasyGlobals.GetAssetPath(objDefFile);
+            if(localObjectsPath != "" && localObjectsDefPath != "")
+            {
+                var localGeobj = new GEObj_Stage(File.ReadAllBytes(localObjectsPath));
+                var localStgobj = new StageObj(File.ReadAllBytes(localObjectsDefPath));
+                CacheGeobjLocal(localStgobj, localGeobj);
+            }
         }
 
-        public static void CacheGeobjLocal(GEObj_Stage stageGeo)
+        public static void CacheGeobjLocal(StageObj stgobj, GEObj_Stage stageGeo)
         {
             ModelConversion.LoadGVM("geobjStage", stageGeo.gvm, out var gvmTextures, out var gvrAlphaTypes);
 
             //Scenery
-            for (int i = 0; i < stageGeo.model2s.Count; i++)
+            for (int i = 0; i < stgobj.objEntries.Count; i++)
             {
+                var objEntry = stgobj.objEntries[i];
+
                 //Model2s all share the same texlist
-                CacheModel($"commGeoM2Local_{i}", stageGeo.model2s[$"model2_{i}"], stageGeo.texList2s["texList2_0"], stageGeo.gvm, false);
+                CacheModel($"commGeoM2Local_{i}", stageGeo.model2s[$"model2_{objEntry.model2Id0}"], stageGeo.texList2s["texList2_0"], stageGeo.gvm, false);
             }
         }
 

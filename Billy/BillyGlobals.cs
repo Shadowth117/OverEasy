@@ -12,6 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json;
 
 namespace OverEasy
@@ -438,6 +439,16 @@ namespace OverEasy
             //Load Object Models
             BillyModelIO.CacheObjectModelsPC(def);
 
+            if(def.worldName == "title")
+            {
+                string titleObjPath = GetAssetPath("ar_obj_title.arc");
+                string titleObjTexPath = GetAssetPath("obj_title.GVM");
+                if(File.Exists(titleObjPath) && File.Exists(titleObjTexPath))
+                {
+                    BillyModelIO.CacheTitleObj(new ArEnemy(File.ReadAllBytes(titleObjPath)), new PuyoFile(File.ReadAllBytes(titleObjTexPath)));
+                }
+            }
+
             //Load Set Design
             string setDesignFilePath = GetAssetPath(def.setDesignFilename);
             if (File.Exists(setDesignFilePath))
@@ -582,6 +593,10 @@ namespace OverEasy
 
             Dictionary<string, ArEnemy> enemyArchiveDict = new Dictionary<string, ArEnemy>();
             Dictionary<string, PuyoFile> enemyGVMDict = new Dictionary<string, PuyoFile>();
+            ArEnemy titleObj = null;
+            PuyoFile titleObjTex = null;
+            GEObj_Stage localGeobj = null;
+            StageObj localStgobj = null;
             for (int i = 0; i < currentPRD.files.Count; i++)
             {
                 //Hold Enemy GVM
@@ -648,11 +663,27 @@ namespace OverEasy
                     modelRoot.AddChild(lnd);
                 }
 
-                //Load Stage Object models 
+                //Load Title objects (if this is the title screen prd)
+                //Title screen scenery objects are special and show up in an arc closer to what enemies use
+                if (currentPRD.fileNames[i] == "ar_obj_title.arc")
+                {
+                    titleObj = new ArEnemy(currentPRD.files[i]);
+                }
+                if (currentPRD.fileNames[i] == "obj_title.GVM")
+                {
+                    titleObjTex = new PuyoFile(currentPRD.files[i]);
+                }
+
+                //Load Stage Object Models 
                 if (currentPRD.fileNames[i] == def.commonData.objectData)
                 {
-                    var localGeobj = new GEObj_Stage(currentPRD.files[i]);
-                    BillyModelIO.CacheGeobjLocal(localGeobj);
+                    localGeobj = new GEObj_Stage(currentPRD.files[i]);
+                }
+
+                //Load Stage Object Definitions
+                if (currentPRD.fileNames[i] == def.commonData.objectDefinition)
+                {
+                    localStgobj = new StageObj(currentPRD.files[i]);
                 }
 
                 //Load Stage Collision Model
@@ -668,7 +699,18 @@ namespace OverEasy
 
                 //Load Stage Event Camera
 
-                //When figured out, load stage event file
+                //Load stage event file
+            }
+
+            if(titleObj != null && titleObjTex != null)
+            {
+                BillyModelIO.CacheTitleObj(titleObj, titleObjTex);
+            }
+
+            //Load Stage Object Models
+            if(localStgobj != null && localGeobj != null)
+            {
+                BillyModelIO.CacheGeobjLocal(localStgobj, localGeobj);
             }
 
             //Load enemies
