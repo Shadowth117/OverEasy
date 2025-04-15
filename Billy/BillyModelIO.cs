@@ -316,6 +316,10 @@ namespace OverEasy.Billy
                 var objEntry = stgobj.objEntries[i];
 
                 //Model2s all share the same texlist
+                if(objEntry.model2Id0 == ushort.MaxValue)
+                {
+                    continue;
+                }
                 CacheModel($"commGeoM2Local_{i}", stageGeo.model2s[$"model2_{objEntry.model2Id0}"], stageGeo.texList2s["texList2_0"], stageGeo.gvm, false);
             }
         }

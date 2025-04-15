@@ -8,11 +8,9 @@ using Godot;
 using OverEasy.Billy;
 using OverEasy.TextInfo;
 using OverEasy.Util;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text.Json;
 
 namespace OverEasy
@@ -34,6 +32,10 @@ namespace OverEasy
         public static PRD currentPRD = null;
         public static PRD currentCommonPRD = null;
         public static SetLightParam currentLightsParam = null;
+        /// <summary>
+        /// Stores the original stage limit so we can remove the test stages we add later
+        /// </summary>
+        public static int fakeDefEntryStart;
 
         public static Vector3? clipboardPosition = null;
         public static Vector3? clipboardRotation = null;
@@ -779,6 +781,7 @@ namespace OverEasy
                         if (fName == "ge_stagedef.bin")
                         {
                             stgDef = new StageDef(bootPrd.files[i]);
+                            fakeDefEntryStart = stgDef.defs.Count;
                             return true;
                         }
                     }
@@ -789,6 +792,106 @@ namespace OverEasy
                 if (File.Exists(Path.Combine(location, "ge_stagedef.bin")))
                 {
                     stgDef = new StageDef(Path.Combine(location, "ge_stagedef.bin"));
+                    fakeDefEntryStart = stgDef.defs.Count;
+
+                    //Add unused maps
+                    stgDef.defs.Add(new StageDef.StageDefinition()
+                    {
+                        missionName = "stg_battle_red",
+                        lndFilename = "stg_battle_red.lnd",
+                        mc2Filename = "stg_battle_red.mc2",
+                        setCameraFilename = "set_cam_battle_red.bin",
+                        setDesignFilename = "set_design_battle_red.bin",
+                        setEnemyFilename = "set_ene_battle_red.bin",
+                        setObjFilename = "set_obj_battle_red.bin",
+                        commonData = stgDef.defsDict["red1"].commonData
+                    });
+                    stgDef.defsDict.Add(stgDef.defs[^1].missionName, stgDef.defs[^1]);
+                    stgDef.defs.Add(new StageDef.StageDefinition()
+                    {
+                        missionName = "stg_blue_night",
+                        lndFilename = "stg_blue_night.lnd",
+                        setDesignFilename = "set_design_blue_night.bin",
+                        commonData = stgDef.defsDict["blue1"].commonData
+                    });
+                    stgDef.defsDict.Add(stgDef.defs[^1].missionName, stgDef.defs[^1]);
+                    stgDef.defs.Add(new StageDef.StageDefinition()
+                    {
+                        missionName = "stg_pur_boss",
+                        lndFilename = "stg_pur_boss.lnd",
+                        mc2Filename = "stg_pur_boss.mc2",
+                        commonData = stgDef.defsDict["purple1"].commonData
+                    });
+                    stgDef.defsDict.Add(stgDef.defs[^1].missionName, stgDef.defs[^1]);
+                    stgDef.defs.Add(new StageDef.StageDefinition()
+                    {
+                        missionName = "stg_purple_n",
+                        lndFilename = "stg_purple_n.lnd",
+                        setDesignFilename = "set_design_purple_n.bin",
+                        commonData = stgDef.defsDict["purple1"].commonData
+                    });
+                    stgDef.defsDict.Add(stgDef.defs[^1].missionName, stgDef.defs[^1]);
+                    stgDef.defs.Add(new StageDef.StageDefinition()
+                    {
+                        missionName = "stg_purple_night",
+                        lndFilename = "stg_purple_night.lnd",
+                        setDesignFilename = "set_design_purple_night.bin",
+                        commonData = stgDef.defsDict["purple1"].commonData
+                    });
+                    stgDef.defsDict.Add(stgDef.defs[^1].missionName, stgDef.defs[^1]);
+                    stgDef.defs.Add(new StageDef.StageDefinition()
+                    {
+                        missionName = "stg_test",
+                        lndFilename = "stg_test.lnd",
+                        mc2Filename = "stg_test.mc2",
+                        setCameraFilename = "set_cam_test01.bin",
+                        setDesignFilename = "set_design_test.bin",
+                        setEnemyFilename = "set_ene_test01.bin",
+                        setObjFilename = "set_obj_test01.bin",
+                        commonData = stgDef.defsDict["red1"].commonData
+                    });
+                    stgDef.defsDict.Add(stgDef.defs[^1].missionName, stgDef.defs[^1]);
+                    stgDef.defs.Add(new StageDef.StageDefinition()
+                    {
+                        missionName = "stg_test2",
+                        lndFilename = "stg_test2.lnd",
+                        mc2Filename = "stg_test2.mc2",
+                        setCameraFilename = "set_cam_test2.bin",
+                        setDesignFilename = "set_design_test2.bin",
+                        setEnemyFilename = "set_ene_test02.bin",
+                        setObjFilename = "set_obj_test02.bin",
+                        commonData = stgDef.defsDict["blue1"].commonData
+                    });
+                    stgDef.defsDict.Add(stgDef.defs[^1].missionName, stgDef.defs[^1]);
+                    stgDef.defs.Add(new StageDef.StageDefinition()
+                    {
+                        missionName = "stg_test2_n",
+                        lndFilename = "stg_test2_n.lnd",
+                        setDesignFilename = "set_design_test2_n.bin",
+                        commonData = stgDef.defsDict["blue1"].commonData
+                    });
+                    stgDef.defsDict.Add(stgDef.defs[^1].missionName, stgDef.defs[^1]);
+                    stgDef.defs.Add(new StageDef.StageDefinition()
+                    {
+                        missionName = "stg_test07",
+                        lndFilename = "stg_test07.lnd",
+                        setCameraFilename = "set_cam_test07.bin",
+                        setEnemyFilename = "set_ene_test07.bin",
+                        setObjFilename = "set_obj_test07.bin",
+                        commonData = stgDef.defsDict["purple1"].commonData
+                    });
+                    stgDef.defsDict.Add(stgDef.defs[^1].missionName, stgDef.defs[^1]);
+                    stgDef.defs.Add(new StageDef.StageDefinition()
+                    {
+                        missionName = "stg_test08",
+                        lndFilename = "stg_test08.lnd",
+                        setCameraFilename = "set_cam_test08.bin",
+                        setEnemyFilename = "set_ene_test08.bin",
+                        setObjFilename = "set_obj_test08.bin",
+                        commonData = stgDef.defsDict["blue1"].commonData
+                    });
+                    stgDef.defsDict.Add(stgDef.defs[^1].missionName, stgDef.defs[^1]);
+
                     return true;
                 }
             }
@@ -1271,9 +1374,21 @@ namespace OverEasy
                 {
                     File.Copy(Path.Combine(gameFolderLocation, "ge_stagedef.bin"), backupFileName);
                 }
-                File.WriteAllBytes(Path.Combine(modFolderLocation, "ge_stagedef.bin"), stgDef.GetBytes());
+                File.WriteAllBytes(Path.Combine(modFolderLocation, "ge_stagedef.bin"), BuildSavableStageDef().GetBytes());
                 stgDefModified = false;
             }
+        }
+
+        private static StageDef BuildSavableStageDef()
+        {
+            //Get rid of the test stages that shouldn't be there
+            StageDef newStageDef = new StageDef();
+            for (int i = 0; i < fakeDefEntryStart; i++)
+            {
+                newStageDef.defs.Add(stgDef.defs[i]);
+            }
+            newStageDef.definition = stgDef.definition;
+            return newStageDef;
         }
 
         private static void SaveDataBillyGC()
@@ -1335,7 +1450,7 @@ namespace OverEasy
                     var fName = bootPrd.fileNames[i];
                     if (fName == "ge_stagedef.bin")
                     {
-                        bootPrd.files[i] = stgDef.GetBytes();
+                        bootPrd.files[i] = BuildSavableStageDef().GetBytes();
                     }
                 }
 

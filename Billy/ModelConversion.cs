@@ -6,7 +6,6 @@ using AquaModelLibrary.Data.Ninja.Motion;
 using AquaModelLibrary.Data.PSO2.Aqua;
 using AquaModelLibrary.Data.PSO2.Aqua.AquaNodeData;
 using AquaModelLibrary.Data.PSO2.Aqua.AquaObjectData;
-using AquaModelLibrary.Data.PSO2.Aqua.AquaObjectData.Intermediary;
 using AquaModelLibrary.Helpers.Readers;
 using ArchiveLib;
 using Godot;
@@ -20,22 +19,22 @@ using Material = Godot.Material;
 namespace OverEasy.Billy
 {
 	public class ModelConversion
-    {
-        public static void BillyModeNightToggleParent(Node3D parentNode)
-        {
+	{
+		public static void BillyModeNightToggleParent(Node3D parentNode)
+		{
 			OverEasyGlobals.SetBillyLighting();
 			BillyModeNightToggle(parentNode);
-        }
-        public static void BillyModeNightToggle(Node parentNode)
+		}
+		public static void BillyModeNightToggle(Node parentNode)
 		{
-            if (parentNode is MeshInstance3D)
-            {
-                if (((MeshInstance3D)parentNode).Mesh is ArrayMesh)
-                {
-                    BillyModeNightToggleMesh((ArrayMesh)((MeshInstance3D)parentNode).Mesh);
-                }
-            }
-            var nodes = parentNode.GetChildren();
+			if (parentNode is MeshInstance3D)
+			{
+				if (((MeshInstance3D)parentNode).Mesh is ArrayMesh)
+				{
+					BillyModeNightToggleMesh((ArrayMesh)((MeshInstance3D)parentNode).Mesh);
+				}
+			}
+			var nodes = parentNode.GetChildren();
 			foreach (var node in nodes)
 			{
 				BillyModeNightToggle(node);
@@ -104,8 +103,8 @@ namespace OverEasy.Billy
 		{
 			if(root == null)
 			{
-                root = new Node3D();
-            }
+				root = new Node3D();
+			}
 			MeshInstance3D meshInst = new MeshInstance3D();
 			var box = new BoxMesh();
 			box.Size = new Vector3(10, 10, 10);
@@ -123,9 +122,9 @@ namespace OverEasy.Billy
 		public static Node3D GDModelClone(Node3D modelNode, Node3D root = null)
 		{
 			if(root == null)
-            {
-                root = new Node3D();
-            }
+			{
+				root = new Node3D();
+			}
 			foreach(var child in modelNode.GetChildren())
 			{
 				root.AddChild(child.Duplicate());
@@ -200,7 +199,7 @@ namespace OverEasy.Billy
 					newTextures.Add(textureList[i]);
 					newAlphaTypes.Add(alphaTypes[i]);
 
-                }
+				}
 			}
 
 			return newTextures;
@@ -213,9 +212,9 @@ namespace OverEasy.Billy
 		public static Node3D NinjaToGDModel(string name, NJSObject nj, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes, AquaNode aqn = null, System.Numerics.Matrix4x4? baseTfm = null, Node3D root = null, System.Numerics.Matrix4x4? rootTfm = null)
 		{
 			if(root == null)
-            {
-                root = new Node3D();
-            }
+			{
+				root = new Node3D();
+			}
 			root.Name = name;
 			
 			Skeleton3D skeleton = new Skeleton3D();
@@ -235,12 +234,12 @@ namespace OverEasy.Billy
 			if(baseTfm == null)
 			{
 				baseTfm = System.Numerics.Matrix4x4.Identity;
-            }
-            if (rootTfm == null)
-            {
-                rootTfm = System.Numerics.Matrix4x4.Identity;
-            }
-            IterateNJSObject(nj, fullVertList, ref nodeId, -1, root, skeleton, (System.Numerics.Matrix4x4)baseTfm, gvrTextures, gvrAlphaTypes, (System.Numerics.Matrix4x4)rootTfm, aqn);
+			}
+			if (rootTfm == null)
+			{
+				rootTfm = System.Numerics.Matrix4x4.Identity;
+			}
+			IterateNJSObject(nj, fullVertList, ref nodeId, -1, root, skeleton, (System.Numerics.Matrix4x4)baseTfm, gvrTextures, gvrAlphaTypes, (System.Numerics.Matrix4x4)rootTfm, aqn);
 
 			return root;
 		}
@@ -274,26 +273,26 @@ namespace OverEasy.Billy
 			mat = mat * parentMatrix;
 
 			if(aqn != null)
-            {
-                NODE aqNode = new NODE();
-                aqNode.boneShort1 = 0x1C0;
-                aqNode.animatedFlag = 1;
-                aqNode.parentId = parentId;
-                aqNode.nextSibling = -1;
-                aqNode.firstChild = -1;
-                aqNode.unkNode = -1;
-                aqNode.pos = nj.pos;
-                aqNode.eulRot = new System.Numerics.Vector3((float)(nj.rot.X * 180 / Math.PI),
-                    (float)(nj.rot.Y * 180 / Math.PI), (float)(nj.rot.Z * 180 / Math.PI));
-                aqNode.scale = nj.scale;
-                System.Numerics.Matrix4x4.Invert(mat, out var invMat);
-                aqNode.m1 = new System.Numerics.Vector4(invMat.M11, invMat.M12, invMat.M13, invMat.M14);
-                aqNode.m2 = new System.Numerics.Vector4(invMat.M21, invMat.M22, invMat.M23, invMat.M24);
-                aqNode.m3 = new System.Numerics.Vector4(invMat.M31, invMat.M32, invMat.M33, invMat.M34);
-                aqNode.m4 = new System.Numerics.Vector4(invMat.M41, invMat.M42, invMat.M43, invMat.M44);
-                aqNode.boneName.SetString(aqn.nodeList.Count.ToString());
-                aqn.nodeList.Add(aqNode);
-            }
+			{
+				NODE aqNode = new NODE();
+				aqNode.boneShort1 = 0x1C0;
+				aqNode.animatedFlag = 1;
+				aqNode.parentId = parentId;
+				aqNode.nextSibling = -1;
+				aqNode.firstChild = -1;
+				aqNode.unkNode = -1;
+				aqNode.pos = nj.pos;
+				aqNode.eulRot = new System.Numerics.Vector3((float)(nj.rot.X * 180 / Math.PI),
+					(float)(nj.rot.Y * 180 / Math.PI), (float)(nj.rot.Z * 180 / Math.PI));
+				aqNode.scale = nj.scale;
+				System.Numerics.Matrix4x4.Invert(mat, out var invMat);
+				aqNode.m1 = new System.Numerics.Vector4(invMat.M11, invMat.M12, invMat.M13, invMat.M14);
+				aqNode.m2 = new System.Numerics.Vector4(invMat.M21, invMat.M22, invMat.M23, invMat.M24);
+				aqNode.m3 = new System.Numerics.Vector4(invMat.M31, invMat.M32, invMat.M33, invMat.M34);
+				aqNode.m4 = new System.Numerics.Vector4(invMat.M41, invMat.M42, invMat.M43, invMat.M44);
+				aqNode.boneName.SetString(aqn.nodeList.Count.ToString());
+				aqn.nodeList.Add(aqNode);
+			}
 
 			if (nj.mesh != null)
 			{
@@ -332,20 +331,20 @@ namespace OverEasy.Billy
 						for(int j = faceVtxl.vertPositions.Count - 1; j >= 0; j--)
 						{
 							vertPosList.Add(faceVtxl.vertPositions[j].ToGVec3());
-                        }
-                        for (int j = faceVtxl.vertNormals.Count - 1; j >= 0; j--)
-                        {
-                            vertNrmList.Add(faceVtxl.vertNormals[j].ToGVec3());
-                        }
-                        for (int j = faceVtxl.uv1List.Count - 1; j >= 0; j--)
-                        {
-                            vertUvList.Add(faceVtxl.uv1List[j].ToGVec2());
-                        }
-                        for (int j = faceVtxl.vertColors.Count - 1; j >= 0; j--)
-                        {
+						}
+						for (int j = faceVtxl.vertNormals.Count - 1; j >= 0; j--)
+						{
+							vertNrmList.Add(faceVtxl.vertNormals[j].ToGVec3());
+						}
+						for (int j = faceVtxl.uv1List.Count - 1; j >= 0; j--)
+						{
+							vertUvList.Add(faceVtxl.uv1List[j].ToGVec2());
+						}
+						for (int j = faceVtxl.vertColors.Count - 1; j >= 0; j--)
+						{
 							var vertColor = faceVtxl.vertColors[j];
-                            vertClrList.Add(new Color(Mathf.Pow(vertColor[2] / 255f, 2.2f), Mathf.Pow(vertColor[1] / 255f, 2.2f), Mathf.Pow(vertColor[0] / 255f, 2.2f), vertColor[3] / 255f));
-                        }
+							vertClrList.Add(new Color(Mathf.Pow(vertColor[2] / 255f, 2.2f), Mathf.Pow(vertColor[1] / 255f, 2.2f), Mathf.Pow(vertColor[0] / 255f, 2.2f), vertColor[3] / 255f));
+						}
 					}
 					if(vertPosList.Count > 0)
 					{
@@ -364,9 +363,9 @@ namespace OverEasy.Billy
 						arrays[(int)Mesh.ArrayType.Color] = vertClrList.ToArray();
 					}
 
-                    //Set up material
-                    StandardMaterial3D gdMaterial = new StandardMaterial3D();
-                    var matId = tempTri.matIdList.Count > 0 ? tempTri.matIdList[0] : 0;
+					//Set up material
+					StandardMaterial3D gdMaterial = new StandardMaterial3D();
+					var matId = tempTri.matIdList.Count > 0 ? tempTri.matIdList[0] : 0;
 					gdMaterial.VertexColorUseAsAlbedo = true;
 					gdMaterial.ShadingMode = BaseMaterial3D.ShadingModeEnum.PerPixel;
 					gdMaterial.CullMode = BaseMaterial3D.CullModeEnum.Disabled;
@@ -428,22 +427,22 @@ namespace OverEasy.Billy
 		{
 			Node3D modelRoot = new Node3D();
 
-            MeshInstance3D meshInst = new MeshInstance3D();
-            ArrayMesh mesh = new ArrayMesh();
-            var arrays = new Godot.Collections.Array();
-            arrays.Resize((int)Mesh.ArrayType.Max);
+			MeshInstance3D meshInst = new MeshInstance3D();
+			ArrayMesh mesh = new ArrayMesh();
+			var arrays = new Godot.Collections.Array();
+			arrays.Resize((int)Mesh.ArrayType.Max);
 
-            int m = 0;
-            List<Vector3> vertPosList = new List<Vector3>();
-            List<Vector3> vertNrmList = new List<Vector3>();
-            List<Vector2> vertUvList = new List<Vector2>();
-            List<Color> vertClrList = new List<Color>();
-            foreach (var poly in mc2.faceData)
-            {
-                vertPosList.Add(poly.vert2Value.ToGVec3());
+			int m = 0;
+			List<Vector3> vertPosList = new List<Vector3>();
+			List<Vector3> vertNrmList = new List<Vector3>();
+			List<Vector2> vertUvList = new List<Vector2>();
+			List<Color> vertClrList = new List<Color>();
+			foreach (var poly in mc2.faceData)
+			{
+				vertPosList.Add(poly.vert2Value.ToGVec3());
 				vertPosList.Add(poly.vert1Value.ToGVec3());
-                vertPosList.Add(poly.vert0Value.ToGVec3());
-                vertNrmList.Add(poly.faceNormal.ToGVec3());
+				vertPosList.Add(poly.vert0Value.ToGVec3());
+				vertNrmList.Add(poly.faceNormal.ToGVec3());
 				vertNrmList.Add(poly.faceNormal.ToGVec3());
 				vertNrmList.Add(poly.faceNormal.ToGVec3());
 				vertUvList.Add(new Vector2(0, 1));
@@ -456,99 +455,99 @@ namespace OverEasy.Billy
 					color = new Color(1, 0.184f, 0);
 				} 
 				else if((poly.flagSet1 & MC2.FlagSet1.Quicksand) > 0)
-                {
-                    color = new Color(1, 1, 0);
-                }
-                else if ((poly.flagSet1 & MC2.FlagSet1.Drown) > 0)
-                {
-                    color = new Color(0, 0.415f, 1);
-                }
-                else if ((poly.flagSet0 & MC2.FlagSet0.Death) > 0)
-                {
-                    color = new Color(0.1f, 0.1f, 0.1f);
-                }
+				{
+					color = new Color(1, 1, 0);
+				}
+				else if ((poly.flagSet1 & MC2.FlagSet1.Drown) > 0)
+				{
+					color = new Color(0, 0.415f, 1);
+				}
+				else if ((poly.flagSet0 & MC2.FlagSet0.Death) > 0)
+				{
+					color = new Color(0.1f, 0.1f, 0.1f);
+				}
 				else if ((poly.flagSet1 & MC2.FlagSet1.Snow) > 0)
 				{
-                    color = new Color(1f, 1f, 1f);
-                }
-                else if ((poly.flagSet0 & MC2.FlagSet0.Slide) > 0)
-                {
-                    color = new Color(1f, 0.5f, 0f);
-                }
-                else if ((poly.flagSet1 & MC2.FlagSet1.DefaultGround) > 0)
-                {
-                    color = new Color(0.75f, 0.75f, 0.75f);
-                }
+					color = new Color(1f, 1f, 1f);
+				}
+				else if ((poly.flagSet0 & MC2.FlagSet0.Slide) > 0)
+				{
+					color = new Color(1f, 0.5f, 0f);
+				}
+				else if ((poly.flagSet1 & MC2.FlagSet1.DefaultGround) > 0)
+				{
+					color = new Color(0.75f, 0.75f, 0.75f);
+				}
 
-                vertClrList.Add(color);
-                vertClrList.Add(color);
-                vertClrList.Add(color);
-            }
-            if (vertPosList.Count > 0)
-            {
-                arrays[(int)Mesh.ArrayType.Vertex] = vertPosList.ToArray();
-            }
-            if (vertNrmList.Count > 0)
-            {
-                arrays[(int)Mesh.ArrayType.Normal] = vertNrmList.ToArray();
-            }
-            if (vertUvList.Count > 0)
-            {
-                arrays[(int)Mesh.ArrayType.TexUV] = vertUvList.ToArray();
-            }
-            if (vertClrList.Count > 0)
-            {
-                arrays[(int)Mesh.ArrayType.Color] = vertClrList.ToArray();
-            }                    
+				vertClrList.Add(color);
+				vertClrList.Add(color);
+				vertClrList.Add(color);
+			}
+			if (vertPosList.Count > 0)
+			{
+				arrays[(int)Mesh.ArrayType.Vertex] = vertPosList.ToArray();
+			}
+			if (vertNrmList.Count > 0)
+			{
+				arrays[(int)Mesh.ArrayType.Normal] = vertNrmList.ToArray();
+			}
+			if (vertUvList.Count > 0)
+			{
+				arrays[(int)Mesh.ArrayType.TexUV] = vertUvList.ToArray();
+			}
+			if (vertClrList.Count > 0)
+			{
+				arrays[(int)Mesh.ArrayType.Color] = vertClrList.ToArray();
+			}                    
 			
 			//Set up material
-            StandardMaterial3D gdMaterial = new StandardMaterial3D();
-            gdMaterial.VertexColorUseAsAlbedo = true;
-            gdMaterial.ShadingMode = BaseMaterial3D.ShadingModeEnum.PerPixel;
-            gdMaterial.CullMode = BaseMaterial3D.CullModeEnum.Disabled;
-            gdMaterial.Transparency = BaseMaterial3D.TransparencyEnum.Disabled;
+			StandardMaterial3D gdMaterial = new StandardMaterial3D();
+			gdMaterial.VertexColorUseAsAlbedo = true;
+			gdMaterial.ShadingMode = BaseMaterial3D.ShadingModeEnum.PerPixel;
+			gdMaterial.CullMode = BaseMaterial3D.CullModeEnum.Disabled;
+			gdMaterial.Transparency = BaseMaterial3D.TransparencyEnum.Disabled;
 
-            mesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, arrays, null, null);
-            mesh.SurfaceSetMaterial(0, gdMaterial);
-            meshInst.Mesh = mesh;
-            modelRoot.AddChild(meshInst);
+			mesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, arrays, null, null);
+			mesh.SurfaceSetMaterial(0, gdMaterial);
+			meshInst.Mesh = mesh;
+			modelRoot.AddChild(meshInst);
 
 			//Masks and layers are checked at the bit level. Ex. Setting this 3 would have it conflict with 1 (objects) or 2 (transform gizmo)
 			CreateObjectCollision(modelRoot, 4, 4);
 
-            return modelRoot;
-        }
+			return modelRoot;
+		}
 
-        public static void CreateObjectCollision(Node3D modelNode, uint layerId = 1, uint maskId = 1)
-        {
-            List<MeshInstance3D> meshInstances = new List<MeshInstance3D>();
-            GetObjectMeshInstances(modelNode, meshInstances);
+		public static void CreateObjectCollision(Node3D modelNode, uint layerId = 1, uint maskId = 1)
+		{
+			List<MeshInstance3D> meshInstances = new List<MeshInstance3D>();
+			GetObjectMeshInstances(modelNode, meshInstances);
 
-            foreach (var meshInst in meshInstances)
-            {
-                meshInst.CreateTrimeshCollision();
-                var staticBody = (StaticBody3D)meshInst.GetChild(0);
-                var collChild = ((CollisionShape3D)staticBody.GetChild(0));
-                collChild.Disabled = false;
-                staticBody.CollisionLayer = layerId;
-                staticBody.CollisionMask = maskId;
-            }
-        }
+			foreach (var meshInst in meshInstances)
+			{
+				meshInst.CreateTrimeshCollision();
+				var staticBody = (StaticBody3D)meshInst.GetChild(0);
+				var collChild = ((CollisionShape3D)staticBody.GetChild(0));
+				collChild.Disabled = false;
+				staticBody.CollisionLayer = layerId;
+				staticBody.CollisionMask = maskId;
+			}
+		}
 
-        public static void GetObjectMeshInstances(Node modelNode, List<MeshInstance3D> meshInstances)
-        {
-            var children = modelNode.GetChildren();
-            foreach (var nodeChild in children)
-            {
-                if (nodeChild is MeshInstance3D meshChild)
-                {
-                    meshInstances.Add(meshChild);
-                }
-                GetObjectMeshInstances(nodeChild, meshInstances);
-            }
-        }
+		public static void GetObjectMeshInstances(Node modelNode, List<MeshInstance3D> meshInstances)
+		{
+			var children = modelNode.GetChildren();
+			foreach (var nodeChild in children)
+			{
+				if (nodeChild is MeshInstance3D meshChild)
+				{
+					meshInstances.Add(meshChild);
+				}
+				GetObjectMeshInstances(nodeChild, meshInstances);
+			}
+		}
 
-        public static int GetGvrAlphaType(GvrDataFormat format)
+		public static int GetGvrAlphaType(GvrDataFormat format)
 		{
 			switch (format)
 			{
@@ -632,7 +631,81 @@ namespace OverEasy.Billy
 			}
 			else
 			{
+				var lndh = LNDConvert.LNDHToAqua(lnd, false)[0];
+				for(int i = 0; i < lndh.aqp.tempTris.Count; i++)
+				{
+					var tempTris = lndh.aqp.tempTris[i];
 
+					MeshInstance3D meshInst = new MeshInstance3D();
+					ArrayMesh mesh = new ArrayMesh();
+					var arrays = new Godot.Collections.Array();
+					arrays.Resize((int)Mesh.ArrayType.Max);
+
+					int m = 0;
+					List<Vector3> vertPosList = new List<Vector3>();
+					List<Vector3> vertNrmList = new List<Vector3>();
+					List<Vector2> vertUvList = new List<Vector2>();
+					List<Color> vertClrList = new List<Color>();
+					foreach (var polyVerts in tempTris.faceVerts)
+					{
+						vertPosList.Add(polyVerts.vertPositions[2].ToGVec3());
+						vertPosList.Add(polyVerts.vertPositions[1].ToGVec3());
+						vertPosList.Add(polyVerts.vertPositions[0].ToGVec3());
+						if(polyVerts.vertNormals.Count > 0)
+						{
+							vertNrmList.Add(polyVerts.vertNormals[2].ToGVec3());
+							vertNrmList.Add(polyVerts.vertNormals[1].ToGVec3());
+							vertNrmList.Add(polyVerts.vertNormals[0].ToGVec3());
+						}
+						if(polyVerts.uv1List.Count > 0)
+						{
+							vertUvList.Add(polyVerts.uv1List[2].ToGVec2());
+							vertUvList.Add(polyVerts.uv1List[1].ToGVec2());
+							vertUvList.Add(polyVerts.uv1List[0].ToGVec2());
+						}
+						if(polyVerts.vertColors.Count > 0)
+						{
+							for(int v = 2; v >= 0; v--)
+							{
+								var color = polyVerts.vertColors[v];
+								vertClrList.Add(Color.Color8(color[2], color[1], color[0], color[3]));
+							}
+						}
+					}
+					if (vertPosList.Count > 0)
+					{
+						arrays[(int)Mesh.ArrayType.Vertex] = vertPosList.ToArray();
+					}
+					if (vertNrmList.Count > 0)
+					{
+						arrays[(int)Mesh.ArrayType.Normal] = vertNrmList.ToArray();
+					}
+					if (vertUvList.Count > 0)
+					{
+						arrays[(int)Mesh.ArrayType.TexUV] = vertUvList.ToArray();
+					}
+					if (vertClrList.Count > 0)
+					{
+						arrays[(int)Mesh.ArrayType.Color] = vertClrList.ToArray();
+					}
+
+					//Set up material
+					var tempMat = lndh.aqp.tempMats[tempTris.matIdList[0]];
+					StandardMaterial3D gdMaterial = new StandardMaterial3D();
+					gdMaterial.VertexColorUseAsAlbedo = true;
+					gdMaterial.ShadingMode = BaseMaterial3D.ShadingModeEnum.PerPixel;
+					gdMaterial.CullMode = BaseMaterial3D.CullModeEnum.Disabled;
+					gdMaterial.Transparency = BaseMaterial3D.TransparencyEnum.Disabled;
+					if(tempMat.texNames?.Count > 0 && gvm?.Entries?.Count > 0)
+					{
+						gdMaterial.AlbedoTexture = gvmTextures[lnd.njtexList.texNames.IndexOf(Path.GetFileNameWithoutExtension(tempMat.texNames[0]))];
+					}
+
+					mesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, arrays, null, null);
+					mesh.SurfaceSetMaterial(0, gdMaterial);
+					meshInst.Mesh = mesh;
+					root.AddChild(meshInst);
+				}
 			}
 
 			return root;
@@ -641,11 +714,15 @@ namespace OverEasy.Billy
 		public static void LoadGVM(string name, PuyoFile gvm, out List<Texture2D> gvmTextures, out List<int> gvrAlphaTypes, List<int> diffuseAsAlphalist = null)
 		{
 			if(diffuseAsAlphalist == null)
-            {
-                diffuseAsAlphalist = new List<int>();
-            }
-            gvmTextures = new List<Texture2D>();
+			{
+				diffuseAsAlphalist = new List<int>();
+			}
+			gvmTextures = new List<Texture2D>();
 			gvrAlphaTypes = new List<int>();
+			if(gvm == null)
+			{
+				return;
+			}
 			for (int i = 0; i < gvm.Entries.Count; i++)
 			{
 				var entry = (GVMEntry)gvm.Entries[i];
@@ -666,9 +743,9 @@ namespace OverEasy.Billy
 				{
 					gvrAlphaTypes.Add(2);
 				} else
-                {
-                    gvrAlphaTypes.Add(GetGvrAlphaType(tex.DataFormat));
-                }
+				{
+					gvrAlphaTypes.Add(GetGvrAlphaType(tex.DataFormat));
+				}
 
 				var img = Godot.Image.CreateFromData(tex.TextureWidth, tex.TextureHeight, false, Image.Format.Rgba8, texArray);
 				img.GenerateMipmaps();
@@ -704,14 +781,14 @@ namespace OverEasy.Billy
 					StandardMaterial3D gdMaterial = new StandardMaterial3D();
 					gdMaterial.VertexColorUseAsAlbedo = true;
 
-                    gdMaterial.ShadingMode = BaseMaterial3D.ShadingModeEnum.PerPixel;
-                    if (!((mat.entry.RenderFlags & (ARCLNDRenderFlags.RFUnknown0x2)) == 0) && forceShaded == false)
+					gdMaterial.ShadingMode = BaseMaterial3D.ShadingModeEnum.PerPixel;
+					if (!((mat.entry.RenderFlags & (ARCLNDRenderFlags.RFUnknown0x2)) == 0) && forceShaded == false)
 					{
 						gdMaterial.ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded;
 					}
 					gdMaterial.CullMode = BaseMaterial3D.CullModeEnum.Front;
 
-                    if ((mat.entry.RenderFlags & (ARCLNDRenderFlags.TwoSided)) > 0)
+					if ((mat.entry.RenderFlags & (ARCLNDRenderFlags.TwoSided)) > 0)
 					{
 						gdMaterial.CullMode = BaseMaterial3D.CullModeEnum.Disabled;
 					}
