@@ -209,7 +209,8 @@ namespace OverEasy.Billy
 		/// Returns a Node3D containing a mesh instances with the model's arraymesh and a skeleton equivalent to the NJSObject nodes of the provided model.
 		/// Note that providing a rootTfm input will NOT transform bones by it!
 		/// </summary>
-		public static Node3D NinjaToGDModel(string name, NJSObject nj, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes, AquaNode aqn = null, System.Numerics.Matrix4x4? baseTfm = null, Node3D root = null, System.Numerics.Matrix4x4? rootTfm = null)
+		public static Node3D NinjaToGDModel(string name, NJSObject nj, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes, AquaNode aqn = null, 
+			System.Numerics.Matrix4x4? baseTfm = null, Node3D root = null, System.Numerics.Matrix4x4? rootTfm = null, bool blockVertColors = false)
 		{
 			if(root == null)
 			{
@@ -239,13 +240,13 @@ namespace OverEasy.Billy
 			{
 				rootTfm = System.Numerics.Matrix4x4.Identity;
 			}
-			IterateNJSObject(nj, fullVertList, ref nodeId, -1, root, skeleton, (System.Numerics.Matrix4x4)baseTfm, gvrTextures, gvrAlphaTypes, (System.Numerics.Matrix4x4)rootTfm, aqn);
+			IterateNJSObject(nj, fullVertList, ref nodeId, -1, root, skeleton, (System.Numerics.Matrix4x4)baseTfm, gvrTextures, gvrAlphaTypes, (System.Numerics.Matrix4x4)rootTfm, aqn, blockVertColors);
 
 			return root;
 		}
 
 		private static void IterateNJSObject(NJSObject nj, VTXL fullVertList, ref int nodeId, int parentId, Node3D modelRoot, Skeleton3D skel,
-			System.Numerics.Matrix4x4 parentMatrix, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes, System.Numerics.Matrix4x4 rootTfm, AquaNode aqn = null)
+			System.Numerics.Matrix4x4 parentMatrix, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes, System.Numerics.Matrix4x4 rootTfm, AquaNode aqn = null, bool blockVertColors = false)
 		{
 			int currentNodeId = nodeId;
 			string boneName = $"Node_{nodeId}";
@@ -340,11 +341,14 @@ namespace OverEasy.Billy
 						{
 							vertUvList.Add(faceVtxl.uv1List[j].ToGVec2());
 						}
-						for (int j = faceVtxl.vertColors.Count - 1; j >= 0; j--)
-						{
-							var vertColor = faceVtxl.vertColors[j];
-							vertClrList.Add(new Color(Mathf.Pow(vertColor[2] / 255f, 2.2f), Mathf.Pow(vertColor[1] / 255f, 2.2f), Mathf.Pow(vertColor[0] / 255f, 2.2f), vertColor[3] / 255f));
-						}
+						if(!blockVertColors)
+                        {
+                            for (int j = faceVtxl.vertColors.Count - 1; j >= 0; j--)
+                            {
+                                var vertColor = faceVtxl.vertColors[j];
+                                vertClrList.Add(new Color(Mathf.Pow(vertColor[2] / 255f, 2.2f), Mathf.Pow(vertColor[1] / 255f, 2.2f), Mathf.Pow(vertColor[0] / 255f, 2.2f), vertColor[3] / 255f));
+                            }
+                        }
 					}
 					if(vertPosList.Count > 0)
 					{

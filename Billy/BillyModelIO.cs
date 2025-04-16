@@ -287,9 +287,22 @@ namespace OverEasy.Billy
 
         public static void CacheObjectModelsPC(StageDef.StageDefinition def)
         {
+            OverEasyGlobals.cachedStageObjCommonNames.Clear();
+            OverEasyGlobals.cachedStageObjLocalNames.Clear();
             var commonObjectsPath = OverEasyGlobals.GetAssetPath("geobj_common.arc");
-            if(commonObjectsPath != "")
+            var commonObjectsDefPath = OverEasyGlobals.GetAssetPath("stgobj_common.arc");
+            if(commonObjectsPath != "" && commonObjectsDefPath != "")
             {
+                var stgobjCommon = new StageObj(File.ReadAllBytes(commonObjectsDefPath));
+                for(int i = 0; i < stgobjCommon.objEntries.Count; i++)
+                {
+                    var obj = stgobjCommon.objEntries[i];
+                    if(obj.model2Id0 != ushort.MaxValue)
+                    {
+                        OverEasyGlobals.cachedStageObjCommonNames.Add(i, obj.objName);
+                    }
+                }
+
                 var commGeobj = new GEObj_Stage(File.ReadAllBytes(commonObjectsPath));
                 CacheGeobjCommon(commGeobj);
             }
@@ -300,8 +313,17 @@ namespace OverEasy.Billy
             var localObjectsDefPath = OverEasyGlobals.GetAssetPath(objDefFile);
             if(localObjectsPath != "" && localObjectsDefPath != "")
             {
-                var localGeobj = new GEObj_Stage(File.ReadAllBytes(localObjectsPath));
                 var localStgobj = new StageObj(File.ReadAllBytes(localObjectsDefPath));
+                for (int i = 0; i < localStgobj.objEntries.Count; i++)
+                {
+                    var obj = localStgobj.objEntries[i];
+                    if (obj.model2Id0 != ushort.MaxValue)
+                    {
+                        OverEasyGlobals.cachedStageObjLocalNames.Add(i, obj.objName);
+                    }
+                }
+
+                var localGeobj = new GEObj_Stage(File.ReadAllBytes(localObjectsPath));
                 CacheGeobjLocal(localStgobj, localGeobj);
             }
         }
@@ -320,7 +342,7 @@ namespace OverEasy.Billy
                 {
                     continue;
                 }
-                CacheModel($"commGeoM2Local_{i}", stageGeo.model2s[$"model2_{objEntry.model2Id0}"], stageGeo.texList2s["texList2_0"], stageGeo.gvm, false);
+                CacheModel($"commGeoM2Local_{i}", stageGeo.model2s[$"model2_{objEntry.model2Id0}"], stageGeo.texList2s["texList2_0"], stageGeo.gvm, false, true);
             }
         }
 
@@ -368,7 +390,7 @@ namespace OverEasy.Billy
             for(int i = 0; i < commonGeo.model2s.Count; i++)
             {
                 //Model2s all share the same texlist
-                CacheModel($"commGeoM2Common_{i}", commonGeo.model2s[$"model2_{i}"], commonGeo.texList2s["texList2_0"], commonGeo.gvm, false);
+                CacheModel($"commGeoM2Common_{i}", commonGeo.model2s[$"model2_{i}"], commonGeo.texList2s["texList2_0"], commonGeo.gvm, false, true);
             }
         }
 
@@ -403,12 +425,12 @@ namespace OverEasy.Billy
             return modelNode;
         }
 
-        public static Node3D CacheModel(string name, NJSObject nj, NJTextureList njtl, PuyoFile gvm, bool forceAdd)
+        public static Node3D CacheModel(string name, NJSObject nj, NJTextureList njtl, PuyoFile gvm, bool forceAdd, bool blockVertColors = false)
         {
             ModelConversion.LoadGVM(name, gvm, out var gvmTextures, out var gvrAlphaTypes);
             var textureSubSet = ModelConversion.GetTextureSubset(gvmTextures, njtl, gvrAlphaTypes, out var fruitAlphaTypes);
 
-            var modelNode = ModelConversion.NinjaToGDModel(name, nj, textureSubSet, fruitAlphaTypes);
+            var modelNode = ModelConversion.NinjaToGDModel(name, nj, textureSubSet, fruitAlphaTypes, null, null, null, null, blockVertColors);
             ModelConversion.CreateObjectCollision(modelNode);
             if (forceAdd || !OverEasyGlobals.modelDictionary.ContainsKey(name))
             {

@@ -24,6 +24,8 @@ namespace OverEasy
         public static SetObjList loadedBillySetDesignObjects = null;
         public static Dictionary<int, SetObjDefinition> cachedBillySetObjDefinitions = new Dictionary<int, SetObjDefinition>();
         public static Dictionary<int, SetEnemyDefinition> cachedBillySetEnemyDefinitions = new Dictionary<int, SetEnemyDefinition>();
+        public static Dictionary<int, string> cachedStageObjCommonNames = new Dictionary<int, string>();
+        public static Dictionary<int, string> cachedStageObjLocalNames = new Dictionary<int, string>();
         public static bool isDay = true;
         public static Node3D daySkybox = null;
         public static Node3D nightSkybox = null;
@@ -528,6 +530,8 @@ namespace OverEasy
             isDay = true;
             SetCameraSettingsBilly();
             ClearModelAndTextureData();
+            cachedStageObjCommonNames.Clear();
+            cachedStageObjLocalNames.Clear();
             var prdMissionname = GetBillyMissionName(def.missionName);
             currentArhiveFilename = $"k_{prdMissionname}.prd";
             currentPRD = new PRD(File.ReadAllBytes(GetAssetPath(currentArhiveFilename)));
@@ -581,6 +585,17 @@ namespace OverEasy
             {
                 switch (currentCommonPRD.fileNames[i])
                 {
+                    case "stgobj_common.arc":
+                        var commonStgobj = new StageObj(currentCommonPRD.files[i]);
+                        for (int j = 0; j < commonStgobj.objEntries.Count; j++)
+                        {
+                            var obj = commonStgobj.objEntries[j];
+                            if (obj.model2Id0 != ushort.MaxValue)
+                            {
+                                cachedStageObjCommonNames.Add(j, obj.objName);
+                            }
+                        }
+                        break;
                     case "geobj_common.arc":
                         var commonGeobj = new GEObj_Stage(currentCommonPRD.files[i]);
                         BillyModelIO.CacheGeobjCommon(commonGeobj);
@@ -686,6 +701,14 @@ namespace OverEasy
                 if (currentPRD.fileNames[i] == def.commonData.objectDefinition)
                 {
                     localStgobj = new StageObj(currentPRD.files[i]);
+                    for (int j = 0; j < localStgobj.objEntries.Count; j++)
+                    {
+                        var obj = localStgobj.objEntries[j];
+                        if (obj.model2Id0 != ushort.MaxValue)
+                        {
+                            cachedStageObjLocalNames.Add(j, obj.objName);
+                        }
+                    }
                 }
 
                 //Load Stage Collision Model
@@ -1626,33 +1649,47 @@ namespace OverEasy
                 nodeAddition = "Type ";
             }
 
-            if (obj.objectId == 0xB)
+            switch (obj.objectId)
             {
-                string fruit;
-                switch (obj.intProperty1)
-                {
-                    case 0:
-                    case 1:
-                    case 2:
-                    case 3:
-                    case 4:
-                    case 5:
-                    case 6:
-                        fruit = ObjectVariants.fruits[obj.intProperty1];
-                        break;
-                    default:
-                        fruit = ObjectVariants.fruits[6];
-                        break;
-                }
-                return cachedBillySetObjDefinitions[obj.objectId].ObjectName + $" {fruit}";
-            }
-            else if (cachedBillySetObjDefinitions.ContainsKey(obj.objectId))
-            {
-                return cachedBillySetObjDefinitions[obj.objectId].ObjectName;
-            }
-            else
-            {
-                return $"Object {nodeAddition}{obj.objectId} 0x{obj.objectId:X}";
+                case 0xA:
+                    //Use stgobj names if we have them for this
+                    if(obj.intProperty2 == 1 && cachedStageObjCommonNames.ContainsKey(obj.intProperty1))
+                    {
+                        return cachedBillySetObjDefinitions[obj.objectId].ObjectName + $" {cachedStageObjCommonNames[obj.intProperty1]}";
+                    }
+                    else if (obj.intProperty2 == 0 && cachedStageObjLocalNames.ContainsKey(obj.intProperty1))
+                    {
+                        return cachedBillySetObjDefinitions[obj.objectId].ObjectName + $" {cachedStageObjLocalNames[obj.intProperty1]}";
+                    }
+                    return cachedBillySetObjDefinitions[obj.objectId].ObjectName + $" {obj.intProperty1}";
+                case 0xB:
+                    string fruit;
+                    switch (obj.intProperty1)
+                    {
+                        case 0:
+                        case 1:
+                        case 2:
+                        case 3:
+                        case 4:
+                        case 5:
+                        case 6:
+                            fruit = ObjectVariants.fruits[obj.intProperty1];
+                            break;
+                        default:
+                            fruit = ObjectVariants.fruits[6];
+                            break;
+                    }
+                    return cachedBillySetObjDefinitions[obj.objectId].ObjectName + $" {fruit}";
+                default:
+                    if (cachedBillySetObjDefinitions.ContainsKey(obj.objectId))
+                    {
+                        return cachedBillySetObjDefinitions[obj.objectId].ObjectName;
+                    }
+                    else
+                    {
+                        return $"Object {nodeAddition}{obj.objectId} 0x{obj.objectId:X}";
+                    }
+
             }
         }
 
