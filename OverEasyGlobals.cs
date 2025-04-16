@@ -566,7 +566,8 @@ namespace OverEasy
 		{
 			TransformGizmo.SetCurrentTransformType(Gizmo.TransformType.None);
 			TransformGizmo.Reparent(TransformGizmo.GetTree().Root, false);
-		}
+			SetGizmoWorldStatus(TransformGizmoWorld);
+        }
 
 		/// <summary>
 		/// Method for handling what happens when we load a game
@@ -809,6 +810,7 @@ namespace OverEasy
         {
             TransformGizmo.Reparent(activeNode3d, false);
             TransformGizmo.SetCurrentTransformType(OverEasy.Editor.Gizmo.TransformType.Translation);
+            SetGizmoWorldStatus(TransformGizmoWorld);
             if (WarpCameraToNewSelection)
             {
                 ViewCamera.orbitFocusNode = activeNode3d;
