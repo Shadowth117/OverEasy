@@ -436,7 +436,6 @@ namespace OverEasy.Billy
 			var arrays = new Godot.Collections.Array();
 			arrays.Resize((int)Mesh.ArrayType.Max);
 
-			int m = 0;
 			List<Vector3> vertPosList = new List<Vector3>();
 			List<Vector3> vertNrmList = new List<Vector3>();
 			List<Vector2> vertUvList = new List<Vector2>();
@@ -645,7 +644,6 @@ namespace OverEasy.Billy
 					var arrays = new Godot.Collections.Array();
 					arrays.Resize((int)Mesh.ArrayType.Max);
 
-					int m = 0;
 					List<Vector3> vertPosList = new List<Vector3>();
 					List<Vector3> vertNrmList = new List<Vector3>();
 					List<Vector2> vertUvList = new List<Vector2>();
@@ -879,7 +877,6 @@ namespace OverEasy.Billy
 				{
 					for (int i = 0; i < strip.Count - 2; i++)
 					{
-						int x, y, z;
 						if (((i + listFlip) & 1) > 0)
 						{
 							AddARCVert(mdl, strip[i + 2], flags, billyData);
