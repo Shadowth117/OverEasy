@@ -1668,13 +1668,13 @@ namespace OverEasy
                     //Use stgobj names if we have them for this
                     if(obj.intProperty2 == 1 && cachedStageObjCommonNames.ContainsKey(obj.intProperty1))
                     {
-                        return cachedBillySetObjDefinitions[obj.objectId].ObjectName + $" {cachedStageObjCommonNames[obj.intProperty1]}";
+                        return cachedBillySetObjDefinitions[obj.objectId].ObjectName + $" - {cachedStageObjCommonNames[obj.intProperty1]}";
                     }
                     else if (obj.intProperty2 == 0 && cachedStageObjLocalNames.ContainsKey(obj.intProperty1))
                     {
-                        return cachedBillySetObjDefinitions[obj.objectId].ObjectName + $" {cachedStageObjLocalNames[obj.intProperty1]}";
+                        return cachedBillySetObjDefinitions[obj.objectId].ObjectName + $" - {cachedStageObjLocalNames[obj.intProperty1]}";
                     }
-                    return cachedBillySetObjDefinitions[obj.objectId].ObjectName + $" {obj.intProperty1}";
+                    return cachedBillySetObjDefinitions[obj.objectId].ObjectName + $" - {obj.intProperty1}";
                 case 0xB:
                     string fruit;
                     switch (obj.intProperty1)
@@ -1692,7 +1692,28 @@ namespace OverEasy
                             fruit = ObjectVariants.fruits[6];
                             break;
                     }
-                    return cachedBillySetObjDefinitions[obj.objectId].ObjectName + $" {fruit}";
+                    return cachedBillySetObjDefinitions[obj.objectId].ObjectName + $" - {fruit}";
+                case 0x19:
+                    string egg = "";
+                    if (ObjectVariants.eggNames.Count > obj.intProperty1 && obj.intProperty1 > 0)
+                    {
+                        egg = ObjectVariants.eggNames[obj.intProperty1];
+                    }
+                    else
+                    {
+                        egg = ObjectVariants.eggNames[0];
+                    }
+                    return cachedBillySetObjDefinitions[obj.objectId].ObjectName + $" - {egg}";
+                case 0x32:
+                    string segg = "";
+                    if(ObjectVariants.eggNames.Count > obj.intProperty1 && obj.intProperty1 > 0)
+                    {
+                        segg = ObjectVariants.eggNames[obj.intProperty1];
+                    } else
+                    {
+                        segg = ObjectVariants.eggNames[0];
+                    }
+                    return cachedBillySetObjDefinitions[obj.objectId].ObjectName + $" - {segg}";
                 default:
                     if (cachedBillySetObjDefinitions.ContainsKey(obj.objectId))
                     {
