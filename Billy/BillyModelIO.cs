@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using AquaModelLibrary.Data.PSO2.Aqua;
 using AquaModelLibrary.Data.BillyHatcher;
+using VrSharp.Gvr;
 
 namespace OverEasy.Billy
 {
@@ -172,6 +173,20 @@ namespace OverEasy.Billy
                 case 11:
                     name += $"_{obj.intProperty1}";
                     break;
+                case 25:
+                    name = $"egg_{obj.intProperty1}";
+                    if(!OverEasyGlobals.modelDictionary.ContainsKey(name))
+                    {
+                        name = "egg_0";
+                    }
+                    break;
+                case 50:
+                    name = $"segg_{obj.intProperty1}";
+                    if (!OverEasyGlobals.modelDictionary.ContainsKey(name))
+                    {
+                        name = "segg_0";
+                    }
+                    break;
             }
 
             //If it's not null, we clean up the node.
@@ -285,10 +300,81 @@ namespace OverEasy.Billy
             CacheModel("object_4612_1", titleObj.models[5], titleObj.texList[0], gvm, false);
         }
 
+        public static void CacheEggContentData(GEEGG gegg, List<Texture2D> gplTextures, List<int> gplAlphaTypes)
+        {
+            //Transform to translate items above eggs
+            var tfm = System.Numerics.Matrix4x4.CreateTranslation(new System.Numerics.Vector3(0, 20, 0));
+            var tfmEgg = System.Numerics.Matrix4x4.CreateScale(1.5f, 1.5f, 1.5f) * System.Numerics.Matrix4x4.CreateTranslation(new System.Numerics.Vector3(0, 7.5f, 0));
+
+            //Default Egg - Blue Speckled
+            CacheEggModel(gegg, gplTextures, gplAlphaTypes, null, null, null, 0, tfm, tfmEgg);
+
+            for(int i = 1; i < 66; i++)
+            {
+                CacheEggEntity(gegg, gplTextures, gplAlphaTypes, tfm, tfmEgg, ObjectVariants.eggFileNames[i], i);
+            }
+        }
+
+        private static void CacheEggEntity(GEEGG gegg, List<Texture2D> gplTextures, List<int> gplAlphaTypes, System.Numerics.Matrix4x4 tfm, System.Numerics.Matrix4x4 tfmEgg, string file, int id)
+        {
+            var path = OverEasyGlobals.GetAssetPath(file);
+            if (path != "" && File.Exists(path))
+            {
+                if(file == "obj_ms_bomb.arc")
+                {
+                    var item = new ObjMsBomb(File.ReadAllBytes(path));
+                    CacheEggModel(gegg, gplTextures, gplAlphaTypes, item.model, item.texLists[0], item.gvm, id, tfm, tfmEgg);
+                } else if (file.StartsWith("ani_model"))
+                {
+                    var item = new AniModel(File.ReadAllBytes(path));
+                    CacheEggModel(gegg, gplTextures, gplAlphaTypes, item.models[0], item.texList, item.gvm, id, tfm, tfmEgg);
+                }
+                else
+                {
+                    var item = new ItemLibModel(File.ReadAllBytes(path));
+                    CacheEggModel(gegg, gplTextures, gplAlphaTypes, item.model, item.texList, item.gvm, id, tfm, tfmEgg);
+                }
+            }
+        }
+
+        public static void CacheEggModel(GEEGG gegg, List<Texture2D> gplTextures, List<int> gplAlphaTypes, NJSObject itemNj, NJTextureList texList, PuyoFile gvm, int eggId, System.Numerics.Matrix4x4 tfm, System.Numerics.Matrix4x4 tfmEgg)
+        {
+            Node3D itemModel = null;
+            Node3D itemModel2 = null;
+            if(itemNj != null)
+            {
+                ModelConversion.LoadGVM($"egg_{eggId}_item", gvm, out var gvmTextures, out var gvrAlphaTypes);
+                var textureSubSet = ModelConversion.GetTextureSubset(gvmTextures, texList, gvrAlphaTypes, out var itemAlphaTypes);
+                itemModel = ModelConversion.NinjaToGDModel($"egg_{eggId}", itemNj, textureSubSet, itemAlphaTypes, null, null, null, tfm, false, 0.5f);
+                itemModel2 = ModelConversion.NinjaToGDModel($"segg_{eggId}", itemNj, textureSubSet, itemAlphaTypes, null, null, null, tfm, false, 0.5f);
+            }
+            itemModel = ModelConversion.NinjaToGDModel($"egg_{eggId}", gegg.models[0], new List<Texture2D>() { gplTextures[eggId] }, new List<int>() { gplAlphaTypes[eggId] }, null, null, itemModel, tfmEgg);
+            ModelConversion.CreateObjectCollision(itemModel);
+            itemModel2 = ModelConversion.NinjaToGDModel($"segg_{eggId}", gegg.models[0], new List<Texture2D>() { gplTextures[eggId] }, new List<int>() { gplAlphaTypes[eggId] }, null, null, itemModel2, tfmEgg, false, 0.5f);
+            ModelConversion.CreateObjectCollision(itemModel2);
+            OverEasyGlobals.modelDictionary[$"egg_{eggId}"] = itemModel;
+            OverEasyGlobals.modelDictionary[$"segg_{eggId}"] = itemModel2;
+        }
+
         public static void CacheObjectModelsPC(StageDef.StageDefinition def)
         {
+            //Clear prior data
             OverEasyGlobals.cachedStageObjCommonNames.Clear();
             OverEasyGlobals.cachedStageObjLocalNames.Clear();
+
+            //Load egg data
+            var amemBootPath = OverEasyGlobals.GetAssetPath("amem_boot.nrc");
+            var geEggPath = OverEasyGlobals.GetAssetPath("ge_egg.arc");
+            if(amemBootPath != "" && geEggPath != "")
+            {
+                var nrc = new PRD(File.ReadAllBytes(amemBootPath), true);
+                LoadGPLTextures(nrc, out var gplTextures, out var gplAlphaTypes);
+
+                var geEgg = new GEEGG(File.ReadAllBytes(geEggPath));
+                CacheEggContentData(geEgg, gplTextures, gplAlphaTypes);
+            }
+
+            //Load common geobj data
             var commonObjectsPath = OverEasyGlobals.GetAssetPath("geobj_common.arc");
             var commonObjectsDefPath = OverEasyGlobals.GetAssetPath("stgobj_common.arc");
             if(commonObjectsPath != "" && commonObjectsDefPath != "")
@@ -307,6 +393,7 @@ namespace OverEasy.Billy
                 CacheGeobjCommon(commGeobj);
             }
 
+            //Load local world geobj data
             var objDataFile = def.commonData != null ? def.commonData.objectData : "";
             var objDefFile = def.commonData != null ? def.commonData.objectDefinition : "";
             var localObjectsPath = OverEasyGlobals.GetAssetPath(objDataFile);
@@ -325,6 +412,28 @@ namespace OverEasy.Billy
 
                 var localGeobj = new GEObj_Stage(File.ReadAllBytes(localObjectsPath));
                 CacheGeobjLocal(localStgobj, localGeobj);
+            }
+        }
+
+        public static void LoadGPLTextures(PRD nrc, out List<Texture2D> gplTextures, out List<int> gplAlphaTypes)
+        {
+            gplTextures = new List<Texture2D>();
+            gplAlphaTypes = new List<int>();
+            for (int i = 0; i < nrc.fileNames.Count; i++)
+            {
+                if (nrc.fileNames[i] == "egg.gpl")
+                {
+                    var gpl = new GPL(nrc.files[i]);
+                    var gvrs = gpl.GetGVRs();
+                    var gvrTextureList = new List<GvrTexture>();
+                    List<string> names = new List<string>();
+                    for (int t = 0; t < gvrs.Count; t++)
+                    {
+                        gvrTextureList.Add(new GvrTexture(gvrs[t]));
+                        names.Add($"gpl_{t}");
+                    }
+                    ModelConversion.LoadGVRTextures("egg.gpl", gvrTextureList, names, out gplTextures, out gplAlphaTypes);
+                }
             }
         }
 
@@ -425,12 +534,12 @@ namespace OverEasy.Billy
             return modelNode;
         }
 
-        public static Node3D CacheModel(string name, NJSObject nj, NJTextureList njtl, PuyoFile gvm, bool forceAdd, bool blockVertColors = false)
+        public static Node3D CacheModel(string name, NJSObject nj, NJTextureList njtl, PuyoFile gvm, bool forceAdd, bool blockVertColors = false, float? forceOpacity = null)
         {
             ModelConversion.LoadGVM(name, gvm, out var gvmTextures, out var gvrAlphaTypes);
             var textureSubSet = ModelConversion.GetTextureSubset(gvmTextures, njtl, gvrAlphaTypes, out var fruitAlphaTypes);
 
-            var modelNode = ModelConversion.NinjaToGDModel(name, nj, textureSubSet, fruitAlphaTypes, null, null, null, null, blockVertColors);
+            var modelNode = ModelConversion.NinjaToGDModel(name, nj, textureSubSet, fruitAlphaTypes, null, null, null, null, blockVertColors, forceOpacity);
             ModelConversion.CreateObjectCollision(modelNode);
             if (forceAdd || !OverEasyGlobals.modelDictionary.ContainsKey(name))
             {

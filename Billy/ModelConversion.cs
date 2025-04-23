@@ -13,6 +13,7 @@ using OverEasy.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using VrSharp;
 using VrSharp.Gvr;
 using Material = Godot.Material;
 
@@ -210,14 +211,14 @@ namespace OverEasy.Billy
 		/// Note that providing a rootTfm input will NOT transform bones by it!
 		/// </summary>
 		public static Node3D NinjaToGDModel(string name, NJSObject nj, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes, AquaNode aqn = null, 
-			System.Numerics.Matrix4x4? baseTfm = null, Node3D root = null, System.Numerics.Matrix4x4? rootTfm = null, bool blockVertColors = false)
+			System.Numerics.Matrix4x4? baseTfm = null, Node3D root = null, System.Numerics.Matrix4x4? rootTfm = null, bool blockVertColors = false, float? forcedOpacity = null)
 		{
 			if(root == null)
 			{
 				root = new Node3D();
 			}
 			root.Name = name;
-			
+		
 			Skeleton3D skeleton = new Skeleton3D();
 			skeleton.RotationOrder = EulerOrder.Xyz;
 			skeleton.Name = name + "_skel";
@@ -240,13 +241,13 @@ namespace OverEasy.Billy
 			{
 				rootTfm = System.Numerics.Matrix4x4.Identity;
 			}
-			IterateNJSObject(nj, fullVertList, ref nodeId, -1, root, skeleton, (System.Numerics.Matrix4x4)baseTfm, gvrTextures, gvrAlphaTypes, (System.Numerics.Matrix4x4)rootTfm, aqn, blockVertColors);
+			IterateNJSObject(nj, fullVertList, ref nodeId, -1, root, skeleton, (System.Numerics.Matrix4x4)baseTfm, gvrTextures, gvrAlphaTypes, (System.Numerics.Matrix4x4)rootTfm, aqn, blockVertColors, forcedOpacity);
 
 			return root;
 		}
 
 		private static void IterateNJSObject(NJSObject nj, VTXL fullVertList, ref int nodeId, int parentId, Node3D modelRoot, Skeleton3D skel,
-			System.Numerics.Matrix4x4 parentMatrix, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes, System.Numerics.Matrix4x4 rootTfm, AquaNode aqn = null, bool blockVertColors = false)
+			System.Numerics.Matrix4x4 parentMatrix, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes, System.Numerics.Matrix4x4 rootTfm, AquaNode aqn = null, bool blockVertColors = false, float? forcedOpacity = null)
 		{
 			int currentNodeId = nodeId;
 			string boneName = $"Node_{nodeId}";
@@ -370,7 +371,6 @@ namespace OverEasy.Billy
 					//Set up material
 					StandardMaterial3D gdMaterial = new StandardMaterial3D();
 					var matId = tempTri.matIdList.Count > 0 ? tempTri.matIdList[0] : 0;
-					gdMaterial.VertexColorUseAsAlbedo = true;
 					gdMaterial.ShadingMode = BaseMaterial3D.ShadingModeEnum.PerPixel;
 					gdMaterial.CullMode = BaseMaterial3D.CullModeEnum.Disabled;
 					
@@ -399,8 +399,21 @@ namespace OverEasy.Billy
 								}
 							}
 						}
-					}
-					mesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, arrays, null, null);
+                    }
+
+					//In case we want to force a transparent model
+                    if (forcedOpacity != null)
+                    {
+                        var albedo = gdMaterial.AlbedoColor;
+                        albedo.A = forcedOpacity.Value;
+                        gdMaterial.AlbedoColor = albedo;
+                        gdMaterial.Transparency = BaseMaterial3D.TransparencyEnum.Alpha;
+                    }
+                    else
+                    {
+                        gdMaterial.VertexColorUseAsAlbedo = true;
+                    }
+                    mesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, arrays, null, null);
 					mesh.SurfaceSetMaterial(0, gdMaterial);
 
 					//Final assignment steps
@@ -417,13 +430,13 @@ namespace OverEasy.Billy
 			if(nj.childObject != null)
 			{
 				nodeId++;
-				IterateNJSObject(nj.childObject, fullVertList, ref nodeId, currentNodeId, modelRoot, skel, mat, gvrTextures, gvrAlphaTypes, rootTfm, aqn);
+				IterateNJSObject(nj.childObject, fullVertList, ref nodeId, currentNodeId, modelRoot, skel, mat, gvrTextures, gvrAlphaTypes, rootTfm, aqn, blockVertColors, forcedOpacity);
 			}
 
 			if(nj.siblingObject != null)
 			{
 				nodeId++;
-				IterateNJSObject(nj.siblingObject, fullVertList, ref nodeId, parentId, modelRoot, skel, parentMatrix, gvrTextures, gvrAlphaTypes, rootTfm, aqn);
+				IterateNJSObject(nj.siblingObject, fullVertList, ref nodeId, parentId, modelRoot, skel, parentMatrix, gvrTextures, gvrAlphaTypes, rootTfm, aqn, blockVertColors, forcedOpacity);
 			}
 		}
 
@@ -714,52 +727,77 @@ namespace OverEasy.Billy
 		}
 
 		public static void LoadGVM(string name, PuyoFile gvm, out List<Texture2D> gvmTextures, out List<int> gvrAlphaTypes, List<int> diffuseAsAlphalist = null)
-		{
-			if(diffuseAsAlphalist == null)
+        {
+            gvmTextures = new List<Texture2D>();
+            gvrAlphaTypes = new List<int>();
+            if (gvm == null)
+            {
+                return;
+            }
+            List<string> texNames = new List<string>();
+			List<GvrTexture> gvrTextures = new List<GvrTexture>();
+			for(int i = 0; i < gvm.Entries.Count; i++)
 			{
-				diffuseAsAlphalist = new List<int>();
+				texNames.Add(gvm.Entries[i].Name);
+				gvrTextures.Add(new GvrTexture(gvm.Entries[i].Data));
 			}
-			gvmTextures = new List<Texture2D>();
-			gvrAlphaTypes = new List<int>();
-			if(gvm == null)
-			{
-				return;
-			}
-			for (int i = 0; i < gvm.Entries.Count; i++)
-			{
-				var entry = (GVMEntry)gvm.Entries[i];
-				var tex = new GvrTexture(entry.Data);
-				var texArray = tex.ToArray();
-				for (int t = 0; t < texArray.Length - 4; t += 4)
-				{
-					var temp = texArray[t + 2];
-					texArray[t + 2] = texArray[t];
-					texArray[t] = temp;
+            LoadGVRTextures(name, gvrTextures, texNames, out gvmTextures, out gvrAlphaTypes, diffuseAsAlphalist);
+        }
 
-					if (diffuseAsAlphalist.Contains(i))
+		public static void LoadGVRTextures(string name, List<GvrTexture> gvrTextures, List<string> gvrNames, out List<Texture2D> gvmTextures, out List<int> gvrAlphaTypes, List<int> diffuseAsAlphalist = null)
+        {
+            if (diffuseAsAlphalist == null)
+            {
+                diffuseAsAlphalist = new List<int>();
+            }
+            gvmTextures = new List<Texture2D>();
+            gvrAlphaTypes = new List<int>();
+            for (int i = 0; i < gvrTextures.Count; i++)
+            {
+				bool texHasDiffuseAlpha = diffuseAsAlphalist.Contains(i);
+                var tex = gvrTextures[i];
+                var texArray = tex.ToArray();
+                for (int t = 0; t < texArray.Length - 4; t += 4)
+                {
+                    var temp = texArray[t + 2];
+                    texArray[t + 2] = texArray[t];
+                    texArray[t] = temp;
+
+					switch(texHasDiffuseAlpha)
 					{
-						texArray[t + 3] = (byte)Math.Min((texArray[t] + texArray[t + 1] + texArray[t + 2]) / 3, 255);
+						case true:
+                            texArray[t + 3] = (byte)Math.Min((texArray[t] + texArray[t + 1] + texArray[t + 2]) / 3, 255);
+                            break;
+						case false:
+							break;
 					}
-				}
-				if (diffuseAsAlphalist.Contains(i))
-				{
-					gvrAlphaTypes.Add(2);
-				} else
-				{
-					gvrAlphaTypes.Add(GetGvrAlphaType(tex.DataFormat));
-				}
+                }
+                if (diffuseAsAlphalist.Contains(i))
+                {
+                    gvrAlphaTypes.Add(2);
+                }
+                else
+                {
+					if(tex is GvrTexture gvrTex)
+                    {
+                        gvrAlphaTypes.Add(GetGvrAlphaType(gvrTex.DataFormat));
+                    } else
+					{
+						throw new NotImplementedException();
+					}
+                }
 
-				var img = Godot.Image.CreateFromData(tex.TextureWidth, tex.TextureHeight, false, Image.Format.Rgba8, texArray);
-				img.GenerateMipmaps();
-				var imgTex = ImageTexture.CreateFromImage(img);
-				imgTex.ResourceName = entry.Name; //We don't need the GBIX (global index) here, probably.
-				gvmTextures.Add(imgTex);
-			}
-			if(!OverEasyGlobals.orderedTextureArchivePools.ContainsKey(name))
-			{
-				OverEasyGlobals.orderedTextureArchivePools.Add(name, gvmTextures);
-			}
-		}
+                var img = Godot.Image.CreateFromData(tex.TextureWidth, tex.TextureHeight, false, Image.Format.Rgba8, texArray);
+                img.GenerateMipmaps();
+                var imgTex = ImageTexture.CreateFromImage(img);
+                imgTex.ResourceName = gvrNames[i];
+                gvmTextures.Add(imgTex);
+            }
+            if (!OverEasyGlobals.orderedTextureArchivePools.ContainsKey(name))
+            {
+                OverEasyGlobals.orderedTextureArchivePools.Add(name, gvmTextures);
+            }
+        }
 
 		private static void AddARCLNDModelData(LND lnd, ARCLNDModel mdl, Node3D modelParent, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes, bool forceShaded)
 		{

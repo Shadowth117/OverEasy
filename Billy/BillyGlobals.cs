@@ -581,10 +581,22 @@ namespace OverEasy
             {
                 currentCommonPRD = stageCommonPRD;
             }
+
+            GEEGG gegg = null;
             for (int i = 0; i < currentCommonPRD.files.Count; i++)
             {
                 switch (currentCommonPRD.fileNames[i])
                 {
+                    case "ge_egg.arc":
+                        gegg = new GEEGG(currentCommonPRD.files[i]);
+                        break;
+                    case "geobj_common.arc":
+                        var commonGeobj = new GEObj_Stage(currentCommonPRD.files[i]);
+                        BillyModelIO.CacheGeobjCommon(commonGeobj);
+                        break;
+                    case "set_light_param.bin":
+                        currentLightsParam = new SetLightParam(currentCommonPRD.files[i]);
+                        break;
                     case "stgobj_common.arc":
                         var commonStgobj = new StageObj(currentCommonPRD.files[i]);
                         for (int j = 0; j < commonStgobj.objEntries.Count; j++)
@@ -595,13 +607,6 @@ namespace OverEasy
                                 cachedStageObjCommonNames.Add(j, obj.objName);
                             }
                         }
-                        break;
-                    case "geobj_common.arc":
-                        var commonGeobj = new GEObj_Stage(currentCommonPRD.files[i]);
-                        BillyModelIO.CacheGeobjCommon(commonGeobj);
-                        break;
-                    case "set_light_param.bin":
-                        currentLightsParam = new SetLightParam(currentCommonPRD.files[i]);
                         break;
 
                 }
@@ -727,7 +732,16 @@ namespace OverEasy
                 //Load stage event file
             }
 
-            if(titleObj != null && titleObjTex != null)
+            //Load egg data
+            var amemBootPath = GetAssetPath("amem_boot.nrc");
+            if (amemBootPath != "" && gegg != null)
+            {
+                var nrc = new PRD(File.ReadAllBytes(amemBootPath), true);
+                BillyModelIO.LoadGPLTextures(nrc, out var gplTextures, out var gplAlphaTypes);
+                BillyModelIO.CacheEggContentData(gegg, gplTextures, gplAlphaTypes);
+            }
+
+            if (titleObj != null && titleObjTex != null)
             {
                 BillyModelIO.CacheTitleObj(titleObj, titleObjTex);
             }
@@ -987,7 +1001,6 @@ namespace OverEasy
             if (cachedBillySetObjDefinitions.ContainsKey(key))
             {
                 template = cachedBillySetObjDefinitions[key];
-
             }
             else
             {
@@ -1205,7 +1218,7 @@ namespace OverEasy
                         break;
                     case "IntProperty1":
                         var intProperty1Value = (int)GetSpinBoxValue("IntProperty1");
-                        if ((objRaw.objectId == 11 || objRaw.objectId == 10) && objRaw.intProperty1 != intProperty1Value)
+                        if ((objRaw.objectId == 50 || objRaw.objectId == 25 || objRaw.objectId == 11 || objRaw.objectId == 10) && objRaw.intProperty1 != intProperty1Value)
                         {
                             shouldReloadModel = true;
                         }
