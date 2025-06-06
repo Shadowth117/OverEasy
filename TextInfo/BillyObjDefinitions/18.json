@@ -1,0 +1,23 @@
+{
+  "ObjectName": "Chick",
+  "ObjectId": 18,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Textbox ID",
+  "IntProperty1Hint": "The ID of the textbox used in the mes_color_bin file. First ID is 0!",
+  "IntProperty2": "Movement Type",
+  "IntProperty2Hint": "A value of 0 is just idling, a value of 1 is walking",
+  "IntProperty3": "Costume Type",
+  "IntProperty3Hint": "Determines various costume combos Chicks use. From pigtails, to bowties, to dress, to hat. Up to 15 combos used",
+  "IntProperty4": "Costume Color",
+  "IntProperty4Hint": "Color for costumes. 0 is Red, 1 Green, 2 Blue, 3 Magenta, 4 Cyan, 5 Orange",
+  "FloatProperty1": "FloatProperty1",
+  "FloatProperty2": "Walk Range Radius",
+  "FloatProperty2Hint": "Add/Subtracts the default 50 units. Requires Movement type to be 1",
+  "FloatProperty3": "Walk Speed Modifier",
+  "FloatProperty3Hint": "Add/Subtracts the default 0.6 units/frame speed. **Subtracting more than 0.49 crashes the game**"
+}
