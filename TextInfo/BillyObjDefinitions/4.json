@@ -10,7 +10,7 @@
   "IntProperty1": "Switch Type",
   "IntProperty1Hint": "0: Invisible, Sphere shape\n1: Invisible, Box shape\n2: Invisible, Pyramid shape\n3: Red w/o Comb graphic, can be activated w/ or w/o egg\n4: Red w/ Comb graphic, only player can activate it\n5: Blue w/ Egg graphic, req. egg to activate",
   "IntProperty2": "Retriggerable?",
-  "IntProperty2Hint": "0 & 2: No, triggers event immediately\n1 Yes, triggers event immediately\n3: Waits X time after Billy steps off before resetting. Used for groups",
+  "IntProperty2Hint": "0 & 2: No, triggers event immediately\n1: Yes, triggers event immediately\n3: Waits X time after Billy steps off\nbefore resetting. Used for groups",
   "IntProperty3": "Is part of Chain?",
   "IntProperty3Hint": "0 - Yes\n1 - No",
   "IntProperty4": "Trigger ID (Event)",
