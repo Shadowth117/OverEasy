@@ -1,0 +1,12 @@
+{
+  "ObjectName": "Chick Coin",
+  "ObjectId": 47,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Coin ID",
+  "IntProperty1Hint": "Potentially Global ID"
+}
