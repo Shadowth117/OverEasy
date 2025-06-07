@@ -1,0 +1,20 @@
+{
+  "ObjectName": "Respawn Trigger",
+  "ObjectId": 14,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Respawn Trigger ID",
+  "IntProperty1Hint": "The id of the Respawn Check Point",
+  "IntProperty2": "Trigger shape",
+  "IntProperty2Hint": "0 is Sphere, 1 is Box",
+  "FloatProperty1": "Trigger Box X Width",
+  "FloatProperty1Hint": "X axis radius/width",
+  "FloatProperty2": "Trigger Box Y Height",
+  "FloatProperty2Hint": "Y axis height (measured from bottom for base)",
+  "FloatProperty3": "Trigger Box Z Depth",
+  "FloatProperty3Hint": "Z axis depth"
+}

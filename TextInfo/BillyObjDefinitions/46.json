@@ -1,0 +1,12 @@
+{
+  "ObjectName": "ChickenSuitEgg",
+  "ObjectId": 46,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Trigger Flag",
+  "IntProperty1Hint": "To set to so Billy still wears the suit even if he dies"
+}

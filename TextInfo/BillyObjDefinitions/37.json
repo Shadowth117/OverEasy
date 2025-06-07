@@ -1,0 +1,18 @@
+{
+  "ObjectName": "Emblem Spawn Point",
+  "ObjectId": 37,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Requires Event?",
+  "IntProperty1Hint": "0 - No\n1 - Yes",
+  "IntProperty2": "IntProperty2",
+  "IntProperty2Hint": "",
+  "IntProperty3": "IntProperty3",
+  "IntProperty3Hint": "",
+  "ByteProperty1": "ByteProperty1",
+  "ByteProperty2": "ByteProperty2"
+}

@@ -1,0 +1,18 @@
+{
+  "ObjectName": "Kidnapped Char",
+  "ObjectId": 40,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Char ID",
+  "IntProperty1Hint": "0 - Billy (unused)\n1 - Rolly\n2 - Chick\n3 - Bantam",
+  "IntProperty2": "IntProperty2",
+  "IntProperty2Hint": "",
+  "IntProperty3": "IntProperty3",
+  "IntProperty3Hint": "",
+  "ByteProperty1": "ByteProperty1",
+  "ByteProperty2": "ByteProperty2"
+}

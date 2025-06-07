@@ -1,0 +1,23 @@
+{
+  "ObjectName": "Chick",
+  "ObjectId": 18,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Textbox ID",
+  "IntProperty1Hint": "The ID of the textbox used in the\n level message bin file\nFirst ID is 0!",
+  "IntProperty2": "Movement Type",
+  "IntProperty2Hint": "0 is just idling,\na value of 1 is walking",
+  "IntProperty3": "Costume Type",
+  "IntProperty3Hint": "Determines various costume combos Chicks use\n00 - Pigtail (Hairband)\n01 - Pigtail (Hairband) and bowtie\n02 - Pigtail (Bow)\n03 - Pigtail (Hairband) and Egghead\n04 - Pigtail (Bow) and bowtie\n05 - Pigtail (Hairband) and Bowtie and Egghead\n06 - Pigtail (Bow) and Bowtie and Egghead\n07 - Pigtail (Bow) and Egghead\n08 - Hat\n09 - Pigtail (Hairband) and Dress\n10 - Pigtail (Hairband) and Bowtie and Hat\n11 - Pigtail (Hairband) and Dress and Hat\n12 - Pigtail (Hairband) and Dress\n13 - Pigtail (Hairband) and Dress and Egghead\n14 - Pigtail (Bow) and Dress and Egghead",
+  "IntProperty4": "Costume Color",
+  "IntProperty4Hint": "Color for costumes\n0 - Red\n1 - Green\n2 - Blue\n3 - Magenta\n4 - Cyan\n5 - Orange",
+  "FloatProperty1": "FloatProperty1",
+  "FloatProperty2": "Walk Range Radius",
+  "FloatProperty2Hint": "Add/Subtracts the default 50 units. Requires Movement type to be 1",
+  "FloatProperty3": "Walk Speed Modifier",
+  "FloatProperty3Hint": "Add/Subtracts the default 0.6 units/frame speed. **Subtracting more than 0.49 crashes the game**"
+}

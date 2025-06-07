@@ -7,9 +7,9 @@
   "RotationX": null,
   "RotationY": null,
   "RotationZ": null,
-  "IntProperty1": "Model2 id",
-  "IntProperty1Hint": "The id of the model in either the common geobj file or the stage's specific geobj file, depending on the value in the next field.'",
+  "IntProperty1": "Model2 ID",
+  "IntProperty1Hint": "The id of the model in either\nthe common geobj file or the stage's\nspecific geobj file,\ndepending on the value\nin the next field",
   "IntProperty2": "IsGeobjCommonModel",
-  "IntProperty2Hint": "A value of 1 means the model for this will be pulled from the common geobj, otherwise it will be sourced from the world specific geobj",
+  "IntProperty2Hint": "A value of 1 means the model\nfor this will be pulled from the\ncommon geobj, otherwise it will\nbe sourced from the world\nspecific geobj",
   "FloatProperty1": "Scale modifier"
 }
