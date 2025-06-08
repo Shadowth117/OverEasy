@@ -1,0 +1,20 @@
+{
+  "ObjectName": "Floating Platform",
+  "ObjectId": 12,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Movement Type",
+  "IntProperty1Hint": "0 - None\n1 - Rotate self(Z axis)\n2 - Spin self(Y axis)\n3 - Vertical\n4 - Horizontal(X axis)\n5 - Orbit around radius\n",
+  "IntProperty2": "IntProperty2",
+  "IntProperty2Hint": "Need to test",
+  "IntProperty3": "Speed Modifier",
+  "IntProperty3Hint": "How long it takes to complete movement\nDefault(0) is 5 seconds\nNegative numbers ignored",
+  "FloatProperty1": "Range",
+  "FloatProperty1Hint": "Treated like radius",
+  "FloatProperty3": "FloatProperty3",
+  "FloatProperty3Hint": "FloatProperty3"
+}
