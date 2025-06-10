@@ -1,0 +1,14 @@
+{
+  "ObjectName": "Chicken to Save",
+  "ObjectId": 41,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Chicken Type",
+  "IntProperty1Hint": "Appearance mainly\n0 = White w/ Red Bow\n1 = Pink\n2 = Brown\n3 = Green\n4 = White w/ Red Bow & beady eyes\n5 = Blue\n6 = Purple\n7 = White w/ Red Bandana",
+  "IntProperty2": "IntProperty2",
+  "IntProperty2Hint": ""
+}

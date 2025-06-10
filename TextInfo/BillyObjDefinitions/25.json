@@ -8,5 +8,5 @@
   "RotationY": null,
   "RotationZ": null,
   "IntProperty1": "Egg id",
-  "IntProperty1Hint": "The id of the egg in the game data. The chicken suit and elders are not considered normal eggs and are not in this list. GBA eggs are hardcoded to load as default eggs on PC Billy."
+  "IntProperty1Hint": "The id of the egg in the game data.\nThe chicken suit and elders are not considered\nnormal eggs and are not in this list.\nGBA eggs are hardcoded to load\nas default eggs on PC Billy."
 }

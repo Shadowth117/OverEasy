@@ -1,0 +1,17 @@
+{
+  "ObjectName": "Respawn Check Point",
+  "ObjectId": 15,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Respawn Trigger ID (self)",
+  "IntProperty1Hint": "The id of itself",
+  "IntProperty2": "???",
+  "IntProperty2Hint": "",
+  "FloatProperty1": "Unused",
+  "FloatProperty2": "Unused",
+  "FloatProperty3": "Unused"
+}
