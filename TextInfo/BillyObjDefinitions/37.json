@@ -9,10 +9,10 @@
   "RotationZ": null,
   "IntProperty1": "Requires Event?",
   "IntProperty1Hint": "0 - No\n1 - Yes",
-  "IntProperty2": "IntProperty2",
-  "IntProperty2Hint": "",
-  "IntProperty3": "IntProperty3",
-  "IntProperty3Hint": "",
-  "ByteProperty1": "ByteProperty1",
-  "ByteProperty2": "ByteProperty2"
+  "IntProperty2": "Self Event ID",
+  "IntProperty2Hint": "For Saving Chickens, this needs to be 200 higher than the first chicken's Event ID",
+  "ByteProperty1": "Cam Flag",
+  "ByteProperty1Hint": "Leave as 1 if using event",
+  "ByteProperty2": "Cam Identifier",
+  "ByteProperty2Hint": "Needs to be unique amongst all objects"
 }

@@ -1,0 +1,21 @@
+{
+  "ObjectName": "Small Auto-Fire Cannon",
+  "ObjectId": 256,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Null",
+  "IntProperty2": "Null",
+  "IntProperty3": "Null",
+  "IntProperty4": "Null",
+  "FloatProperty1": "Null", 
+  "FloatProperty2": "Target Trigger Range X",
+  "FloatProperty2Hint": "Trigger X Width\n(box shape, measured from center)",
+  "FloatProperty3": "Target Trigger Range Y",
+  "FloatProperty3Hint": "Trigger Y Height\n(box shape, measured bottom up)",
+  "FloatProperty4": "Target Trigger Range Z",
+  "FloatProperty4Hint": "Trigger Z Depth\n(box shape, measured from center)"
+}

@@ -1,0 +1,16 @@
+{
+  "ObjectName": "Particle (Level Based)",
+  "ObjectId": 31,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Particle ID?",
+  "IntProperty1Hint": "",
+  "IntProperty2": "",
+  "IntProperty2Hint": "",
+  "IntProperty3": "",
+  "IntProperty3Hint": ""
+}

@@ -1,0 +1,12 @@
+{
+  "ObjectName": "Captain Glur's Ship",
+  "ObjectId": 264,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Is Animated?",
+  "IntProperty1Hint":  "0 - No\n1 - Yes"
+}

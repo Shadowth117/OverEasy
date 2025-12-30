@@ -13,6 +13,8 @@
   "IntProperty2Hint": "",
   "IntProperty3": "IntProperty3",
   "IntProperty3Hint": "",
-  "ByteProperty1": "ByteProperty1",
-  "ByteProperty2": "ByteProperty2"
+  "ByteProperty1": "Cam Flag",
+  "ByteProperty1Hint": "Leave as 1 if using event",
+  "ByteProperty2": "Cam Identifier",
+  "ByteProperty2Hint": "Needs to be unique amongst all objects"
 }

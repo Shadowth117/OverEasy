@@ -1,0 +1,14 @@
+{
+  "ObjectName": "Animated Skull and Hook",
+  "ObjectId": 263,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Self Event ID",
+  "IntProperty1Hint":  "ID for Switches/Triggers to call\nto start event",
+  "IntProperty2": "Requires Event?",
+  "IntProperty2Hint": "0 - No\n1 - Yes\nIf no, it'll immediately animate\nafter Stage cam intro"
+}

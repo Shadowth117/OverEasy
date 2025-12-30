@@ -1,0 +1,18 @@
+{
+  "ObjectName": "Fire Pillar",
+  "ObjectId": 13,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "",
+  "IntProperty1Hint": "",
+  "IntProperty2": "Time Period",
+  "IntProperty2Hint": "-3- = Off\n-2 = Burn Indefinitely\n-1 to 1 = Burn 1s Wait 1s\n2 = Burn 1s Wait 3s\n3 = Burn 1s Wait 5s\n4 = Burn 1s, Wait 6s...etc?",
+  "IntProperty4": "Damage Amount",
+  "IntProperty4Hint": "Player has 50HP\nMinimum damage done is 5HP",
+  "FloatProperty4": "HurtBox Radius",
+  "FloatProperty4Hint": "How big the flame reaches"
+}

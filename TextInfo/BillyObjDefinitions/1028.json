@@ -1,0 +1,12 @@
+{
+  "ObjectName": "Thorns",
+  "ObjectId": 1028,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Damage Amount",
+  "IntProperty1Hint": "Player has 50HP\nMinimum damage done is 5HP"
+}

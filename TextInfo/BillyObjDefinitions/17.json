@@ -1,0 +1,12 @@
+{
+  "ObjectName": "Grabbable Rung",
+  "ObjectId": 17,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "FloatProperty2": "Time?",
+  "FloatProperty2Hint": "Unknown"
+}
