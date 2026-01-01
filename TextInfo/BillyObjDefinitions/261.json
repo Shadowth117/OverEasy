@@ -1,0 +1,16 @@
+{
+  "ObjectName": "Fire Arrow (Req. Spawner)",
+  "ObjectId": 261,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Spawner ID",
+  "IntProperty1Hint": "Spawner it originates from",
+  "IntProperty4": "Event ID",
+  "IntProperty4Hint": "Event that triggers shooting arrows",
+  "FloatProperty4": "???",
+  "FloatProperty4Hint": "???"
+}

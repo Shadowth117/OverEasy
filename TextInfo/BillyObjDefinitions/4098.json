@@ -1,0 +1,17 @@
+{
+  "ObjectName": "Waterfall(Green Village)",
+  "ObjectId": 4098,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty2": "??",
+  "IntProperty2Hint": "",
+  "FloatProperty1": "?",
+  "FloatProperty2": "Vertical UV Scroll Speed",
+  "FloatProperty2Hint": "Measured Units per frame",
+  "FloatProperty3": "???",
+  "FloatProperty4": "????"
+}

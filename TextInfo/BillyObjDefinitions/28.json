@@ -1,0 +1,17 @@
+{
+  "ObjectName": "Golden Egg",
+  "ObjectId": 28,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Unused",
+  "IntProperty2": "Script ID",
+  "IntProperty2Hint": "Refer to event_x_script.arc settings",
+  "ByteProperty1": "Camera Flag",
+  "ByteProperty1Hint":  "Req. to do Camera events,\nelse it softlocks",
+  "ByteProperty2": "Camera Identifier",
+  "ByteProperty2Hint": "Needs to be unique across all objects in map"
+}

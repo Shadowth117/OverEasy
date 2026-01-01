@@ -1,0 +1,18 @@
+{
+  "ObjectName": "Egg Bounce Switch",
+  "ObjectId": 29,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "",
+  "IntProperty1Hint": "",
+  "IntProperty2": "Group ID",
+  "IntProperty2Hint": "Needs to be unique per group",
+  "IntProperty3": "Is part of group?",
+  "IntProperty3Hint": "0 - No\n1 - Yes",
+  "IntProperty4": "Event ID Reference",
+  "IntProperty4Hint": "The ID of the enemy to spawn or\nthe cage or gate. Add 1 per Switch in a group"
+}

@@ -1,0 +1,14 @@
+{
+  "ObjectName": "Swinging Anchor",
+  "ObjectId": 257,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Speed",
+  "IntProperty1Hint": "How fast it swings",
+  "IntProperty2": "Rotation Range",
+  "IntProperty2Hint": "How far it can rotate\n(divide by 10 for angle)"
+}

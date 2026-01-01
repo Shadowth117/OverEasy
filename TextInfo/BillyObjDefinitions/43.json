@@ -22,8 +22,10 @@
   "FloatProperty3Hint": "Z axis depth",
   "FloatProperty4": "Unused",
   "FloatProperty4Hint": "",
-  "ByteProperty1": "ByteProperty1",
-  "ByteProperty2": "ByteProperty2",
+  "ByteProperty1": "Cam Flag",
+  "ByteProperty1Hint": "Leave as 1 if using event",
+  "ByteProperty2": "Cam Identifier",
+  "ByteProperty2Hint": "Needs to be unique amongst all objects",
   "ByteProperty3": "Unused",
   "ByteProperty4": "Unused"
 }

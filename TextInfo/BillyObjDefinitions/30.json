@@ -1,0 +1,16 @@
+{
+  "ObjectName": "Bridge",
+  "ObjectId": 3,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Segment Count Additive",
+  "IntProperty1Hint": "Default 0 is 2 segments long. Add or subtract",
+  "IntProperty2": "???",
+  "IntProperty2Hint": "Typically 1 or 3",
+  "IntProperty3": "???",
+  "IntProperty3Hint": "Typically 4-8"
+}
