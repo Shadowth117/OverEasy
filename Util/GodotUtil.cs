@@ -38,7 +38,10 @@ namespace OverEasy.Util
         {
             foreach(var nodeChild in node.GetChildren())
             {
-                aabb = aabb.Merge(GetHierarchyAABB((Node3D)nodeChild, aabb));
+                if(nodeChild is Node3D)
+                {
+                    aabb = aabb.Merge(GetHierarchyAABB((Node3D)nodeChild, aabb));
+                }
             }
 
             if(node is MeshInstance3D)

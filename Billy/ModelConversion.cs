@@ -13,6 +13,7 @@ using OverEasy.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Xml.Linq;
 using VrSharp;
 using VrSharp.Gvr;
 using Material = Godot.Material;
@@ -213,15 +214,17 @@ namespace OverEasy.Billy
 		public static Node3D NinjaToGDModel(string name, NJSObject nj, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes, AquaNode aqn = null, 
 			System.Numerics.Matrix4x4? baseTfm = null, Node3D root = null, System.Numerics.Matrix4x4? rootTfm = null, bool blockVertColors = false, float? forcedOpacity = null)
 		{
-			if(root == null)
+			bool addBones = true;
+			if (root == null)
 			{
-				root = new Node3D();
+				root = new Skeleton3D();
+				root.RotationOrder = EulerOrder.Xyz;
+			}
+			else
+			{
+				addBones = false;
 			}
 			root.Name = name;
-		
-			Skeleton3D skeleton = new Skeleton3D();
-			skeleton.RotationOrder = EulerOrder.Xyz;
-			skeleton.Name = name + "_skel";
 			int nodeId = 0;
 
 			VTXL fullVertList = null;
@@ -241,27 +244,60 @@ namespace OverEasy.Billy
 			{
 				rootTfm = System.Numerics.Matrix4x4.Identity;
 			}
-			IterateNJSObject(nj, fullVertList, ref nodeId, -1, root, skeleton, (System.Numerics.Matrix4x4)baseTfm, gvrTextures, gvrAlphaTypes, (System.Numerics.Matrix4x4)rootTfm, aqn, blockVertColors, forcedOpacity);
+			IterateNJSObject(nj, fullVertList, ref nodeId, -1, root, root is Skeleton3D ? (Skeleton3D)root : new Skeleton3D(), (System.Numerics.Matrix4x4)baseTfm, gvrTextures, gvrAlphaTypes, (System.Numerics.Matrix4x4)rootTfm, aqn, blockVertColors, forcedOpacity, addBones);
 
-			return root;
+            /*
+			 This won't work here
+#if DEBUG
+			AnimationPlayer animPlayer = new AnimationPlayer();
+			animPlayer.Name = "AnimTest";
+			var animLibrary = new AnimationLibrary();
+
+			Animation anim = new Animation();
+			var delta = 1 / 60; //FPS
+
+			var animName = "TestAnim".ToLower();
+			animLibrary.AddAnimation(animName, anim);
+			anim.Length = delta * 4;
+
+			animPlayer.Autoplay = animName.ToLower();
+
+			var animParentPath = "../" + root.Name + ":" + "Node_0";
+			var trackRotIdx = anim.AddTrack(Animation.TrackType.Rotation3D);
+			anim.TrackSetPath(trackRotIdx, animParentPath);
+
+			anim.RotationTrackInsertKey(trackRotIdx, delta * 0, new Quaternion(0, 0, 0, 1));
+			anim.RotationTrackInsertKey(trackRotIdx, delta * 1, new Quaternion(0, 0.707f, 0, 0.707f));
+			anim.RotationTrackInsertKey(trackRotIdx, delta * 2, new Quaternion(0, 1, 0, 0));
+			anim.RotationTrackInsertKey(trackRotIdx, delta * 3, new Quaternion(0, 0.707f, 0, -0.707f));
+
+			animPlayer.AddAnimationLibrary("", animLibrary);
+			root.AddChild(animPlayer);
+#endif
+			 */
+            return root;
 		}
 
 		private static void IterateNJSObject(NJSObject nj, VTXL fullVertList, ref int nodeId, int parentId, Node3D modelRoot, Skeleton3D skel,
-			System.Numerics.Matrix4x4 parentMatrix, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes, System.Numerics.Matrix4x4 rootTfm, AquaNode aqn = null, bool blockVertColors = false, float? forcedOpacity = null)
+			System.Numerics.Matrix4x4 parentMatrix, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes, System.Numerics.Matrix4x4 rootTfm, AquaNode aqn = null, bool blockVertColors = false, float? forcedOpacity = null, bool addBones = true)
 		{
 			int currentNodeId = nodeId;
-			string boneName = $"Node_{nodeId}";
+			if(addBones)
+			{
+				string boneName = $"Node_{nodeId}";
 
-			skel.AddBone(boneName);
-			int gdIndex = skel.GetBoneCount() - 1;
-			int parGdIndex = skel.FindBone($"Node_{parentId}");
-			if (parGdIndex != -1) {
-				skel.SetBoneParent(gdIndex, parGdIndex);
+				skel.AddBone(boneName);
+				int gdIndex = skel.GetBoneCount() - 1;
+				int parGdIndex = skel.FindBone($"Node_{parentId}");
+				if (parGdIndex != -1)
+				{
+					skel.SetBoneParent(gdIndex, parGdIndex);
+				}
+				//Animation base position for ninja stuff should just be 0ed essentially
+				skel.SetBoneRest(gdIndex, new Transform3D());
+				skel.SetBonePosePosition(gdIndex, nj.pos.ToGVec3());
+				skel.SetBonePoseRotation(gdIndex, Quaternion.FromEuler(nj.rot.ToGVec3()));
 			}
-			//Animation base position for ninja stuff should just be 0ed essentially
-			skel.SetBoneRest(gdIndex, new Transform3D());
-			skel.SetBonePosePosition(gdIndex, nj.pos.ToGVec3());
-			skel.SetBonePoseRotation(gdIndex, Quaternion.FromEuler(nj.rot.ToGVec3()));
 
 			//Calc node matrices for mesh transforms
 			//We need this regardless of if there's a mesh or not since child meshes might exist
@@ -327,6 +363,8 @@ namespace OverEasy.Billy
 					List<Vector3> vertNrmList = new List<Vector3>();
 					List<Vector2> vertUvList = new List<Vector2>();
 					List<Color> vertClrList = new List<Color>();
+					List<float> vertWeightList = new List<float>();
+					List<int> vertWeightIndexList = new List<int>();
 					for(int i = 0; i < tempTri.faceVerts.Count; i++)
 					{
 						var faceVtxl = tempTri.faceVerts[i];
@@ -334,22 +372,52 @@ namespace OverEasy.Billy
 						{
 							vertPosList.Add(faceVtxl.vertPositions[j].ToGVec3());
 						}
-						for (int j = faceVtxl.vertNormals.Count - 1; j >= 0; j--)
+						for(int j = faceVtxl.vertNormals.Count - 1; j >= 0; j--)
 						{
 							vertNrmList.Add(faceVtxl.vertNormals[j].ToGVec3());
 						}
-						for (int j = faceVtxl.uv1List.Count - 1; j >= 0; j--)
+						for(int j = faceVtxl.uv1List.Count - 1; j >= 0; j--)
 						{
 							vertUvList.Add(faceVtxl.uv1List[j].ToGVec2());
 						}
 						if(!blockVertColors)
-                        {
-                            for (int j = faceVtxl.vertColors.Count - 1; j >= 0; j--)
-                            {
-                                var vertColor = faceVtxl.vertColors[j];
-                                vertClrList.Add(new Color(Mathf.Pow(vertColor[2] / 255f, 2.2f), Mathf.Pow(vertColor[1] / 255f, 2.2f), Mathf.Pow(vertColor[0] / 255f, 2.2f), vertColor[3] / 255f));
-                            }
-                        }
+						{
+							for (int j = faceVtxl.vertColors.Count - 1; j >= 0; j--)
+							{
+								var vertColor = faceVtxl.vertColors[j];
+								vertClrList.Add(new Color(Mathf.Pow(vertColor[2] / 255f, 2.2f), Mathf.Pow(vertColor[1] / 255f, 2.2f), Mathf.Pow(vertColor[0] / 255f, 2.2f), vertColor[3] / 255f));
+							}
+						}
+						if(faceVtxl.vertWeights.Count > 0)
+						{
+							for (int j = 0; j < faceVtxl.vertWeights.Count; j++)
+							{
+								vertWeightList.Add(faceVtxl.vertWeights[j].X);
+								vertWeightList.Add(faceVtxl.vertWeights[j].Y);
+								vertWeightList.Add(faceVtxl.vertWeights[j].Z);
+								vertWeightList.Add(faceVtxl.vertWeights[j].W);
+
+								vertWeightIndexList.Add(faceVtxl.vertWeightIndices[j][0]);
+								vertWeightIndexList.Add(faceVtxl.vertWeightIndices[j][1]);
+								vertWeightIndexList.Add(faceVtxl.vertWeightIndices[j][2]);
+								vertWeightIndexList.Add(faceVtxl.vertWeightIndices[j][3]);
+							}
+						} else
+						{
+							//Default to static weighting to mimic behavior of weightless meshes in ninja attached to nodes
+							for (int j = 0; j < faceVtxl.vertPositions.Count; j++)
+							{
+								vertWeightList.Add(1);
+								vertWeightList.Add(0);
+								vertWeightList.Add(0);
+								vertWeightList.Add(0);
+
+								vertWeightIndexList.Add(currentNodeId);
+								vertWeightIndexList.Add(0);
+								vertWeightIndexList.Add(0);
+								vertWeightIndexList.Add(0);
+							}
+						}
 					}
 					if(vertPosList.Count > 0)
 					{
@@ -366,6 +434,14 @@ namespace OverEasy.Billy
 					if (vertClrList.Count > 0)
 					{
 						arrays[(int)Mesh.ArrayType.Color] = vertClrList.ToArray();
+					}
+					if(vertWeightList.Count > 0)
+					{
+						arrays[(int)Mesh.ArrayType.Weights] = vertWeightList.ToArray();
+					}
+					if (vertWeightIndexList.Count > 0)
+					{
+						arrays[(int)Mesh.ArrayType.Bones] = vertWeightIndexList.ToArray();
 					}
 
 					//Set up material
@@ -399,21 +475,21 @@ namespace OverEasy.Billy
 								}
 							}
 						}
-                    }
+					}
 
 					//In case we want to force a transparent model
-                    if (forcedOpacity != null)
-                    {
-                        var albedo = gdMaterial.AlbedoColor;
-                        albedo.A = forcedOpacity.Value;
-                        gdMaterial.AlbedoColor = albedo;
-                        gdMaterial.Transparency = BaseMaterial3D.TransparencyEnum.Alpha;
-                    }
-                    else
-                    {
-                        gdMaterial.VertexColorUseAsAlbedo = true;
-                    }
-                    mesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, arrays, null, null);
+					if (forcedOpacity != null)
+					{
+						var albedo = gdMaterial.AlbedoColor;
+						albedo.A = forcedOpacity.Value;
+						gdMaterial.AlbedoColor = albedo;
+						gdMaterial.Transparency = BaseMaterial3D.TransparencyEnum.Alpha;
+					}
+					else
+					{
+						gdMaterial.VertexColorUseAsAlbedo = true;
+					}
+					mesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, arrays, null, null);
 					mesh.SurfaceSetMaterial(0, gdMaterial);
 
 					//Final assignment steps
@@ -430,13 +506,13 @@ namespace OverEasy.Billy
 			if(nj.childObject != null)
 			{
 				nodeId++;
-				IterateNJSObject(nj.childObject, fullVertList, ref nodeId, currentNodeId, modelRoot, skel, mat, gvrTextures, gvrAlphaTypes, rootTfm, aqn, blockVertColors, forcedOpacity);
+				IterateNJSObject(nj.childObject, fullVertList, ref nodeId, currentNodeId, modelRoot, skel, mat, gvrTextures, gvrAlphaTypes, rootTfm, aqn, blockVertColors, forcedOpacity, addBones);
 			}
 
 			if(nj.siblingObject != null)
 			{
 				nodeId++;
-				IterateNJSObject(nj.siblingObject, fullVertList, ref nodeId, parentId, modelRoot, skel, parentMatrix, gvrTextures, gvrAlphaTypes, rootTfm, aqn, blockVertColors, forcedOpacity);
+				IterateNJSObject(nj.siblingObject, fullVertList, ref nodeId, parentId, modelRoot, skel, parentMatrix, gvrTextures, gvrAlphaTypes, rootTfm, aqn, blockVertColors, forcedOpacity, addBones);
 			}
 		}
 
@@ -727,77 +803,77 @@ namespace OverEasy.Billy
 		}
 
 		public static void LoadGVM(string name, PuyoFile gvm, out List<Texture2D> gvmTextures, out List<int> gvrAlphaTypes, List<int> diffuseAsAlphalist = null)
-        {
-            gvmTextures = new List<Texture2D>();
-            gvrAlphaTypes = new List<int>();
-            if (gvm == null)
-            {
-                return;
-            }
-            List<string> texNames = new List<string>();
+		{
+			gvmTextures = new List<Texture2D>();
+			gvrAlphaTypes = new List<int>();
+			if (gvm == null)
+			{
+				return;
+			}
+			List<string> texNames = new List<string>();
 			List<GvrTexture> gvrTextures = new List<GvrTexture>();
 			for(int i = 0; i < gvm.Entries.Count; i++)
 			{
 				texNames.Add(gvm.Entries[i].Name);
 				gvrTextures.Add(new GvrTexture(gvm.Entries[i].Data));
 			}
-            LoadGVRTextures(name, gvrTextures, texNames, out gvmTextures, out gvrAlphaTypes, diffuseAsAlphalist);
-        }
+			LoadGVRTextures(name, gvrTextures, texNames, out gvmTextures, out gvrAlphaTypes, diffuseAsAlphalist);
+		}
 
 		public static void LoadGVRTextures(string name, List<GvrTexture> gvrTextures, List<string> gvrNames, out List<Texture2D> gvmTextures, out List<int> gvrAlphaTypes, List<int> diffuseAsAlphalist = null)
-        {
-            if (diffuseAsAlphalist == null)
-            {
-                diffuseAsAlphalist = new List<int>();
-            }
-            gvmTextures = new List<Texture2D>();
-            gvrAlphaTypes = new List<int>();
-            for (int i = 0; i < gvrTextures.Count; i++)
-            {
+		{
+			if (diffuseAsAlphalist == null)
+			{
+				diffuseAsAlphalist = new List<int>();
+			}
+			gvmTextures = new List<Texture2D>();
+			gvrAlphaTypes = new List<int>();
+			for (int i = 0; i < gvrTextures.Count; i++)
+			{
 				bool texHasDiffuseAlpha = diffuseAsAlphalist.Contains(i);
-                var tex = gvrTextures[i];
-                var texArray = tex.ToArray();
-                for (int t = 0; t < texArray.Length - 4; t += 4)
-                {
-                    var temp = texArray[t + 2];
-                    texArray[t + 2] = texArray[t];
-                    texArray[t] = temp;
+				var tex = gvrTextures[i];
+				var texArray = tex.ToArray();
+				for (int t = 0; t < texArray.Length - 4; t += 4)
+				{
+					var temp = texArray[t + 2];
+					texArray[t + 2] = texArray[t];
+					texArray[t] = temp;
 
 					switch(texHasDiffuseAlpha)
 					{
 						case true:
-                            texArray[t + 3] = (byte)Math.Min((texArray[t] + texArray[t + 1] + texArray[t + 2]) / 3, 255);
-                            break;
+							texArray[t + 3] = (byte)Math.Min((texArray[t] + texArray[t + 1] + texArray[t + 2]) / 3, 255);
+							break;
 						case false:
 							break;
 					}
-                }
-                if (diffuseAsAlphalist.Contains(i))
-                {
-                    gvrAlphaTypes.Add(2);
-                }
-                else
-                {
+				}
+				if (diffuseAsAlphalist.Contains(i))
+				{
+					gvrAlphaTypes.Add(2);
+				}
+				else
+				{
 					if(tex is GvrTexture gvrTex)
-                    {
-                        gvrAlphaTypes.Add(GetGvrAlphaType(gvrTex.DataFormat));
-                    } else
+					{
+						gvrAlphaTypes.Add(GetGvrAlphaType(gvrTex.DataFormat));
+					} else
 					{
 						throw new NotImplementedException();
 					}
-                }
+				}
 
-                var img = Godot.Image.CreateFromData(tex.TextureWidth, tex.TextureHeight, false, Image.Format.Rgba8, texArray);
-                img.GenerateMipmaps();
-                var imgTex = ImageTexture.CreateFromImage(img);
-                imgTex.ResourceName = gvrNames[i];
-                gvmTextures.Add(imgTex);
-            }
-            if (!OverEasyGlobals.orderedTextureArchivePools.ContainsKey(name))
-            {
-                OverEasyGlobals.orderedTextureArchivePools.Add(name, gvmTextures);
-            }
-        }
+				var img = Godot.Image.CreateFromData(tex.TextureWidth, tex.TextureHeight, false, Image.Format.Rgba8, texArray);
+				img.GenerateMipmaps();
+				var imgTex = ImageTexture.CreateFromImage(img);
+				imgTex.ResourceName = gvrNames[i];
+				gvmTextures.Add(imgTex);
+			}
+			if (!OverEasyGlobals.orderedTextureArchivePools.ContainsKey(name))
+			{
+				OverEasyGlobals.orderedTextureArchivePools.Add(name, gvmTextures);
+			}
+		}
 
 		private static void AddARCLNDModelData(LND lnd, ARCLNDModel mdl, Node3D modelParent, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes, bool forceShaded)
 		{

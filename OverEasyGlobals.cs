@@ -105,6 +105,7 @@ namespace OverEasy
 			BillySetDesign = 2,
 			BillySpawnPoint = 3,
 			BillySetEnemy = 4,
+			BillyStageDef = 5,
 		}
 
 		public static void SetCameraSettings()
@@ -677,7 +678,10 @@ namespace OverEasy
 						UpdateBillySetEnemies(currentObjectId);
 						LoadBillySetEnemyTemplateInfo();
 						break;
-				}
+                    case EditingType.BillyStageDef:
+						UpdateBillyStageDef();
+						break;
+                }
 				SetGizmoWorldStatus(TransformGizmoWorld);
 			}
 		}
@@ -720,6 +724,9 @@ namespace OverEasy
 				case EditingType.BillySetEnemy:
 					LoadBillyEnemy();
 					break;
+				case EditingType.BillyStageDef:
+					LoadStageDef();
+                    break;
 			}
 		}
 
@@ -788,7 +795,17 @@ namespace OverEasy
 				case 1:
 				//mission Node Data Type - SetObject, Camera, etc.
 				case 2:
-					break;
+                    var hasEditorType = activeNode.GetMetadata(1).AsInt32();
+					if(hasEditorType == 1)
+                    {
+                        currentObjectId = -1;
+                        currentEditorType = (EditingType)(activeNode.GetMetadata(2).AsInt32());
+                        currentObjectTreeItem = activeNode;
+
+                        LoadSetObject();
+                        setDataTree.ScrollToItem(activeNode);
+                    }
+                    break;
 				//Object Node
 				case 3:
 					currentObjectId = activeNode.GetMetadata(1).AsInt32();

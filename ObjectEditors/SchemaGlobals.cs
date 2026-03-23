@@ -119,7 +119,35 @@ namespace OverEasy
 			activeObjectEditorObjects[key] = newSchema;
 		}
 
-		public static double GetSpinBoxValue(string key)
+        public static void CreateStringSchema(string key, string value)
+        {
+            var newSchema = (VBoxContainer)StringSchemaTemplate.Duplicate();
+
+            var paramValue = (LineEdit)newSchema.GetChild(1);
+            paramValue.Text = value;
+            newSchema.Visible = true;
+
+            objectScrollContainer.GetChild(0).AddChild(newSchema);
+            activeObjectEditorObjects[key] = newSchema;
+        }
+
+		public static string GetStringValue(string key)
+        {
+            var vecObj = activeObjectEditorObjects[key];
+            var lineEdit = (LineEdit)vecObj.GetChild(1);
+
+            return lineEdit.Text;
+        }
+
+        public static void SetStringValue(string key, string newValue)
+        {
+            var vecObj = activeObjectEditorObjects[key];
+            var lineEdit = (LineEdit)vecObj.GetChild(1);
+
+            lineEdit.Text = newValue;
+        }
+
+        public static double GetSpinBoxValue(string key)
 		{
 			var vecObj = activeObjectEditorObjects[key];
 			var spinBox = (SpinBox)vecObj.GetChild(1);
@@ -226,11 +254,12 @@ namespace OverEasy
 			schObj.TooltipText = hint;
 
 			var objText = (RichTextLabel)schObj.GetChild(0);
+			objText.TooltipText = hint;
 			var objTextText = name != "" && name != null ? name : nameDefault;
 			objText.Text = objTextText;
 		}
 
-		private static void LoadVecSchemaTemplateInfo(string key, string objName, string objNameDefault, string objHint, string xName, string yName, string zName, string wName)
+        private static void LoadVecSchemaTemplateInfo(string key, string objName, string objNameDefault, string objHint, string xName, string yName, string zName, string wName)
 		{
 			if (!activeObjectEditorObjects.ContainsKey(key))
 			{
@@ -240,6 +269,7 @@ namespace OverEasy
 			vecObj.TooltipText = objHint;
 
 			var objText = (RichTextLabel)vecObj.GetChild(0);
+			objText.TooltipText = objHint;
 			var objTextText = objName != "" && objName != null ? objName : objNameDefault;
 			var vecSize = vecObj.GetChild(1).GetChildCount();
 
