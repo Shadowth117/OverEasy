@@ -3,6 +3,7 @@ using OverEasy.Billy;
 using OverEasy.Editor;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -359,36 +360,36 @@ namespace OverEasy
 		/// Method for setting up the current edit menu
 		/// </summary>
 		public static void GetCurrentEditMenu()
-        {
-            editBtn.GetPopup().Clear();
+		{
+			editBtn.GetPopup().Clear();
 
-            switch (currentEditorType)
-            {
-                case EditingType.BillySetEnemy:
-                case EditingType.BillySetObj:
-                case EditingType.BillySetDesign:
-                case EditingType.BillySpawnPoint:
-                    editBtn.GetPopup().AddItem("Copy Object Data", 0);
-                    editBtn.GetPopup().AddItem("Paste Object Transform", 1);
-                    editBtn.GetPopup().AddItem("Paste Non-Transform Data", 2);
-                    editBtn.GetPopup().AddItem("Paste Full Object Data", 3);
-                    editBtn.GetPopup().AddItem("Drop Object To Nearest Solid", 4);
-                    break;
-                case EditingType.BillyStageDef:
-                    editBtn.GetPopup().AddItem("Copy Stage Definition Data", 0);
-                    editBtn.GetPopup().AddItem("Paste Object Set Common Data", 1);
-                    editBtn.GetPopup().AddItem("Paste All Stage Definition Data (Except Mission Id)", 2);
-                    break;
-                case EditingType.None:
-                default:
-                    break;
-            }
-        }
+			switch (currentEditorType)
+			{
+				case EditingType.BillySetEnemy:
+				case EditingType.BillySetObj:
+				case EditingType.BillySetDesign:
+				case EditingType.BillySpawnPoint:
+					editBtn.GetPopup().AddItem("Copy Object Data", 0);
+					editBtn.GetPopup().AddItem("Paste Object Transform", 1);
+					editBtn.GetPopup().AddItem("Paste Non-Transform Data", 2);
+					editBtn.GetPopup().AddItem("Paste Full Object Data", 3);
+					editBtn.GetPopup().AddItem("Drop Object To Nearest Solid", 4);
+					break;
+				case EditingType.BillyStageDef:
+					editBtn.GetPopup().AddItem("Copy Stage Definition Data", 0);
+					editBtn.GetPopup().AddItem("Paste Object Set Common Data", 1);
+					editBtn.GetPopup().AddItem("Paste All Stage Definition Data (Except Mission Id)", 2);
+					break;
+				case EditingType.None:
+				default:
+					break;
+			}
+		}
 
-        /// <summary>
-        /// Method for handling what happens when we select an option under the Edit menu
-        /// </summary>
-        public static void OnEditButtonMenuSelection(long id)
+		/// <summary>
+		/// Method for handling what happens when we select an option under the Edit menu
+		/// </summary>
+		public static void OnEditButtonMenuSelection(long id)
 		{
 			switch (currentEditorType)
 			{
@@ -396,41 +397,41 @@ namespace OverEasy
 				case EditingType.BillySetObj:
 				case EditingType.BillySetDesign:
 				case EditingType.BillySpawnPoint:
-                    switch (id)
-                    {
-                        case 0:
-                            CopyObjectData();
-                            break;
-                        case 1:
-                            PasteTransformData();
-                            break;
-                        case 2:
-                            PasteNonTransformData();
-                            break;
-                        case 3:
-                            PasteFullObjectData();
-                            break;
-                        case 4:
-                            DropObjToNearestSolid();
-                            break;
-                    }
-                    break;
+					switch (id)
+					{
+						case 0:
+							CopyObjectData();
+							break;
+						case 1:
+							PasteTransformData();
+							break;
+						case 2:
+							PasteNonTransformData();
+							break;
+						case 3:
+							PasteFullObjectData();
+							break;
+						case 4:
+							DropObjToNearestSolid();
+							break;
+					}
+					break;
 				case EditingType.BillyStageDef:
-                    switch (id)
-                    {
-                        case 0:
-                            CopyObjectData();
-                            break;
-                        case 1:
-                            PasteNonTransformData();
-                            break;
-                        case 2:
-                            PasteFullObjectData();
-                            break;
-                    }
-                    break;
-                case EditingType.None:
-                default:
+					switch (id)
+					{
+						case 0:
+							CopyObjectData();
+							break;
+						case 1:
+							PasteNonTransformData();
+							break;
+						case 2:
+							PasteFullObjectData();
+							break;
+					}
+					break;
+				case EditingType.None:
+				default:
 					break;
 			}
 		}
@@ -449,40 +450,40 @@ namespace OverEasy
 			{
 				trn.Visible = showCollision;
 			}
-        }
+		}
 
-        public static void OnSettingsButtonMenuSelection(int id)
-        {
+		public static void OnSettingsButtonMenuSelection(int id)
+		{
 			var previousIsDay = isDay;
 			var previousTransformGizmoWorld = TransformGizmoWorld;
 
-            SettingsBtn.GetPopup().SetItemChecked(id, !SettingsBtn.GetPopup().IsItemChecked(id));
-            isDay = SettingsBtn.GetPopup().IsItemChecked(0);
-            TransformGizmoWorld = SettingsBtn.GetPopup().IsItemChecked(1);
-            WarpCameraToNewSelection = SettingsBtn.GetPopup().IsItemChecked(2);
+			SettingsBtn.GetPopup().SetItemChecked(id, !SettingsBtn.GetPopup().IsItemChecked(id));
+			isDay = SettingsBtn.GetPopup().IsItemChecked(0);
+			TransformGizmoWorld = SettingsBtn.GetPopup().IsItemChecked(1);
+			WarpCameraToNewSelection = SettingsBtn.GetPopup().IsItemChecked(2);
 
 			//Handle day/night settings
 			if(previousIsDay != isDay)
-            {
-                if (daySkybox != null)
-                {
-                    daySkybox.Visible = isDay;
-                }
-                if (nightSkybox != null)
-                {
-                    nightSkybox.Visible = !isDay;
-                }
-                ModelConversion.BillyModeNightToggleParent(modelRoot);
-            }
+			{
+				if (daySkybox != null)
+				{
+					daySkybox.Visible = isDay;
+				}
+				if (nightSkybox != null)
+				{
+					nightSkybox.Visible = !isDay;
+				}
+				ModelConversion.BillyModeNightToggleParent(modelRoot);
+			}
 
 			//World transform toggle
 			if(previousTransformGizmoWorld != TransformGizmoWorld)
-            {
-                SetGizmoWorldStatus(TransformGizmoWorld);
-            }
-        }
+			{
+				SetGizmoWorldStatus(TransformGizmoWorld);
+			}
+		}
 
-        public static void CopyObjectData()
+		public static void CopyObjectData()
 		{
 			switch(gameType)
 			{
@@ -534,25 +535,39 @@ namespace OverEasy
 		/// </summary>
 		public static void DropObjToNearestSolid()
 		{
-            switch (gameType)
-            {
-                case GameType.BillyPC:
-                case GameType.BillyGC:
-                    BillyDropObjToNearestSolid();
-                    break;
-            }
-        }
+			switch (gameType)
+			{
+				case GameType.BillyPC:
+				case GameType.BillyGC:
+					BillyDropObjToNearestSolid();
+					break;
+			}
+		}
 
 		private static void ClearModelAndTextureData()
-        {
-            terrainModels.Clear();
-            terrainCollision.Clear();
-            foreach (var child in modelRoot.GetChildren())
+		{
+			foreach (var child in terrainModels)
 			{
 				modelRoot.RemoveChild(child);
 				child.QueueFree();
 			}
+			terrainModels.Clear();
+			foreach (var child in terrainCollision)
+			{
+				modelRoot.RemoveChild(child);
+				child.QueueFree();
+			}
+			terrainCollision.Clear();
+			foreach (var child in modelDictionary.Values)
+			{
+				child.QueueFree();
+			}
 			modelDictionary.Clear();
+			foreach (var child in modelRoot.GetChildren())
+			{
+				modelRoot.RemoveChild(child);
+				child.QueueFree();
+			}
 			foreach (var set in globalTexturePool)
 			{
 				set.Value.Dispose();
@@ -624,7 +639,7 @@ namespace OverEasy
 			TransformGizmo.SetCurrentTransformType(Gizmo.TransformType.None);
 			TransformGizmo.Reparent(TransformGizmo.GetTree().Root, false);
 			SetGizmoWorldStatus(TransformGizmoWorld);
-        }
+		}
 
 		/// <summary>
 		/// Method for handling what happens when we load a game
@@ -734,10 +749,10 @@ namespace OverEasy
 						UpdateBillySetEnemies(currentObjectId);
 						LoadBillySetEnemyTemplateInfo();
 						break;
-                    case EditingType.BillyStageDef:
+					case EditingType.BillyStageDef:
 						UpdateBillyStageDef();
 						break;
-                }
+				}
 				SetGizmoWorldStatus(TransformGizmoWorld);
 			}
 		}
@@ -782,7 +797,7 @@ namespace OverEasy
 					break;
 				case EditingType.BillyStageDef:
 					LoadStageDefEditor();
-                    break;
+					break;
 			}
 		}
 
@@ -851,23 +866,32 @@ namespace OverEasy
 				case 1:
 				//mission Node Data Type - SetObject, Camera, etc.
 				case 2:
-                    var hasEditorType = activeNode.GetMetadata(1).AsInt32();
+					var ids = Node.GetOrphanNodeIds();
+					foreach(var id in ids)
+					{
+						if(Node.IsInstanceIdValid((ulong)id))
+						{
+							var node = Node.InstanceFromId((ulong)id);
+							Debug.WriteLine(node);
+						}
+					}
+					var hasEditorType = activeNode.GetMetadata(1).AsInt32();
 					if(hasEditorType == 1)
-                    {
-                        currentObjectId = -1;
-                        currentEditorType = (EditingType)(activeNode.GetMetadata(2).AsInt32());
+					{
+						currentObjectId = -1;
+						currentEditorType = (EditingType)(activeNode.GetMetadata(2).AsInt32());
 						if(currentEditorType == EditingType.BillyStageDef)
-                        {
-                            currentObjectTreeItem = activeNode;
+						{
+							currentObjectTreeItem = activeNode;
 
-                            LoadSetObject();
-                            setDataTree.ScrollToItem(activeNode);
-                        }
-                    }
-                    break;
+							LoadSetObject();
+							setDataTree.ScrollToItem(activeNode);
+						}
+					}
+					break;
 				//Object Node
 				case 3:
-                    currentObjectId = activeNode.GetMetadata(1).AsInt32();
+					currentObjectId = activeNode.GetMetadata(1).AsInt32();
 					currentEditorType = (EditingType)(activeNode.GetMetadata(2).AsInt32());
 					currentObjectTreeItem = activeNode;
 
@@ -883,17 +907,17 @@ namespace OverEasy
 		}
 
 		private static void HandleEditorObjectsOnselection(Node3D activeNode3d)
-        {
-            TransformGizmo.Reparent(activeNode3d, false);
-            TransformGizmo.SetCurrentTransformType(OverEasy.Editor.Gizmo.TransformType.Translation);
-            SetGizmoWorldStatus(TransformGizmoWorld);
-            if (WarpCameraToNewSelection)
-            {
-                ViewCamera.orbitFocusNode = activeNode3d;
-                ViewCamera.TrySetOrbitCam();
-                ViewCamera.oneTimeProcessTransform = true;
-                ViewCamera.ToggleMode();
-            }
+		{
+			TransformGizmo.Reparent(activeNode3d, false);
+			TransformGizmo.SetCurrentTransformType(OverEasy.Editor.Gizmo.TransformType.Translation);
+			SetGizmoWorldStatus(TransformGizmoWorld);
+			if (WarpCameraToNewSelection)
+			{
+				ViewCamera.orbitFocusNode = activeNode3d;
+				ViewCamera.TrySetOrbitCam();
+				ViewCamera.oneTimeProcessTransform = true;
+				ViewCamera.ToggleMode();
+			}
 		}
 
 		/// <summary>

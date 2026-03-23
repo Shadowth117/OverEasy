@@ -1,10 +1,10 @@
 using Godot;
 using Godot.Collections;
-using System.Linq;
 using OverEasy;
 using OverEasy.Editor;
 using OverEasy.Util;
 using System;
+using System.Linq;
 public partial class ViewerCamera : Camera3D
 {
 	public enum CameraMode : int
@@ -434,22 +434,22 @@ public partial class ViewerCamera : Camera3D
 
 		// Update distance
 		_distance += scrollSpeed * delta;
-		if (_distance < 0)
+		if (_distance < 0.001)
 		{
-			_distance = 0;
+			_distance = 0.001;
 		}
 
 		scrollSpeed = 0;
-		//spinSpeed = 0
+        //spinSpeed = 0
 
-		this.SetIdentity();
-		this.TranslateObjectLocal(new Vector3(0, 0, (float)_distance));
+        this.SetIdentity();
+        this.TranslateObjectLocal(new Vector3(0, 0, (float)_distance));
+        targetNode.SetIdentity();
+        var targetNodeTfm = targetNode.Transform;
+        targetNodeTfm.Basis = new Basis(Godot.Quaternion.FromEuler(_orbitRotation));
+        targetNode.Transform = targetNodeTfm;
 
-		targetNode.SetIdentity();
-		var targetNodeTfm = targetNode.Transform;
-		targetNodeTfm.Basis = new Basis(Godot.Quaternion.FromEuler(_orbitRotation));
-		targetNode.Transform = targetNodeTfm;
-	}
+    }
 
 	public void _ProcessFreecam(double delta)
 	{
@@ -558,18 +558,22 @@ public partial class ViewerCamera : Camera3D
     {
         cameraMode = CameraMode.Freecam;
         this.Reparent(GetTree().Root);
+
         //Adjust targetNode while it's not parented
-        targetNode.GlobalRotation = new Vector3(0, targetNode.GlobalRotation.Y, targetNode.GlobalRotation.Z);
-        targetNode.Reparent(GetTree().Root, true);
+		if(Node.IsInstanceValid(targetNode))
+        {
+            targetNode.GlobalRotation = new Vector3(0, targetNode.GlobalRotation.Y, targetNode.GlobalRotation.Z);
+            targetNode.Reparent(GetTree().Root, true);
+            this.Reparent(targetNode);
+        }
 
         //Reparent back to targetNode after its adjustment
-        this.Reparent(targetNode);
         freecamTotalPitch = -(this.Rotation.X * 180 / Mathf.Pi);
     }
 
     public bool TrySetOrbitCam()
 	{
-		if (orbitFocusNode != null)
+		if (Node.IsInstanceValid(orbitFocusNode) && orbitFocusNode != null)
 		{
 			targetNode.Reparent(orbitFocusNode);
 			var aabb = OverEasy.Util.GodotUtil.GetHierarchyAABB(orbitFocusNode);

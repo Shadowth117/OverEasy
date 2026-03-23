@@ -163,8 +163,8 @@ namespace OverEasy
 						SetVec3SchemaValues("ObjectPosition", clipboardPosition.Value);
 						SetVec3SchemaValues("ObjectRotation", clipboardRotation.Value);
 						break;
-                    case EditingType.BillyStageDef:
-                    case EditingType.None:
+					case EditingType.BillyStageDef:
+					case EditingType.None:
 						break;
 				}
 			}
@@ -234,7 +234,7 @@ namespace OverEasy
 								(float)(NinjaConstants.FromBAMSValueToDegrees * newData.BAMSRotation.Y), (float)(NinjaConstants.FromBAMSValueToDegrees * newData.BAMSRotation.Z));
 						}
 						break;
-                    case EditingType.BillyStageDef:
+					case EditingType.BillyStageDef:
 						if (clipboardStageDef != null)
 						{
 							var def = clipboardStageDef;
@@ -249,10 +249,10 @@ namespace OverEasy
 								objectData = def.commonData.objectData,
 								objectDefinition = def.commonData.objectDefinition,
 							};
-                            LoadStageDefEditor();
+							LoadStageDefEditor();
 						}
 						break;
-                    case EditingType.None:
+					case EditingType.None:
 						break;
 				}
 			}
@@ -325,38 +325,38 @@ namespace OverEasy
 							SetVec3SchemaValues("ObjectRotation", clipboardRotation.Value);
 						}
 						break;
-                    case EditingType.BillyStageDef:
-                        if (clipboardStageDef != null)
-                        {
-                            var def = clipboardStageDef;
-                            var loadedDef = stgDef.defs[currentMissionId];
-                            loadedDef.missionType = def.missionType;
-                            loadedDef.bspFilename = def.bspFilename;
-                            loadedDef.pathFilename = def.pathFilename;
-                            loadedDef.messageFilename = def.messageFilename;
-                            loadedDef.eventFilename = def.eventFilename;
-                            loadedDef.eventCameraFilename = def.eventCameraFilename;
-                            loadedDef.lndFilename = def.lndFilename;
-                            loadedDef.mc2Filename = def.mc2Filename;
-                            loadedDef.setCameraFilename = def.setCameraFilename;
-                            loadedDef.setDesignFilename = def.setDesignFilename;
-                            loadedDef.setEnemyFilename = def.setEnemyFilename;
-                            loadedDef.setObjFilename = def.setObjFilename;
-                            loadedDef.worldName = def.worldName;
-                            loadedDef.commonData = new StageDef.StageCommonData()
-                            {
-                                effect = def.commonData.effect,
-                                particle = def.commonData.particle,
-                                SEBank4 = def.commonData.SEBank4,
-                                SEBank6 = def.commonData.SEBank6,
-                                SEBank7 = def.commonData.SEBank7,
-                                objectData = def.commonData.objectData,
-                                objectDefinition = def.commonData.objectDefinition,
-                            };
-                            LoadStageDefEditor();
-                        }
-                        break;
-                    case EditingType.None:
+					case EditingType.BillyStageDef:
+						if (clipboardStageDef != null)
+						{
+							var def = clipboardStageDef;
+							var loadedDef = stgDef.defs[currentMissionId];
+							loadedDef.missionType = def.missionType;
+							loadedDef.bspFilename = def.bspFilename;
+							loadedDef.pathFilename = def.pathFilename;
+							loadedDef.messageFilename = def.messageFilename;
+							loadedDef.eventFilename = def.eventFilename;
+							loadedDef.eventCameraFilename = def.eventCameraFilename;
+							loadedDef.lndFilename = def.lndFilename;
+							loadedDef.mc2Filename = def.mc2Filename;
+							loadedDef.setCameraFilename = def.setCameraFilename;
+							loadedDef.setDesignFilename = def.setDesignFilename;
+							loadedDef.setEnemyFilename = def.setEnemyFilename;
+							loadedDef.setObjFilename = def.setObjFilename;
+							loadedDef.worldName = def.worldName;
+							loadedDef.commonData = new StageDef.StageCommonData()
+							{
+								effect = def.commonData.effect,
+								particle = def.commonData.particle,
+								SEBank4 = def.commonData.SEBank4,
+								SEBank6 = def.commonData.SEBank6,
+								SEBank7 = def.commonData.SEBank7,
+								objectData = def.commonData.objectData,
+								objectDefinition = def.commonData.objectDefinition,
+							};
+							LoadStageDefEditor();
+						}
+						break;
+					case EditingType.None:
 						break;
 				}
 			}
@@ -375,8 +375,8 @@ namespace OverEasy
 				case EditingType.BillySetEnemy:
 					currentPosition = GetVec3SchemaValues("ObjectPosition").ToGVec3();
 					break;
-                case EditingType.BillyStageDef:
-                case EditingType.None:
+				case EditingType.BillyStageDef:
+				case EditingType.None:
 					return;
 			}
 			var node = (Node3D)TransformGizmo.GetParent();
@@ -420,8 +420,8 @@ namespace OverEasy
 					case EditingType.BillySetEnemy:
 						SetVec3SchemaValues("ObjectPosition", finalPos.Value);
 						break;
-                    case EditingType.BillyStageDef:
-                    case EditingType.None:
+					case EditingType.BillyStageDef:
+					case EditingType.None:
 						break;
 				}
 			}
@@ -1035,19 +1035,19 @@ namespace OverEasy
 		}
 
 		public static void LoadStageDefEditor()
-        {
-            allowedToUpdate = false;
-            foreach (var objSet in activeObjectEditorObjects)
-            {
-                objSet.Value.Free();
-            }
-            activeObjectEditorObjects.Clear();
+		{
+			allowedToUpdate = false;
+			foreach (var objSet in activeObjectEditorObjects)
+			{
+				objSet.Value.Free();
+			}
+			activeObjectEditorObjects.Clear();
 
-            LoadBillyStageDefValues();
-            LoadBillyStageDefInfo();
-            ToggleObjectScrollContainerCollision();
-            allowedToUpdate = true;
-        }
+			LoadBillyStageDefValues();
+			LoadBillyStageDefInfo();
+			ToggleObjectScrollContainerCollision();
+			allowedToUpdate = true;
+		}
 
 		public static void LoadBillySetObject(SetObjList setObjList)
 		{
@@ -1081,56 +1081,56 @@ namespace OverEasy
 			allowedToUpdate = true;
 		}
 
-        public static void LoadBillySpawnPointInfo()
+		public static void LoadBillySpawnPointInfo()
 		{
 			LoadVec3SchemaTemplateInfo("PlayerPosition", "Player Position", "Position", "The position of the player at spawn", "", "", "");
 			LoadSchemaTemplateInfo("PlayerRotation", "Player Rotation", "Rotation", "The rotation of the player at spawn");
 		}
 
-        public static void LoadBillyStageDefInfo()
-        {
-            LoadSchemaTemplateInfo("MissionInternalName", "Mission Internal Name", "MissionInternalName", "The reference the game uses to identify a stage in the stage definition file");
-            LoadSchemaTemplateInfo("MissionType", "Mission Type", "MissionType", "Type of mission. Some may be hardcoded or require certain objects to work. Valid types are:\ngold - Hatch a Chicken Elder" +
+		public static void LoadBillyStageDefInfo()
+		{
+			LoadSchemaTemplateInfo("MissionInternalName", "Mission Internal Name", "MissionInternalName", "The reference the game uses to identify a stage in the stage definition file");
+			LoadSchemaTemplateInfo("MissionType", "Mission Type", "MissionType", "Type of mission. Some may be hardcoded or require certain objects to work. Valid types are:\ngold - Hatch a Chicken Elder" +
 				"\ngoal - Reach an emblem or gate of darkness\n" +
 				"mini - Minigame Salesman\ncollect - Save the chickens\nwipeout - Defeat x crows\nrace - Race a large egg animal\nrescue - Save a friend strapped to a bomb\ndino - Defeat x Bone Dragons" +
 				"\ngear - Break x snowflake gears\nsnowman - Build and place the snowman's head\nbattery - Shock x batteries\nfireworks - Launch the fireworks from the cannon\nboss - Defeat the boss" +
 				"\nlastboss - Defeat the last boss\nelder - Talk to the chicken elder");
-            LoadSchemaTemplateInfo("RankTimeThreshold(Seconds)", "Rank Time Threshold (Seconds)", "RankTimeThreshold(Seconds)", "Time in seconds related to score bonus?");
-            LoadSchemaTemplateInfo("ScoreThresholdS", "Score Threshold S", "ScoreThresholdS", "Score threshold for S rank?");
-            LoadSchemaTemplateInfo("ScoreThresholdA", "Score Threshold A", "ScoreThresholdA", "Score threshold for A rank?");
-            LoadSchemaTemplateInfo("ScoreThresholdB", "Score Threshold B", "ScoreThresholdB", "Score threshold for B rank?");
-            LoadSchemaTemplateInfo("ScoreThresholdC", "Score Threshold C", "ScoreThresholdC", "Score threshold for C rank?");
+			LoadSchemaTemplateInfo("RankTimeThreshold(Seconds)", "Rank Time Threshold (Seconds)", "RankTimeThreshold(Seconds)", "Time in seconds related to score bonus?");
+			LoadSchemaTemplateInfo("ScoreThresholdS", "Score Threshold S", "ScoreThresholdS", "Score threshold for S rank?");
+			LoadSchemaTemplateInfo("ScoreThresholdA", "Score Threshold A", "ScoreThresholdA", "Score threshold for A rank?");
+			LoadSchemaTemplateInfo("ScoreThresholdB", "Score Threshold B", "ScoreThresholdB", "Score threshold for B rank?");
+			LoadSchemaTemplateInfo("ScoreThresholdC", "Score Threshold C", "ScoreThresholdC", "Score threshold for C rank?");
 
-            LoadSchemaTemplateInfo("StageGeometryFile", "Stage Geometry File", "StageGeometryFile", "The stage's 3d model");
-            LoadSchemaTemplateInfo("StageCollisionGeometryFile", "Stage Collision Geometry File", "StageCollisionGeometryFile", "The stage collision's 3d model");
-            LoadSchemaTemplateInfo("StageSplinePathsFile", "Stage Spline Paths File", "StageSplinePathsFile", "The stage's spline paths file");
-            LoadSchemaTemplateInfo("DialogueScriptFile", "Dialogue Script File", "DialogueScriptFile", "The stage's dialogue messages file. Contains text from stage specific messages that can appear.");
-            LoadSchemaTemplateInfo("EventScriptFile", "Event Script File", "EventScriptFile", "The stage's script file. Contains game script code that provides infos for certain events," +
+			LoadSchemaTemplateInfo("StageGeometryFile", "Stage Geometry File", "StageGeometryFile", "The stage's 3d model");
+			LoadSchemaTemplateInfo("StageCollisionGeometryFile", "Stage Collision Geometry File", "StageCollisionGeometryFile", "The stage collision's 3d model");
+			LoadSchemaTemplateInfo("StageSplinePathsFile", "Stage Spline Paths File", "StageSplinePathsFile", "The stage's spline paths file");
+			LoadSchemaTemplateInfo("DialogueScriptFile", "Dialogue Script File", "DialogueScriptFile", "The stage's dialogue messages file. Contains text from stage specific messages that can appear.");
+			LoadSchemaTemplateInfo("EventScriptFile", "Event Script File", "EventScriptFile", "The stage's script file. Contains game script code that provides infos for certain events," +
 				"\n world states, and other settings");
-            LoadSchemaTemplateInfo("CutsceneCameraFile", "Cutscene Cameras File", "CutsceneCameraFile", "Contains camera data for certain stage specific cutscenes ie. Intro Camera");
-            LoadSchemaTemplateInfo("StageCamerasFile", "Stage Cameras File", "StageCamerasFile", "Contains player camera data based on volumes of space per camera");
-            LoadSchemaTemplateInfo("StageSceneryObjectsFile", "Stage Scenery Objects File", "StageSceneryObjectsFile", "Contains scenery object data. Mainly organizational, also allows regular objects");
-            LoadSchemaTemplateInfo("StageMissionObjectsFile", "Stage Mission Objects File", "StageMissionObjectsFile", "Contains mission object data. Mainly organizational, also allows scenery objects");
-            LoadSchemaTemplateInfo("StageEnemyObjectsFile", "Stage Enemy Objects File", "StageEnemyObjectsFile", "Contains enemy object data");
+			LoadSchemaTemplateInfo("CutsceneCameraFile", "Cutscene Cameras File", "CutsceneCameraFile", "Contains camera data for certain stage specific cutscenes ie. Intro Camera");
+			LoadSchemaTemplateInfo("StageCamerasFile", "Stage Cameras File", "StageCamerasFile", "Contains player camera data based on volumes of space per camera");
+			LoadSchemaTemplateInfo("StageSceneryObjectsFile", "Stage Scenery Objects File", "StageSceneryObjectsFile", "Contains scenery object data. Mainly organizational, also allows regular objects");
+			LoadSchemaTemplateInfo("StageMissionObjectsFile", "Stage Mission Objects File", "StageMissionObjectsFile", "Contains mission object data. Mainly organizational, also allows scenery objects");
+			LoadSchemaTemplateInfo("StageEnemyObjectsFile", "Stage Enemy Objects File", "StageEnemyObjectsFile", "Contains enemy object data");
 
-            LoadSchemaTemplateInfo("ObjectSet", "Object Set", "ObjectSet", "The reference to the set of objects the game is allowed to pull from, sorted per 'world':" +
+			LoadSchemaTemplateInfo("ObjectSet", "Object Set", "ObjectSet", "The reference to the set of objects the game is allowed to pull from, sorted per 'world':" +
 				"\ngreen - Forest Village\nblue - Pirates Island\nred - Dino Mountain\npurple - Blizzard Castle\norange - Circus Park\nyellow - Sand Ruini\nlast - Giant Palace\nblueboss\nredboss\npurpleboss" +
 				"\norangeboss\nyellowboss\ngreenboss\nlastboss\nlastboss2\ntitle");
-            LoadSchemaTemplateInfo("SoundBank4File", "Sound Bank 4 File", "SoundBank4File", "Sound effects container");
-            LoadSchemaTemplateInfo("SoundBank6File", "Sound Bank 6 File", "SoundBank6File", "Sound effects container");
-            LoadSchemaTemplateInfo("SoundBank7File", "Sound Bank 7 File", "SoundBank7File", "Sound effects container");
-            LoadSchemaTemplateInfo("EffectsFile", "Effects File", "EffectsFile", "Special effects file");
-            LoadSchemaTemplateInfo("ParticleSystemsFile", "Particle Systems File", "ParticleSystemsFile", "Particle Systems file");
-            LoadSchemaTemplateInfo("ObjectGeometryFile", "Object Geometry File", "ObjectGeometryFile", "Stage specific objects, animations, texture lists, and textures");
-            LoadSchemaTemplateInfo("StaticAndDestructibleObjectDefinitionFile", "Static And Destructible ObjectDefinition File", "StaticAndDestructibleObjectDefinitionFile", 
+			LoadSchemaTemplateInfo("SoundBank4File", "Sound Bank 4 File", "SoundBank4File", "Sound effects container");
+			LoadSchemaTemplateInfo("SoundBank6File", "Sound Bank 6 File", "SoundBank6File", "Sound effects container");
+			LoadSchemaTemplateInfo("SoundBank7File", "Sound Bank 7 File", "SoundBank7File", "Sound effects container");
+			LoadSchemaTemplateInfo("EffectsFile", "Effects File", "EffectsFile", "Special effects file");
+			LoadSchemaTemplateInfo("ParticleSystemsFile", "Particle Systems File", "ParticleSystemsFile", "Particle Systems file");
+			LoadSchemaTemplateInfo("ObjectGeometryFile", "Object Geometry File", "ObjectGeometryFile", "Stage specific objects, animations, texture lists, and textures");
+			LoadSchemaTemplateInfo("StaticAndDestructibleObjectDefinitionFile", "Static And Destructible ObjectDefinition File", "StaticAndDestructibleObjectDefinitionFile", 
 				"Defines basic, static objects for scenery such as rocks, signs, boxes, etc.\nand contains settings for their destructability, if they're allowed to be broken.");
 
-            LoadSchemaTemplateInfo("BSPFile(Unused)", "BSP File (Unused)", "BSPFile(Unused)", "Not loaded by the game, nor present in GC version." +
+			LoadSchemaTemplateInfo("BSPFile(Unused)", "BSP File (Unused)", "BSPFile(Unused)", "Not loaded by the game, nor present in GC version." +
 				"\nBinary Space Partition file, seemingly for culling pieces of large 3d maps for rendering." +
 				"\nSonic Heroes and Shadow the Hedgehog used these, but perhaps Billy wasn't deemed " +
 				"\nexpansive enough to require it");
-        }
-        
+		}
+		
 		public static void LoadBillySetObjectTemplateInfo(SetObjList setObjList)
 		{
 			var setObj = setObjList.setObjs[currentObjectId];
@@ -1250,31 +1250,31 @@ namespace OverEasy
 			CreateFloatSchema("PlayerRotation", start.rotation);
 		}
 
-        public static void LoadBillyStageDefValues()
-        {
-            var def = stgDef.defs[currentMissionId];
+		public static void LoadBillyStageDefValues()
+		{
+			var def = stgDef.defs[currentMissionId];
 
-            CreateStringSchema("MissionInternalName", def.missionName);
-            CreateStringSchema("MissionType", def.missionType);
-            CreateIntSchema("RankTimeThreshold(Seconds)", def.rankTimeThreshold);
-            CreateIntSchema("ScoreThresholdS", def.scoreThreshold1);
-            CreateIntSchema("ScoreThresholdA", def.scoreThreshold2);
-            CreateIntSchema("ScoreThresholdB", def.scoreThreshold3);
-            CreateIntSchema("ScoreThresholdC", def.scoreThreshold4);
+			CreateStringSchema("MissionInternalName", def.missionName);
+			CreateStringSchema("MissionType", def.missionType);
+			CreateIntSchema("RankTimeThreshold(Seconds)", def.rankTimeThreshold);
+			CreateIntSchema("ScoreThresholdS", def.scoreThreshold1);
+			CreateIntSchema("ScoreThresholdA", def.scoreThreshold2);
+			CreateIntSchema("ScoreThresholdB", def.scoreThreshold3);
+			CreateIntSchema("ScoreThresholdC", def.scoreThreshold4);
 
-            CreateStringSchema("StageGeometryFile", def.lndFilename);
-            CreateStringSchema("StageCollisionGeometryFile", def.mc2Filename);
-            CreateStringSchema("StageSplinePathsFile", def.pathFilename);
-            CreateStringSchema("DialogueScriptFile", def.messageFilename);
-            CreateStringSchema("EventScriptFile", def.eventFilename);
-            CreateStringSchema("CutsceneCameraFile", def.eventCameraFilename);
-            CreateStringSchema("StageCamerasFile", def.setCameraFilename);
-            CreateStringSchema("StageSceneryObjectsFile", def.setDesignFilename);
-            CreateStringSchema("StageMissionObjectsFile", def.setObjFilename);
-            CreateStringSchema("StageEnemyObjectsFile", def.setEnemyFilename);
+			CreateStringSchema("StageGeometryFile", def.lndFilename);
+			CreateStringSchema("StageCollisionGeometryFile", def.mc2Filename);
+			CreateStringSchema("StageSplinePathsFile", def.pathFilename);
+			CreateStringSchema("DialogueScriptFile", def.messageFilename);
+			CreateStringSchema("EventScriptFile", def.eventFilename);
+			CreateStringSchema("CutsceneCameraFile", def.eventCameraFilename);
+			CreateStringSchema("StageCamerasFile", def.setCameraFilename);
+			CreateStringSchema("StageSceneryObjectsFile", def.setDesignFilename);
+			CreateStringSchema("StageMissionObjectsFile", def.setObjFilename);
+			CreateStringSchema("StageEnemyObjectsFile", def.setEnemyFilename);
 
-            //Common Files, the "Common" only matters internally
-            CreateStringSchema("ObjectSet", def.worldName);
+			//Common Files, the "Common" only matters internally
+			CreateStringSchema("ObjectSet", def.worldName);
 			CreateStringSchema("SoundBank4File", def.commonData.SEBank4);
 			CreateStringSchema("SoundBank6File", def.commonData.SEBank6);
 			CreateStringSchema("SoundBank7File", def.commonData.SEBank7);
@@ -1283,10 +1283,10 @@ namespace OverEasy
 			CreateStringSchema("ObjectGeometryFile", def.commonData.objectData);
 			CreateStringSchema("StaticAndDestructibleObjectDefinitionFile", def.commonData.objectDefinition);
 
-            CreateStringSchema("BSPFile(Unused)", def.bspFilename);
-        }
+			CreateStringSchema("BSPFile(Unused)", def.bspFilename);
+		}
 
-        public static void LoadBillySetEnemyGui()
+		public static void LoadBillySetEnemyGui()
 		{
 			var setEne = loadedBillySetEnemies.setEnemies[currentObjectId];
 			CreateIntSchema("ObjectId", setEne.enemyId);
@@ -1365,62 +1365,62 @@ namespace OverEasy
 			stgDefModified = true;
 		}
 
-        public static void UpdateBillyStageDef()
-        {
-            //Gather some initial values
-            var missionInternalNameFile = GetStringValue("MissionInternalName");
-            var missionTypeFile = GetStringValue("MissionType");
-            var rankTimeThreshold = GetSpinBoxValue("RankTimeThreshold(Seconds)");
-            var scoreThresholdS = GetSpinBoxValue("ScoreThresholdS");
-            var scoreThresholdA = GetSpinBoxValue("ScoreThresholdA");
-            var scoreThresholdB = GetSpinBoxValue("ScoreThresholdB");
-            var scoreThresholdC = GetSpinBoxValue("ScoreThresholdC");
+		public static void UpdateBillyStageDef()
+		{
+			//Gather some initial values
+			var missionInternalNameFile = GetStringValue("MissionInternalName");
+			var missionTypeFile = GetStringValue("MissionType");
+			var rankTimeThreshold = GetSpinBoxValue("RankTimeThreshold(Seconds)");
+			var scoreThresholdS = GetSpinBoxValue("ScoreThresholdS");
+			var scoreThresholdA = GetSpinBoxValue("ScoreThresholdA");
+			var scoreThresholdB = GetSpinBoxValue("ScoreThresholdB");
+			var scoreThresholdC = GetSpinBoxValue("ScoreThresholdC");
 
-            var stageGeometryFile = GetStringValue("StageGeometryFile");
-            var stageCollisionGeometryFile = GetStringValue("StageCollisionGeometryFile");
-            var stageSplinePathFile = GetStringValue("StageSplinePathsFile");
-            var dialogueScriptFile = GetStringValue("DialogueScriptFile");
-            var eventFile = GetStringValue("EventScriptFile");
-            var cutsceneCameraFile = GetStringValue("CutsceneCameraFile");
-            var stageCamerasFile = GetStringValue("StageCamerasFile");
-            var stageSceneryObjectsFile = GetStringValue("StageSceneryObjectsFile");
-            var stageMissionObjectsFile = GetStringValue("StageMissionObjectsFile");
-            var stageEnemyObjectsFile = GetStringValue("StageEnemyObjectsFile");
+			var stageGeometryFile = GetStringValue("StageGeometryFile");
+			var stageCollisionGeometryFile = GetStringValue("StageCollisionGeometryFile");
+			var stageSplinePathFile = GetStringValue("StageSplinePathsFile");
+			var dialogueScriptFile = GetStringValue("DialogueScriptFile");
+			var eventFile = GetStringValue("EventScriptFile");
+			var cutsceneCameraFile = GetStringValue("CutsceneCameraFile");
+			var stageCamerasFile = GetStringValue("StageCamerasFile");
+			var stageSceneryObjectsFile = GetStringValue("StageSceneryObjectsFile");
+			var stageMissionObjectsFile = GetStringValue("StageMissionObjectsFile");
+			var stageEnemyObjectsFile = GetStringValue("StageEnemyObjectsFile");
 
-            var worldFile = GetStringValue("ObjectSet");
-            var bank4File = GetStringValue("SoundBank4File");
-            var bank6File = GetStringValue("SoundBank6File");
-            var bank7File = GetStringValue("SoundBank7File");
-            var effectFile = GetStringValue("EffectsFile");
-            var particleSystemsFile = GetStringValue("ParticleSystemsFile");
-            var objectGeometryFile = GetStringValue("ObjectGeometryFile");
-            var objectDefinitionsFile = GetStringValue("StaticAndDestructibleObjectDefinitionFile");
+			var worldFile = GetStringValue("ObjectSet");
+			var bank4File = GetStringValue("SoundBank4File");
+			var bank6File = GetStringValue("SoundBank6File");
+			var bank7File = GetStringValue("SoundBank7File");
+			var effectFile = GetStringValue("EffectsFile");
+			var particleSystemsFile = GetStringValue("ParticleSystemsFile");
+			var objectGeometryFile = GetStringValue("ObjectGeometryFile");
+			var objectDefinitionsFile = GetStringValue("StaticAndDestructibleObjectDefinitionFile");
 
-            var bspFile = GetStringValue("BSPFile(Unused)");
+			var bspFile = GetStringValue("BSPFile(Unused)");
 
-            //Update 3d representation
-            //Maybe for the future if lnd/mc2 is changed?
+			//Update 3d representation
+			//Maybe for the future if lnd/mc2 is changed?
 
-            //Gather current object values
-            var objRaw = stgDef.defs[currentMissionId];
-            objRaw.missionName = missionInternalNameFile;
-            objRaw.missionType = missionTypeFile;
-            objRaw.rankTimeThreshold = (int)rankTimeThreshold;
-            objRaw.scoreThreshold1 = (int)scoreThresholdS;
-            objRaw.scoreThreshold2 = (int)scoreThresholdA;
-            objRaw.scoreThreshold3 = (int)scoreThresholdB;
-            objRaw.scoreThreshold4 = (int)scoreThresholdC;
+			//Gather current object values
+			var objRaw = stgDef.defs[currentMissionId];
+			objRaw.missionName = missionInternalNameFile;
+			objRaw.missionType = missionTypeFile;
+			objRaw.rankTimeThreshold = (int)rankTimeThreshold;
+			objRaw.scoreThreshold1 = (int)scoreThresholdS;
+			objRaw.scoreThreshold2 = (int)scoreThresholdA;
+			objRaw.scoreThreshold3 = (int)scoreThresholdB;
+			objRaw.scoreThreshold4 = (int)scoreThresholdC;
 
-            objRaw.lndFilename = stageGeometryFile;
-            objRaw.mc2Filename = stageCollisionGeometryFile;
-            objRaw.pathFilename = stageSplinePathFile;
-            objRaw.messageFilename = dialogueScriptFile;
-            objRaw.eventFilename = eventFile;
-            objRaw.eventCameraFilename = cutsceneCameraFile;
-            objRaw.setCameraFilename = stageCamerasFile;
-            objRaw.setDesignFilename = stageSceneryObjectsFile;
-            objRaw.setObjFilename = stageMissionObjectsFile;
-            objRaw.setEnemyFilename = stageEnemyObjectsFile;
+			objRaw.lndFilename = stageGeometryFile;
+			objRaw.mc2Filename = stageCollisionGeometryFile;
+			objRaw.pathFilename = stageSplinePathFile;
+			objRaw.messageFilename = dialogueScriptFile;
+			objRaw.eventFilename = eventFile;
+			objRaw.eventCameraFilename = cutsceneCameraFile;
+			objRaw.setCameraFilename = stageCamerasFile;
+			objRaw.setDesignFilename = stageSceneryObjectsFile;
+			objRaw.setObjFilename = stageMissionObjectsFile;
+			objRaw.setEnemyFilename = stageEnemyObjectsFile;
 
 			objRaw.commonData = new StageDef.StageCommonData()
 			{
@@ -1433,12 +1433,12 @@ namespace OverEasy
 				objectDefinition = objectDefinitionsFile,
 			};
 
-            objRaw.bspFilename = bspFile;
+			objRaw.bspFilename = bspFile;
 
-            stgDefModified = true;
-        }
+			stgDefModified = true;
+		}
 
-         public static void UpdateBillySetObjects(SetObjList setObjList, int objectId, bool isDesignObject)
+		 public static void UpdateBillySetObjects(SetObjList setObjList, int objectId, bool isDesignObject)
 		{
 			//Gather some initial values
 			var objPosition = GetVec3SchemaValues("ObjectPosition");
@@ -1762,15 +1762,15 @@ namespace OverEasy
 		{
 			TreeItem temp;
 
-            //StageDef
-            temp = activeNode.CreateChild();
-            temp.SetText(0, "Stage Definition Values");
-            temp.SetMetadata(0, 2);
-            temp.SetMetadata(1, 1);
-            temp.SetMetadata(2, (int)EditingType.BillyStageDef);
+			//StageDef
+			temp = activeNode.CreateChild();
+			temp.SetText(0, "Stage Definition Values");
+			temp.SetMetadata(0, 2);
+			temp.SetMetadata(1, 1);
+			temp.SetMetadata(2, (int)EditingType.BillyStageDef);
 
-            //We will ALWAYS have 4 spawnpoints. 
-            temp = activeNode.CreateChild();
+			//We will ALWAYS have 4 spawnpoints. 
+			temp = activeNode.CreateChild();
 			temp.SetText(0, "Player Spawnpoints");
 			temp.SetMetadata(0, 2);
 
@@ -2077,7 +2077,7 @@ namespace OverEasy
 						SetSpinBoxValue("PlayerRotation", eulRot.Z);
 					}
 					break;
-                case EditingType.BillyStageDef:
+				case EditingType.BillyStageDef:
 				case EditingType.None:
 					break;
 			}
