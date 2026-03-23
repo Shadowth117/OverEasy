@@ -33,6 +33,7 @@ namespace OverEasy
 
 		public static DisplayButton DisplayBtn = null;
 		public static SettingsButton SettingsBtn = null;
+		public static EditButton editBtn = null;
 
 		public static CollisionShape2D MenuBarCollision = null;
 		public static CollisionShape2D setDataTreeCollision = null;
@@ -353,29 +354,84 @@ namespace OverEasy
 					break;
 			}
 		}
-
+		
 		/// <summary>
-		/// Method for handling what happens when we select an option under the Edit menu
+		/// Method for setting up the current edit menu
 		/// </summary>
-		public static void OnEditButtonMenuSelection(long id)
-		{
-			switch (id)
-			{
-				case 0:
-					CopyObjectData();
-					break;
-				case 1:
-					PasteTransformData();
-					break;
-				case 2:
-					PasteNonTransformData();
-					break;
-				case 3:
-					PasteFullObjectData();
-					break;
-				case 4:
-					DropObjToNearestSolid();
+		public static void GetCurrentEditMenu()
+        {
+            editBtn.GetPopup().Clear();
+
+            switch (currentEditorType)
+            {
+                case EditingType.BillySetEnemy:
+                case EditingType.BillySetObj:
+                case EditingType.BillySetDesign:
+                case EditingType.BillySpawnPoint:
+                    editBtn.GetPopup().AddItem("Copy Object Data", 0);
+                    editBtn.GetPopup().AddItem("Paste Object Transform", 1);
+                    editBtn.GetPopup().AddItem("Paste Non-Transform Data", 2);
+                    editBtn.GetPopup().AddItem("Paste Full Object Data", 3);
+                    editBtn.GetPopup().AddItem("Drop Object To Nearest Solid", 4);
                     break;
+                case EditingType.BillyStageDef:
+                    editBtn.GetPopup().AddItem("Copy Stage Definition Data", 0);
+                    editBtn.GetPopup().AddItem("Paste Object Set Common Data", 1);
+                    editBtn.GetPopup().AddItem("Paste All Stage Definition Data (Except Mission Id)", 2);
+                    break;
+                case EditingType.None:
+                default:
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Method for handling what happens when we select an option under the Edit menu
+        /// </summary>
+        public static void OnEditButtonMenuSelection(long id)
+		{
+			switch (currentEditorType)
+			{
+				case EditingType.BillySetEnemy:
+				case EditingType.BillySetObj:
+				case EditingType.BillySetDesign:
+				case EditingType.BillySpawnPoint:
+                    switch (id)
+                    {
+                        case 0:
+                            CopyObjectData();
+                            break;
+                        case 1:
+                            PasteTransformData();
+                            break;
+                        case 2:
+                            PasteNonTransformData();
+                            break;
+                        case 3:
+                            PasteFullObjectData();
+                            break;
+                        case 4:
+                            DropObjToNearestSolid();
+                            break;
+                    }
+                    break;
+				case EditingType.BillyStageDef:
+                    switch (id)
+                    {
+                        case 0:
+                            CopyObjectData();
+                            break;
+                        case 1:
+                            PasteNonTransformData();
+                            break;
+                        case 2:
+                            PasteFullObjectData();
+                            break;
+                    }
+                    break;
+                case EditingType.None:
+                default:
+					break;
 			}
 		}
 
@@ -725,7 +781,7 @@ namespace OverEasy
 					LoadBillyEnemy();
 					break;
 				case EditingType.BillyStageDef:
-					LoadStageDef();
+					LoadStageDefEditor();
                     break;
 			}
 		}
@@ -800,15 +856,18 @@ namespace OverEasy
                     {
                         currentObjectId = -1;
                         currentEditorType = (EditingType)(activeNode.GetMetadata(2).AsInt32());
-                        currentObjectTreeItem = activeNode;
+						if(currentEditorType == EditingType.BillyStageDef)
+                        {
+                            currentObjectTreeItem = activeNode;
 
-                        LoadSetObject();
-                        setDataTree.ScrollToItem(activeNode);
+                            LoadSetObject();
+                            setDataTree.ScrollToItem(activeNode);
+                        }
                     }
                     break;
 				//Object Node
 				case 3:
-					currentObjectId = activeNode.GetMetadata(1).AsInt32();
+                    currentObjectId = activeNode.GetMetadata(1).AsInt32();
 					currentEditorType = (EditingType)(activeNode.GetMetadata(2).AsInt32());
 					currentObjectTreeItem = activeNode;
 

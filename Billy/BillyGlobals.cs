@@ -5,11 +5,9 @@ using AquaModelLibrary.Data.DataTypes;
 using AquaModelLibrary.Data.Ninja;
 using ArchiveLib;
 using Godot;
-using Microsoft.Toolkit.HighPerformance;
 using OverEasy.Billy;
 using OverEasy.TextInfo;
 using OverEasy.Util;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -45,6 +43,7 @@ namespace OverEasy
 		public static Vector3? clipboardRotation = null;
 		public static SetObj? clipboardSetObj = null;
 		public static SetEnemy? clipboardSetEnemy = null;
+		public static StageDef.StageDefinition clipboardStageDef = null;
 
 		public static void SetCameraSettingsBilly()
 		{
@@ -109,6 +108,34 @@ namespace OverEasy
 					clipboardSetEnemy = loadedBillySetEnemies.setEnemies[currentObjectId];
 					break;
 				case EditingType.BillyStageDef:
+					var def = stgDef.defs[currentMissionId];
+					clipboardStageDef = new StageDef.StageDefinition() 
+					{ 
+						missionName = def.missionName,
+						worldName = def.worldName,
+						missionType = def.missionType,
+						lndFilename = def.lndFilename,
+						bspFilename = def.bspFilename,
+						mc2Filename = def.mc2Filename,
+						setObjFilename = def.setObjFilename,
+						setEnemyFilename = def.setEnemyFilename,
+						setCameraFilename = def.setCameraFilename,
+						pathFilename = def.pathFilename,
+						eventCameraFilename = def.eventCameraFilename,
+						messageFilename = def.messageFilename,
+						eventFilename = def.eventFilename,
+						commonData = new StageDef.StageCommonData() 
+						{
+							effect = def.commonData.effect,
+							objectData = def.commonData.objectData,
+							objectDefinition = def.commonData.objectDefinition,
+							particle = def.commonData.particle,
+							SEBank4 = def.commonData.SEBank4,
+							SEBank6 = def.commonData.SEBank6,
+							SEBank7 = def.commonData.SEBank7,
+						}
+					};
+					break;
 				case EditingType.None:
 					break;
 			}
@@ -145,7 +172,7 @@ namespace OverEasy
 
 		public static void BillyPasteNonTransformData()
 		{
-			if (clipboardSetObj != null || clipboardSetEnemy != null)
+			if ((clipboardSetObj != null || clipboardSetEnemy != null) || currentEditorType == EditingType.BillyStageDef)
 			{
 				System.Numerics.Vector3 tempPos;
 				Vector3Int.Vec3Int tempRot;
@@ -208,6 +235,23 @@ namespace OverEasy
 						}
 						break;
                     case EditingType.BillyStageDef:
+						if (clipboardStageDef != null)
+						{
+							var def = clipboardStageDef;
+							var loadedDef = stgDef.defs[currentMissionId];
+							loadedDef.commonData = new StageDef.StageCommonData()
+							{
+								effect = def.commonData.effect,
+								particle = def.commonData.particle,
+								SEBank4 = def.commonData.SEBank4,
+								SEBank6 = def.commonData.SEBank6,
+								SEBank7 = def.commonData.SEBank7,
+								objectData = def.commonData.objectData,
+								objectDefinition = def.commonData.objectDefinition,
+							};
+                            LoadStageDefEditor();
+						}
+						break;
                     case EditingType.None:
 						break;
 				}
@@ -216,7 +260,7 @@ namespace OverEasy
 
 		public static void BillyPasteFullObjectData()
 		{
-			if (clipboardPosition != null && clipboardRotation != null)
+			if ((clipboardPosition != null && clipboardRotation != null) || currentEditorType == EditingType.BillyStageDef)
 			{
 				switch (currentEditorType)
 				{
@@ -282,6 +326,36 @@ namespace OverEasy
 						}
 						break;
                     case EditingType.BillyStageDef:
+                        if (clipboardStageDef != null)
+                        {
+                            var def = clipboardStageDef;
+                            var loadedDef = stgDef.defs[currentMissionId];
+                            loadedDef.missionType = def.missionType;
+                            loadedDef.bspFilename = def.bspFilename;
+                            loadedDef.pathFilename = def.pathFilename;
+                            loadedDef.messageFilename = def.messageFilename;
+                            loadedDef.eventFilename = def.eventFilename;
+                            loadedDef.eventCameraFilename = def.eventCameraFilename;
+                            loadedDef.lndFilename = def.lndFilename;
+                            loadedDef.mc2Filename = def.mc2Filename;
+                            loadedDef.setCameraFilename = def.setCameraFilename;
+                            loadedDef.setDesignFilename = def.setDesignFilename;
+                            loadedDef.setEnemyFilename = def.setEnemyFilename;
+                            loadedDef.setObjFilename = def.setObjFilename;
+                            loadedDef.worldName = def.worldName;
+                            loadedDef.commonData = new StageDef.StageCommonData()
+                            {
+                                effect = def.commonData.effect,
+                                particle = def.commonData.particle,
+                                SEBank4 = def.commonData.SEBank4,
+                                SEBank6 = def.commonData.SEBank6,
+                                SEBank7 = def.commonData.SEBank7,
+                                objectData = def.commonData.objectData,
+                                objectDefinition = def.commonData.objectDefinition,
+                            };
+                            LoadStageDefEditor();
+                        }
+                        break;
                     case EditingType.None:
 						break;
 				}
@@ -960,7 +1034,7 @@ namespace OverEasy
 			allowedToUpdate = true;
 		}
 
-		public static void LoadStageDef()
+		public static void LoadStageDefEditor()
         {
             allowedToUpdate = false;
             foreach (var objSet in activeObjectEditorObjects)
