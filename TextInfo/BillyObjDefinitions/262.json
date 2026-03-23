@@ -1,0 +1,12 @@
+{
+  "ObjectName": "Skull and Crossbones\nFire Arrow Spawner",
+  "ObjectId": 262,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Self ID",
+  "IntProperty1Hint": "Arrows reference this\nto spawn from"
+}

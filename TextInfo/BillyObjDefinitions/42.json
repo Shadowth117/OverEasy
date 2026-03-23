@@ -1,0 +1,18 @@
+{
+  "ObjectName": "Minigame Man",
+  "ObjectId": 42,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Unknown",
+  "IntProperty1Hint": "",
+  "IntProperty3": "Script ID",
+  "IntProperty3Hint": "Script ID in event_X.arc script file for mission",
+  "IntProperty4": "Emblem Event ID",
+  "IntProperty4Hint": "The ID of the emblem spawn\nscript if minigame passes\nRequires script to use this\nfor sw_off/on commands",
+  "ByteProperty2Hint": "Needs to be unique amongst all objects"
+
+}

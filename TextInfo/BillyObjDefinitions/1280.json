@@ -1,0 +1,14 @@
+{
+  "ObjectName": "Card Symbol Puzzle Panel",
+  "ObjectId": 1280,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Event ID",
+  "IntProperty1Hint": "The event to reference if correct",
+  "IntProperty2": "Goal Pattern",
+  "IntProperty2Hint": "0 - Spade\n1 - Heart\n2 - Diamond\n3 - Club"
+}

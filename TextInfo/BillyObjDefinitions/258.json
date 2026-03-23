@@ -1,0 +1,15 @@
+{
+  "ObjectName": "Shark",
+  "ObjectId": 258,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "FloatProperty1": "Null",
+  "FloatProperty2": "Swim Range",
+  "FloatProperty2Hint": "How far it swims\n0 defaults to roughly\na 10 unit radius",
+  "FloatProperty3": "Detection Range",
+  "FloatProperty3Hint": "Trigger radius size to detect\nthen lunge at player"
+}

@@ -1,0 +1,14 @@
+{
+  "ObjectName": "Rising Meteor",
+  "ObjectId": 772,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty2": "Damage Dealt",
+  "IntProperty2Hint": "Treats 50 as 2.5 combs lost\nunlike other damaging objects",
+  "FloatProperty1": "Spawning Range Radius",
+  "FloatProperty1Hint": "In units (decimeters, cylinder)\ndetermines when the player\ncan see it from afar"
+}

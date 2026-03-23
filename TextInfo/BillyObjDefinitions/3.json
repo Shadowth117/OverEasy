@@ -1,0 +1,16 @@
+{
+  "ObjectName": "Particle (Decoration)",
+  "ObjectId": 3,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Particle Type",
+  "IntProperty1Hint": "Depends on level geobj list",
+  "IntProperty2": "Texture type (leave as 1)",
+  "IntProperty2Hint": "0 - Alpha cut star fallback(broken)\n1 - Regular blend",
+  "IntProperty3": "Time of Day it spawns",
+  "IntProperty3Hint": "0 - Both Day/Night\n1 - Only Day\n2 - Only Night"
+}

@@ -1,0 +1,20 @@
+{
+  "ObjectName": "Pond Water Plane",
+  "ObjectId": 4096,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty2": "??",
+  "IntProperty2Hint": "",
+  "IntProperty3": "??",
+  "IntProperty4Hint": "",
+  "FloatProperty1": "Vertical UV Scroll Speed",
+  "FloatProperty1Hint": "Measured Units per second",
+  "FloatProperty2": "Horizontal UV Scroll Speed",
+  "FloatProperty2Hint": "Measured Units per second",
+  "FloatProperty3": "???",
+  "FloatProperty4": "????"
+}
