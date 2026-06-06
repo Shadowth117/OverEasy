@@ -6,6 +6,7 @@ using AquaModelLibrary.Data.Ninja;
 using ArchiveLib;
 using Godot;
 using OverEasy.Billy;
+using OverEasy.Editor;
 using OverEasy.TextInfo;
 using OverEasy.Util;
 using System.Collections.Generic;
@@ -432,8 +433,8 @@ namespace OverEasy
 			billyDirectionalLight = new DirectionalLight3D();
 			modelRoot.GetParent().AddChild(billyDirectionalLight);
 			LoadMapNames("TextInfo\\BillyMapNames.txt");
-			LoadSetObjTemplates("TextInfo\\BillyObjDefinitions\\");
-			LoadSetEnemyTemplates("TextInfo\\BillyEnemyDefinitions\\");
+			LoadSetObjTemplates("TextInfo\\billyObjDefs.json");
+			LoadSetEnemyTemplates("TextInfo\\billyEnemyDefs.json");
 			if (!ReadBillyGEStageDef(modFolderLocation))
 			{
 				ReadBillyGEStageDef(gameFolderLocation);
@@ -1143,15 +1144,6 @@ namespace OverEasy
 			{
 				template = cachedBillySetObjDefinitions[key];
 			}
-			else
-			{
-				var templatePath = Path.Combine(editorRootDirectory, "TextInfo\\BillyObjDefinitions", $"{setObj.objectId}.json");
-				if (File.Exists(templatePath))
-				{
-					template = JsonSerializer.Deserialize<SetObjDefinition>(File.ReadAllText(templatePath));
-					cachedBillySetObjDefinitions.Add(key, template);
-				}
-			}
 
 			if (activeObjectEditorObjects.ContainsKey("ObjectId"))
 			{
@@ -1188,16 +1180,6 @@ namespace OverEasy
 			if (cachedBillySetEnemyDefinitions.ContainsKey(key))
 			{
 				template = cachedBillySetEnemyDefinitions[key];
-
-			}
-			else
-			{
-				var templatePath = Path.Combine(editorRootDirectory, "TextInfo\\BillyEnemyDefinitions", $"{setObj.enemyId}.json");
-				if (File.Exists(templatePath))
-				{
-					template = JsonSerializer.Deserialize<SetEnemyDefinition>(File.ReadAllText(templatePath));
-					cachedBillySetEnemyDefinitions.Add(key, template);
-				}
 			}
 
 			if (activeObjectEditorObjects.ContainsKey("ObjectId"))
@@ -2043,6 +2025,184 @@ namespace OverEasy
 			{
 				return $"Enemy {nodeAddition}0x{obj.enemyId:X}";
 			}
+		}
+
+		public static int GetCurrentListCount()
+		{
+			switch (currentEditorType)
+			{
+				case EditingType.BillySetObj: return loadedBillySetObjects?.setObjs?.Count ?? 0;
+				case EditingType.BillySetDesign: return loadedBillySetDesignObjects?.setObjs?.Count ?? 0;
+				case EditingType.BillySetEnemy: return loadedBillySetEnemies?.setEnemies?.Count ?? 0;
+				default: return 0;
+			}
+		}
+
+		public static void BillyMoveObject(EditingType type, int direction)
+		{
+			if (currentEditorType != type || currentObjectTreeItem == null || currentObjectId < 0) return;
+
+			int listCount;
+			switch (type)
+			{
+				case EditingType.BillySetObj:
+					if (loadedBillySetObjects == null) return;
+					listCount = loadedBillySetObjects.setObjs.Count;
+					break;
+				case EditingType.BillySetDesign:
+					if (loadedBillySetDesignObjects == null) return;
+					listCount = loadedBillySetDesignObjects.setObjs.Count;
+					break;
+				case EditingType.BillySetEnemy:
+					if (loadedBillySetEnemies == null) return;
+					listCount = loadedBillySetEnemies.setEnemies.Count;
+					break;
+				default:
+					return;
+			}
+
+			var toIndex = currentObjectId + direction;
+			if (toIndex < 0 || toIndex >= listCount) return;
+
+			var categoryNode = currentObjectTreeItem.GetParent();
+			var cmd = new BillyMoveObjectCommand(type, currentObjectId, toIndex, categoryNode);
+			EditorHistory.Execute(cmd);
+		}
+
+		public static void BillyDeleteSelectedObject()
+		{
+			if (currentObjectId < 0 || currentObjectTreeItem == null) return;
+			if (currentEditorType != EditingType.BillySetObj &&
+				currentEditorType != EditingType.BillySetDesign &&
+				currentEditorType != EditingType.BillySetEnemy) return;
+
+			var categoryNode = currentObjectTreeItem.GetParent();
+			var cmd = new BillyDeleteObjectCommand(currentEditorType, currentObjectId, categoryNode);
+
+			ClearObjectSelection();
+			EditorHistory.Execute(cmd);
+		}
+
+		public static void BillyAddObject(EditingType type)
+		{
+			if (currentEditorType != type || currentObjectTreeItem == null) return;
+
+			switch (type)
+			{
+				case EditingType.BillySetObj:
+					if (loadedBillySetObjects == null) return;
+					break;
+				case EditingType.BillySetDesign:
+					if (loadedBillySetDesignObjects == null) return;
+					break;
+				case EditingType.BillySetEnemy:
+					if (loadedBillySetEnemies == null) return;
+					break;
+				default:
+					return;
+			}
+
+			var categoryNode = currentObjectTreeItem.GetParent();
+			var insertIndex = currentObjectId + 1;
+
+			ClearObjectSelection();
+			BillyAddObjectCommand cmd = type == EditingType.BillySetEnemy
+				? new BillyAddObjectCommand(type, insertIndex, categoryNode, new SetEnemy())
+				: new BillyAddObjectCommand(type, insertIndex, categoryNode, new SetObj());
+			EditorHistory.Execute(cmd);
+		}
+
+		public static void ClearObjectSelection()
+		{
+			ViewCamera.SetToFreecam();
+			ResetTransformGizmo();
+			currentObjectId = -1;
+			currentEditorType = EditingType.None;
+			currentObjectTreeItem = null;
+			allowedToUpdate = false;
+			foreach (var objSet in activeObjectEditorObjects)
+			{
+				objSet.Value.Free();
+			}
+			activeObjectEditorObjects.Clear();
+			allowedToUpdate = true;
+		}
+
+		public static void RebuildBillyObjectCategory(TreeItem categoryNode, EditingType type)
+		{
+			if (!GodotObject.IsInstanceValid(categoryNode)) return;
+
+			var child = categoryNode.GetFirstChild();
+			while (child != null)
+			{
+				var next = child.GetNext();
+				var modelNode = (Node3D)child.GetMetadata(3);
+				if (GodotObject.IsInstanceValid(modelNode))
+				{
+					modelRoot.RemoveChild(modelNode);
+					modelNode.QueueFree();
+				}
+				child.Free();
+				child = next;
+			}
+
+			switch (type)
+			{
+				case EditingType.BillySetObj:
+					for (int i = 0; i < loadedBillySetObjects.setObjs.Count; i++)
+					{
+						CreateBillyObjectTreeItem(categoryNode, loadedBillySetObjects.setObjs[i], i, EditingType.BillySetObj, false);
+					}
+					break;
+				case EditingType.BillySetDesign:
+					for (int i = 0; i < loadedBillySetDesignObjects.setObjs.Count; i++)
+					{
+						CreateBillyObjectTreeItem(categoryNode, loadedBillySetDesignObjects.setObjs[i], i, EditingType.BillySetDesign, true);
+					}
+					break;
+				case EditingType.BillySetEnemy:
+					for (int i = 0; i < loadedBillySetEnemies.setEnemies.Count; i++)
+					{
+						CreateBillyEnemyTreeItem(categoryNode, loadedBillySetEnemies.setEnemies[i], i);
+					}
+					break;
+			}
+		}
+
+		private static void CreateBillyObjectTreeItem(TreeItem parent, SetObj obj, int index, EditingType type, bool isDesign)
+		{
+			var objNode = parent.CreateChild();
+			objNode.SetText(0, GetObjectName(true, obj));
+			objNode.SetMetadata(0, 3);
+			objNode.SetMetadata(1, index);
+			objNode.SetMetadata(2, (int)type);
+			var modelNode = BillyModelIO.LoadBillyObjectModel(obj, isDesign);
+			modelNode.SetMeta("treeItem", objNode);
+			objNode.SetMetadata(3, modelNode);
+			modelNode.RotationDegrees = new Vector3(
+				(float)(NinjaConstants.FromBAMSValueToDegrees * obj.BAMSRotation.X),
+				(float)(NinjaConstants.FromBAMSValueToDegrees * obj.BAMSRotation.Y),
+				(float)(NinjaConstants.FromBAMSValueToDegrees * obj.BAMSRotation.Z));
+			modelNode.Position = new Vector3(obj.Position.X, obj.Position.Y, obj.Position.Z);
+			modelRoot.AddChild(modelNode);
+		}
+
+		private static void CreateBillyEnemyTreeItem(TreeItem parent, SetEnemy obj, int index)
+		{
+			var objNode = parent.CreateChild();
+			objNode.SetText(0, GetEnemyName(true, obj));
+			objNode.SetMetadata(0, 3);
+			objNode.SetMetadata(1, index);
+			objNode.SetMetadata(2, (int)EditingType.BillySetEnemy);
+			var modelNode = BillyModelIO.LoadBillySetEnemyModel(obj);
+			modelNode.SetMeta("treeItem", objNode);
+			objNode.SetMetadata(3, modelNode);
+			modelNode.RotationDegrees = new Vector3(
+				(float)(NinjaConstants.FromBAMSValueToDegrees * obj.BAMSRotation.X),
+				(float)(NinjaConstants.FromBAMSValueToDegrees * obj.BAMSRotation.Y),
+				(float)(NinjaConstants.FromBAMSValueToDegrees * obj.BAMSRotation.Z));
+			modelNode.Position = new Vector3(obj.Position.X, obj.Position.Y, obj.Position.Z);
+			modelRoot.AddChild(modelNode);
 		}
 
 		public static void TransformFromGizmoBilly(Vector3? pos, Quaternion? rot, Vector3? scale)
