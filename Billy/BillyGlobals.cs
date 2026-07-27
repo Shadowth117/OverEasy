@@ -1475,7 +1475,12 @@ namespace OverEasy
 						objRaw.intProperty1 = intProperty1Value;
 						break;
 					case "IntProperty2":
-						objRaw.intProperty2 = (int)GetSpinBoxValue("IntProperty2");
+						var intProperty2Value = (int)GetSpinBoxValue("IntProperty2");
+						if ((objRaw.objectId == 10) && objRaw.intProperty2 != intProperty2Value)
+						{
+							shouldReloadModel = true;
+						}
+						objRaw.intProperty2 = intProperty2Value;
 						break;
 					case "IntProperty3":
 						var intProperty3Value = (int)GetSpinBoxValue("IntProperty3");

@@ -1,5 +1,6 @@
 using AquaModelLibrary.Data.BillyHatcher;
 using AquaModelLibrary.Data.BillyHatcher.LNDH;
+using AquaModelLibrary.Data.BluePoint.CMAT;
 using AquaModelLibrary.Data.Ninja;
 using AquaModelLibrary.Data.Ninja.Model;
 using AquaModelLibrary.Data.Ninja.Motion;
@@ -445,50 +446,79 @@ namespace OverEasy.Billy
 					}
 
 					//Set up material
-					StandardMaterial3D gdMaterial = new StandardMaterial3D();
+					Material gdMaterial;
 					var matId = tempTri.matIdList.Count > 0 ? tempTri.matIdList[0] : 0;
-					gdMaterial.ShadingMode = BaseMaterial3D.ShadingModeEnum.PerPixel;
-					gdMaterial.CullMode = BaseMaterial3D.CullModeEnum.Disabled;
 					
-					if(testAqo.tempMats.Count > 0)
+					if(tempTri.matIdList.Count > 0 && testAqo.tempMats.Count > matId && testAqo.tempMats[matId].matName.Contains("#envmap"))
 					{
-						var texId = Int32.Parse(testAqo.tempMats[matId].texNames[0]);
-						if(texId >= 0)
-						{
-							if(texId < gvrTextures.Count)
-							{
-								gdMaterial.AlbedoTexture = gvrTextures[texId];
-							}
-							if(gvrAlphaTypes.Count > texId)
-							{
-								switch (gvrAlphaTypes[texId])
-								{
-									case 0:
-										gdMaterial.Transparency = BaseMaterial3D.TransparencyEnum.Disabled;
-										break;
-									case 1:
-										gdMaterial.Transparency = BaseMaterial3D.TransparencyEnum.AlphaScissor;
-										break;
-									case 2:
-										gdMaterial.Transparency = BaseMaterial3D.TransparencyEnum.Alpha;
-										break;
-								}
-							}
-						}
-					}
+						gdMaterial = new ShaderMaterial();
+						var shad = (ShaderMaterial)gdMaterial;
+						
+                        var texId = Int32.Parse(testAqo.tempMats[matId].texNames[0]);
+                        if (texId >= 0)
+                        {
+                            if (texId < gvrTextures.Count)
+                            {
+                                shad.SetShaderParameter("matcap", gvrTextures[texId]);
+								var alphaType = gvrAlphaTypes[texId];
 
-					//In case we want to force a transparent model
-					if (forcedOpacity != null)
+								if(alphaType == 0)
+                                {
+                                    shad.Shader = (Shader)GD.Load("res://Shaders/matcapValueAsAlpha.gdshader");
+                                } else
+                                {
+                                    shad.Shader = (Shader)GD.Load("res://Shaders/matcap.gdshader");
+                                }
+                            } 
+                        }
+                    } else
 					{
-						var albedo = gdMaterial.AlbedoColor;
-						albedo.A = forcedOpacity.Value;
-						gdMaterial.AlbedoColor = albedo;
-						gdMaterial.Transparency = BaseMaterial3D.TransparencyEnum.Alpha;
-					}
-					else
-					{
-						gdMaterial.VertexColorUseAsAlbedo = true;
-					}
+                        gdMaterial = new StandardMaterial3D();
+						var smat = (StandardMaterial3D)gdMaterial;
+                        smat.ShadingMode = BaseMaterial3D.ShadingModeEnum.PerPixel;
+                        smat.CullMode = BaseMaterial3D.CullModeEnum.Disabled;
+
+                        if (testAqo.tempMats.Count > 0)
+                        {
+                            var texId = Int32.Parse(testAqo.tempMats[matId].texNames[0]);
+                            if (texId >= 0)
+                            {
+                                if (texId < gvrTextures.Count)
+                                {
+                                    smat.AlbedoTexture = gvrTextures[texId];
+                                }
+                                if (gvrAlphaTypes.Count > texId)
+                                {
+                                    switch (gvrAlphaTypes[texId])
+                                    {
+                                        case 0:
+                                            smat.Transparency = BaseMaterial3D.TransparencyEnum.Disabled;
+                                            break;
+                                        case 1:
+                                            smat.Transparency = BaseMaterial3D.TransparencyEnum.AlphaScissor;
+                                            break;
+                                        case 2:
+                                            smat.Transparency = BaseMaterial3D.TransparencyEnum.Alpha;
+                                            break;
+                                    }
+                                }
+                            }
+                        }
+
+                        //In case we want to force a transparent model
+                        if (forcedOpacity != null)
+                        {
+                            var albedo = smat.AlbedoColor;
+                            albedo.A = forcedOpacity.Value;
+                            smat.AlbedoColor = albedo;
+                            smat.Transparency = BaseMaterial3D.TransparencyEnum.Alpha;
+                        }
+                        else
+                        {
+                            smat.VertexColorUseAsAlbedo = true;
+                        }
+                    }
+
 					mesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, arrays, null, null);
 					mesh.SurfaceSetMaterial(0, gdMaterial);
 

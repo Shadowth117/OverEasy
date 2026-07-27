@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=3 uid="uid://e6mmj1a8sstd"]
+[gd_scene format=3 uid="uid://e6mmj1a8sstd"]
 
 [ext_resource type="Script" uid="uid://d17ij33w188ta" path="res://OverEasyMaster.cs" id="1_pe8jw"]
 [ext_resource type="Script" uid="uid://x770pvm77g4d" path="res://Controls/FileButton.cs" id="1_w33wv"]
@@ -43,7 +43,7 @@ size = Vector2(262, 868)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_uxe8r"]
 size = Vector2(21, 869)
 
-[node name="Control" type="Control" node_paths=PackedStringArray("ColorSchemaTemplate", "FloatSchemaTemplate", "IntSchemaTemplate", "LabelSchemaTemplate", "StringSchemaTemplate", "Vector2SchemaTemplate", "Vector3SchemaTemplate", "Vector4SchemaTemplate")]
+[node name="Control" type="Control" unique_id=576315682 node_paths=PackedStringArray("ColorSchemaTemplate", "FloatSchemaTemplate", "IntSchemaTemplate", "LabelSchemaTemplate", "StringSchemaTemplate", "Vector2SchemaTemplate", "Vector3SchemaTemplate", "Vector4SchemaTemplate")]
 process_mode = 3
 layout_mode = 3
 anchors_preset = 15
@@ -61,45 +61,45 @@ Vector2SchemaTemplate = NodePath("ObjectScrollContainer/ObjectDataContainer/vec2
 Vector3SchemaTemplate = NodePath("ObjectScrollContainer/ObjectDataContainer/vec3_schema")
 Vector4SchemaTemplate = NodePath("ObjectScrollContainer/ObjectDataContainer/vec4_schema")
 
-[node name="GUIArea" type="Area2D" parent="."]
+[node name="GUIArea" type="Area2D" parent="." unique_id=181217662]
 collision_layer = 2
 script = ExtResource("17_7fdyu")
 
-[node name="MenuBarCollision" type="CollisionShape2D" parent="GUIArea"]
+[node name="MenuBarCollision" type="CollisionShape2D" parent="GUIArea" unique_id=1723630423]
 position = Vector2(289, 16)
 shape = SubResource("RectangleShape2D_onrwx")
 script = ExtResource("3_x7jb2")
 
-[node name="SetDataTreeCollision" type="CollisionShape2D" parent="GUIArea"]
+[node name="SetDataTreeCollision" type="CollisionShape2D" parent="GUIArea" unique_id=1946436096]
 position = Vector2(168, 465.5)
 shape = SubResource("RectangleShape2D_y1os6")
 script = ExtResource("4_2w6hp")
 
-[node name="SetDataTreeButtonCollision" type="CollisionShape2D" parent="GUIArea"]
+[node name="SetDataTreeButtonCollision" type="CollisionShape2D" parent="GUIArea" unique_id=1452315538]
 position = Vector2(6.5, 465.5)
 shape = SubResource("RectangleShape2D_jjxky")
 script = ExtResource("5_k45em")
 
-[node name="ObjectPanelCollision" type="CollisionShape2D" parent="GUIArea"]
+[node name="ObjectPanelCollision" type="CollisionShape2D" parent="GUIArea" unique_id=1812767886]
 position = Vector2(1451, 465.5)
 shape = SubResource("RectangleShape2D_tl7e2")
 script = ExtResource("6_1cerq")
 
-[node name="ObjectPanelButtonCollision" type="CollisionShape2D" parent="GUIArea"]
+[node name="ObjectPanelButtonCollision" type="CollisionShape2D" parent="GUIArea" unique_id=1350496220]
 position = Vector2(1592.5, 465.5)
 shape = SubResource("RectangleShape2D_uxe8r")
 script = ExtResource("7_k1esd")
 
-[node name="GridContainer" type="GridContainer" parent="."]
+[node name="GridContainer" type="GridContainer" parent="." unique_id=913257475]
 layout_mode = 0
 offset_right = 199.0
 offset_bottom = 40.0
 
-[node name="MenuGrid" type="GridContainer" parent="GridContainer"]
+[node name="MenuGrid" type="GridContainer" parent="GridContainer" unique_id=491824359]
 layout_mode = 2
 columns = 8
 
-[node name="File" type="MenuButton" parent="GridContainer/MenuGrid"]
+[node name="File" type="MenuButton" parent="GridContainer/MenuGrid" unique_id=808810321]
 layout_mode = 2
 text = "File"
 item_count = 5
@@ -115,7 +115,7 @@ popup/item_4/text = "Restore Backup Files"
 popup/item_4/id = 3
 script = ExtResource("1_w33wv")
 
-[node name="Edit" type="MenuButton" parent="GridContainer/MenuGrid"]
+[node name="Edit" type="MenuButton" parent="GridContainer/MenuGrid" unique_id=1169314073]
 layout_mode = 2
 size_flags_horizontal = 0
 text = "Edit"
@@ -132,7 +132,7 @@ popup/item_4/text = "Drop Object To Nearest Solid"
 popup/item_4/id = 4
 script = ExtResource("9_wq64o")
 
-[node name="Display" type="MenuButton" parent="GridContainer/MenuGrid"]
+[node name="Display" type="MenuButton" parent="GridContainer/MenuGrid" unique_id=646069676]
 layout_mode = 2
 text = "Display"
 item_count = 2
@@ -145,7 +145,7 @@ popup/item_1/checkable = 1
 popup/item_1/id = 1
 script = ExtResource("10_24ln1")
 
-[node name="Settings" type="MenuButton" parent="GridContainer/MenuGrid"]
+[node name="Settings" type="MenuButton" parent="GridContainer/MenuGrid" unique_id=268345314]
 layout_mode = 2
 text = "Settings"
 item_count = 3
@@ -162,12 +162,12 @@ popup/item_2/checked = true
 popup/item_2/id = 2
 script = ExtResource("11_wq64o")
 
-[node name="Tools" type="MenuButton" parent="GridContainer/MenuGrid"]
+[node name="Tools" type="MenuButton" parent="GridContainer/MenuGrid" unique_id=1758406636]
 layout_mode = 2
 text = "Tools"
 
-[node name="SetDataTree" type="Tree" parent="."]
-layout_mode = 2
+[node name="SetDataTree" type="Tree" parent="." unique_id=466413071]
+layout_mode = 0
 offset_left = 18.0
 offset_top = 31.0
 offset_right = 318.0
@@ -179,7 +179,7 @@ focus_mode = 0
 theme_override_font_sizes/font_size = 12
 script = ExtResource("2_objna")
 
-[node name="SetDataTreeButton" type="Button" parent="."]
+[node name="SetDataTreeButton" type="Button" parent="." unique_id=730318980]
 z_index = 1
 layout_mode = 0
 offset_top = 31.0
@@ -191,7 +191,7 @@ focus_previous = NodePath("../GridContainer/MenuGrid")
 text = ">"
 script = ExtResource("4_6llyt")
 
-[node name="DummyTree" type="Tree" parent="."]
+[node name="DummyTree" type="Tree" parent="." unique_id=411455162]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 1.0
@@ -207,7 +207,7 @@ focus_mode = 0
 theme_override_font_sizes/font_size = 12
 script = ExtResource("12_uhepu")
 
-[node name="ObjectScrollContainer" type="ScrollContainer" parent="."]
+[node name="ObjectScrollContainer" type="ScrollContainer" parent="." unique_id=660551421]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 1.0
@@ -219,16 +219,16 @@ offset_bottom = 900.0
 grow_horizontal = 0
 script = ExtResource("5_nwqhc")
 
-[node name="ObjectDataContainer" type="VBoxContainer" parent="ObjectScrollContainer"]
+[node name="ObjectDataContainer" type="VBoxContainer" parent="ObjectScrollContainer" unique_id=424871722]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="string_schema" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer"]
+[node name="string_schema" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer" unique_id=1312778511]
 visible = false
 layout_mode = 2
 script = ExtResource("5_kge3j")
 
-[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/string_schema"]
+[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/string_schema" unique_id=1890383996]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.4
@@ -237,16 +237,16 @@ bbcode_enabled = true
 text = "String Name"
 fit_content = true
 
-[node name="LineEdit" type="LineEdit" parent="ObjectScrollContainer/ObjectDataContainer/string_schema"]
+[node name="LineEdit" type="LineEdit" parent="ObjectScrollContainer/ObjectDataContainer/string_schema" unique_id=1787452819]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="int_schema" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer"]
+[node name="int_schema" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer" unique_id=1254516869]
 visible = false
 layout_mode = 2
 script = ExtResource("6_w3oxx")
 
-[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/int_schema"]
+[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/int_schema" unique_id=1501792124]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.4
@@ -255,15 +255,15 @@ bbcode_enabled = true
 text = "String Name"
 fit_content = true
 
-[node name="SpinBox" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/int_schema"]
+[node name="SpinBox" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/int_schema" unique_id=113561096]
 layout_mode = 2
 
-[node name="float_schema" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer"]
+[node name="float_schema" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer" unique_id=1487342487]
 visible = false
 layout_mode = 2
 script = ExtResource("7_hvdad")
 
-[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/float_schema"]
+[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/float_schema" unique_id=351594939]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.4
@@ -272,18 +272,18 @@ bbcode_enabled = true
 text = "String Name"
 fit_content = true
 
-[node name="SpinBox" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/float_schema"]
+[node name="SpinBox" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/float_schema" unique_id=1922679577]
 layout_mode = 2
 step = 0.01
 allow_greater = true
 allow_lesser = true
 
-[node name="color_schema" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer"]
+[node name="color_schema" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer" unique_id=356795570]
 visible = false
 layout_mode = 2
 script = ExtResource("8_orrkn")
 
-[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/color_schema"]
+[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/color_schema" unique_id=1984251333]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.4
@@ -292,16 +292,16 @@ bbcode_enabled = true
 text = "String Name"
 fit_content = true
 
-[node name="ParamValue" type="ColorPickerButton" parent="ObjectScrollContainer/ObjectDataContainer/color_schema"]
+[node name="ParamValue" type="ColorPickerButton" parent="ObjectScrollContainer/ObjectDataContainer/color_schema" unique_id=280001854]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="vec2_schema" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer"]
+[node name="vec2_schema" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer" unique_id=28203510]
 visible = false
 layout_mode = 2
 script = ExtResource("9_w8md7")
 
-[node name="paramName" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec2_schema"]
+[node name="paramName" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec2_schema" unique_id=93007004]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.4
@@ -310,14 +310,14 @@ bbcode_enabled = true
 text = "Vec2 Name"
 fit_content = true
 
-[node name="paramValue" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec2_schema"]
+[node name="paramValue" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec2_schema" unique_id=768751748]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="x_box" type="HBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec2_schema/paramValue"]
+[node name="x_box" type="HBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec2_schema/paramValue" unique_id=2139195563]
 layout_mode = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec2_schema/paramValue/x_box"]
+[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec2_schema/paramValue/x_box" unique_id=1021036718]
 custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
 size_flags_stretch_ratio = 0.2
@@ -325,7 +325,7 @@ bbcode_enabled = true
 text = "[color=fab293]X: [/color]"
 fit_content = true
 
-[node name="x_value" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/vec2_schema/paramValue/x_box"]
+[node name="x_value" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/vec2_schema/paramValue/x_box" unique_id=2092415738]
 layout_mode = 2
 size_flags_horizontal = 3
 step = 0.0
@@ -333,10 +333,10 @@ allow_greater = true
 allow_lesser = true
 custom_arrow_step = 0.05
 
-[node name="y_box" type="HBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec2_schema/paramValue"]
+[node name="y_box" type="HBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec2_schema/paramValue" unique_id=1186276745]
 layout_mode = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec2_schema/paramValue/y_box"]
+[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec2_schema/paramValue/y_box" unique_id=791382385]
 custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
 size_flags_stretch_ratio = 0.2
@@ -344,7 +344,7 @@ bbcode_enabled = true
 text = "[color=93fab2]Y: [/color]"
 fit_content = true
 
-[node name="y_value" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/vec2_schema/paramValue/y_box"]
+[node name="y_value" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/vec2_schema/paramValue/y_box" unique_id=1262483613]
 layout_mode = 2
 size_flags_horizontal = 3
 step = 0.0
@@ -352,12 +352,12 @@ allow_greater = true
 allow_lesser = true
 custom_arrow_step = 0.05
 
-[node name="vec3_schema" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer"]
+[node name="vec3_schema" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer" unique_id=1110795799]
 visible = false
 layout_mode = 2
 script = ExtResource("10_txxg7")
 
-[node name="paramName" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema"]
+[node name="paramName" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema" unique_id=1039767809]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.4
@@ -366,14 +366,14 @@ bbcode_enabled = true
 text = "Vec3 Name"
 fit_content = true
 
-[node name="paramValue" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema"]
+[node name="paramValue" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema" unique_id=920027947]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="x_box" type="HBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema/paramValue"]
+[node name="x_box" type="HBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema/paramValue" unique_id=404272665]
 layout_mode = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema/paramValue/x_box"]
+[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema/paramValue/x_box" unique_id=1490848919]
 custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
 size_flags_stretch_ratio = 0.2
@@ -381,7 +381,7 @@ bbcode_enabled = true
 text = "[color=fab293]X: [/color]"
 fit_content = true
 
-[node name="x_value" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema/paramValue/x_box"]
+[node name="x_value" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema/paramValue/x_box" unique_id=526904186]
 layout_mode = 2
 size_flags_horizontal = 3
 step = 0.0
@@ -389,10 +389,10 @@ allow_greater = true
 allow_lesser = true
 custom_arrow_step = 0.05
 
-[node name="y_box" type="HBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema/paramValue"]
+[node name="y_box" type="HBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema/paramValue" unique_id=1794513919]
 layout_mode = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema/paramValue/y_box"]
+[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema/paramValue/y_box" unique_id=1335817266]
 custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
 size_flags_stretch_ratio = 0.2
@@ -400,7 +400,7 @@ bbcode_enabled = true
 text = "[color=93fab2]Y: [/color]"
 fit_content = true
 
-[node name="y_value" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema/paramValue/y_box"]
+[node name="y_value" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema/paramValue/y_box" unique_id=1390268418]
 layout_mode = 2
 size_flags_horizontal = 3
 step = 0.0
@@ -408,10 +408,10 @@ allow_greater = true
 allow_lesser = true
 custom_arrow_step = 0.05
 
-[node name="z_box" type="HBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema/paramValue"]
+[node name="z_box" type="HBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema/paramValue" unique_id=484600649]
 layout_mode = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema/paramValue/z_box"]
+[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema/paramValue/z_box" unique_id=542839624]
 custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
 size_flags_stretch_ratio = 0.2
@@ -419,7 +419,7 @@ bbcode_enabled = true
 text = "[color=b293fa]Z: [/color]"
 fit_content = true
 
-[node name="z_value" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema/paramValue/z_box"]
+[node name="z_value" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/vec3_schema/paramValue/z_box" unique_id=2091882055]
 layout_mode = 2
 size_flags_horizontal = 3
 step = 0.0
@@ -427,12 +427,12 @@ allow_greater = true
 allow_lesser = true
 custom_arrow_step = 0.05
 
-[node name="vec4_schema" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer"]
+[node name="vec4_schema" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer" unique_id=509941226]
 visible = false
 layout_mode = 2
 script = ExtResource("11_4sjmf")
 
-[node name="paramName" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema"]
+[node name="paramName" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema" unique_id=770905408]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.4
@@ -441,14 +441,14 @@ bbcode_enabled = true
 text = "Vec4 Name"
 fit_content = true
 
-[node name="paramValue" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema"]
+[node name="paramValue" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema" unique_id=1874457374]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="x_box" type="HBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue"]
+[node name="x_box" type="HBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue" unique_id=1992751311]
 layout_mode = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue/x_box"]
+[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue/x_box" unique_id=1403672669]
 custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
 size_flags_stretch_ratio = 0.2
@@ -456,7 +456,7 @@ bbcode_enabled = true
 text = "[color=fab293]X: [/color]"
 fit_content = true
 
-[node name="x_value" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue/x_box"]
+[node name="x_value" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue/x_box" unique_id=226765966]
 layout_mode = 2
 size_flags_horizontal = 3
 step = 0.0
@@ -464,10 +464,10 @@ allow_greater = true
 allow_lesser = true
 custom_arrow_step = 0.05
 
-[node name="y_box" type="HBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue"]
+[node name="y_box" type="HBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue" unique_id=1424759950]
 layout_mode = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue/y_box"]
+[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue/y_box" unique_id=1282432644]
 custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
 size_flags_stretch_ratio = 0.2
@@ -475,7 +475,7 @@ bbcode_enabled = true
 text = "[color=93fab2]Y: [/color]"
 fit_content = true
 
-[node name="y_value" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue/y_box"]
+[node name="y_value" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue/y_box" unique_id=602151642]
 layout_mode = 2
 size_flags_horizontal = 3
 max_value = 9.22337e+18
@@ -484,10 +484,10 @@ allow_greater = true
 allow_lesser = true
 custom_arrow_step = 0.05
 
-[node name="z_box" type="HBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue"]
+[node name="z_box" type="HBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue" unique_id=468368895]
 layout_mode = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue/z_box"]
+[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue/z_box" unique_id=388913144]
 custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
 size_flags_stretch_ratio = 0.2
@@ -495,7 +495,7 @@ bbcode_enabled = true
 text = "[color=b293fa]Z: [/color]"
 fit_content = true
 
-[node name="z_value" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue/z_box"]
+[node name="z_value" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue/z_box" unique_id=630907898]
 layout_mode = 2
 size_flags_horizontal = 3
 step = 0.0
@@ -503,10 +503,10 @@ allow_greater = true
 allow_lesser = true
 custom_arrow_step = 0.05
 
-[node name="w_box" type="HBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue"]
+[node name="w_box" type="HBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue" unique_id=1138453948]
 layout_mode = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue/w_box"]
+[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue/w_box" unique_id=1883622805]
 custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
 size_flags_stretch_ratio = 0.2
@@ -514,7 +514,7 @@ bbcode_enabled = true
 text = "[color=93dbfa]W: [/color]"
 fit_content = true
 
-[node name="w_value" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue/w_box"]
+[node name="w_value" type="SpinBox" parent="ObjectScrollContainer/ObjectDataContainer/vec4_schema/paramValue/w_box" unique_id=998289582]
 layout_mode = 2
 size_flags_horizontal = 3
 step = 0.0
@@ -522,15 +522,15 @@ allow_greater = true
 allow_lesser = true
 custom_arrow_step = 0.05
 
-[node name="label_schema" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer"]
+[node name="label_schema" type="VBoxContainer" parent="ObjectScrollContainer/ObjectDataContainer" unique_id=1809184464]
 visible = false
 layout_mode = 2
 script = ExtResource("12_vva3x")
 
-[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/label_schema"]
+[node name="RichTextLabel" type="RichTextLabel" parent="ObjectScrollContainer/ObjectDataContainer/label_schema" unique_id=278272175]
 layout_mode = 2
 
-[node name="ObjectScrollContainerButton" type="Button" parent="."]
+[node name="ObjectScrollContainerButton" type="Button" parent="." unique_id=2067591819]
 z_index = 1
 layout_mode = 1
 anchors_preset = 1
@@ -546,10 +546,10 @@ focus_previous = NodePath("../GridContainer/MenuGrid")
 text = "<"
 script = ExtResource("5_nw6mg")
 
-[node name="ViewerCameraTarget" parent="." instance=ExtResource("16_wiw1n")]
+[node name="ViewerCameraTarget" parent="." unique_id=534036650 instance=ExtResource("16_wiw1n")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 5)
 
-[node name="TransformGizmo" parent="." instance=ExtResource("24_wphnq")]
+[node name="TransformGizmo" parent="." unique_id=1037412357 instance=ExtResource("24_wphnq")]
 
-[node name="ModelRoot" type="Node3D" parent="."]
+[node name="ModelRoot" type="Node3D" parent="." unique_id=1871382316]
 script = ExtResource("20_bmy2d")

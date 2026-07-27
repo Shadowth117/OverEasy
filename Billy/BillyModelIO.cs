@@ -462,6 +462,7 @@ namespace OverEasy.Billy
 
             //Fruit balls
             var tfm = System.Numerics.Matrix4x4.CreateTranslation(new System.Numerics.Vector3(0, 5, 0));
+            
             var appleBall = ModelConversion.NinjaToGDModel("fruitBall", commonGeo.models["model_24"], ModelConversion.GetTextureSubset(gvmTextures, commonGeo.texLists["texList_23"], gvrAlphaTypes, out var sphereAlphaTypes), sphereAlphaTypes, null, null, null, tfm);
             var bananaBall = ModelConversion.GDModelClone(appleBall);
             var cherryBall = ModelConversion.GDModelClone(appleBall);
