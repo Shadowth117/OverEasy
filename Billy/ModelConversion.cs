@@ -1,6 +1,5 @@
 using AquaModelLibrary.Data.BillyHatcher;
 using AquaModelLibrary.Data.BillyHatcher.LNDH;
-using AquaModelLibrary.Data.BluePoint.CMAT;
 using AquaModelLibrary.Data.Ninja;
 using AquaModelLibrary.Data.Ninja.Model;
 using AquaModelLibrary.Data.Ninja.Motion;
@@ -14,16 +13,40 @@ using OverEasy.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Xml.Linq;
-using VrSharp;
 using VrSharp.Gvr;
 using Material = Godot.Material;
 
 namespace OverEasy.Billy
 {
 	public class ModelConversion
-	{
-		public static void BillyModeNightToggleParent(Node3D parentNode)
+    {
+        private static Dictionary<string, List<int>> SkipMeshesDict = new Dictionary<string, List<int>>()
+        {
+            { "object_4_0", new List<int>() { 3 } },
+            { "object_4_1", new List<int>() { 3 } },
+            { "object_4_2", new List<int>() { 3 } },
+            { "object_4_3", new List<int>() { 3 } },
+			{ "object_4_4", new List<int>() { 3 } },
+			{ "object_4_5", new List<int>() { 3 } },
+		};
+
+		private static Dictionary<string, Dictionary<int, Vector2>> UVAdjustmentDict = new Dictionary<string, Dictionary<int, Vector2>>()
+        {
+            { "object_4_3", new Dictionary<int, Vector2>() //Switch variant 3
+				{ 
+					{0, new Vector2(0.25f, 0) }, //Switch icon
+                    {1, new Vector2(-0.25f, 0) }, //Switch body
+                } 
+			},
+            { "object_4_4", new Dictionary<int, Vector2>() //Switch variant 4 (5 is the default, 0-2 don't have models)
+                {
+                    {0, new Vector2(-0.25f, 0) }, //Switch icon
+                    {1, new Vector2(-0.25f, 0) }, //Switch body
+                }
+            },
+        };
+
+        public static void BillyModeNightToggleParent(Node3D parentNode)
 		{
 			OverEasyGlobals.SetBillyLighting();
 			BillyModeNightToggle(parentNode);
@@ -215,6 +238,27 @@ namespace OverEasy.Billy
 		public static Node3D NinjaToGDModel(string name, NJSObject nj, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes, AquaNode aqn = null, 
 			System.Numerics.Matrix4x4? baseTfm = null, Node3D root = null, System.Numerics.Matrix4x4? rootTfm = null, bool blockVertColors = false, float? forcedOpacity = null)
 		{
+			//Skip meshes dict
+			List<int> skipMeshes;
+			if(SkipMeshesDict.ContainsKey(name))
+			{
+				skipMeshes = SkipMeshesDict[name];
+			} else
+			{
+				skipMeshes = new();
+			}
+
+			//UV adjustment dict
+			Dictionary<int, Vector2> uvAdjustDict;
+			if(UVAdjustmentDict.ContainsKey(name))
+			{
+				uvAdjustDict = UVAdjustmentDict[name];
+
+            } else
+			{
+				uvAdjustDict = new();
+			}
+
 			bool addBones = true;
 			if (root == null)
 			{
@@ -245,7 +289,9 @@ namespace OverEasy.Billy
 			{
 				rootTfm = System.Numerics.Matrix4x4.Identity;
 			}
-			IterateNJSObject(nj, fullVertList, ref nodeId, -1, root, root is Skeleton3D ? (Skeleton3D)root : new Skeleton3D(), (System.Numerics.Matrix4x4)baseTfm, gvrTextures, gvrAlphaTypes, (System.Numerics.Matrix4x4)rootTfm, aqn, blockVertColors, forcedOpacity, addBones);
+			int meshCounter = 0;
+			IterateNJSObject(nj, fullVertList, ref nodeId, -1, root, root is Skeleton3D ? (Skeleton3D)root : new Skeleton3D(), (System.Numerics.Matrix4x4)baseTfm, gvrTextures, gvrAlphaTypes, (System.Numerics.Matrix4x4)rootTfm, ref meshCounter, skipMeshes, uvAdjustDict,
+				aqn, blockVertColors, forcedOpacity, addBones);
 
             /*
 			 This won't work here
@@ -280,7 +326,8 @@ namespace OverEasy.Billy
 		}
 
 		private static void IterateNJSObject(NJSObject nj, VTXL fullVertList, ref int nodeId, int parentId, Node3D modelRoot, Skeleton3D skel,
-			System.Numerics.Matrix4x4 parentMatrix, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes, System.Numerics.Matrix4x4 rootTfm, AquaNode aqn = null, bool blockVertColors = false, float? forcedOpacity = null, bool addBones = true)
+			System.Numerics.Matrix4x4 parentMatrix, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes, System.Numerics.Matrix4x4 rootTfm, ref int meshCounter, List<int> skipMeshes, Dictionary<int, Vector2> uvAdjustDict, 
+			AquaNode aqn = null, bool blockVertColors = false, float? forcedOpacity = null, bool addBones = true)
 		{
 			int currentNodeId = nodeId;
 			if(addBones)
@@ -355,7 +402,11 @@ namespace OverEasy.Billy
 				//Assign vertex and face data to GD ArrayMesh
 				foreach(var tempTri in testAqo.tempTris)
 				{
-					MeshInstance3D meshInst = new MeshInstance3D();
+					if(skipMeshes.Contains(meshCounter++))
+					{
+						continue;
+					}
+                    MeshInstance3D meshInst = new MeshInstance3D();
 					ArrayMesh mesh = new ArrayMesh();
 					var arrays = new Godot.Collections.Array();
 					arrays.Resize((int)Mesh.ArrayType.Max);
@@ -477,6 +528,11 @@ namespace OverEasy.Billy
 						var smat = (StandardMaterial3D)gdMaterial;
                         smat.ShadingMode = BaseMaterial3D.ShadingModeEnum.PerPixel;
                         smat.CullMode = BaseMaterial3D.CullModeEnum.Disabled;
+						
+						if(uvAdjustDict.ContainsKey(meshCounter - 1))
+						{
+							smat.Uv1Offset = new Vector3(uvAdjustDict[meshCounter - 1].X, uvAdjustDict[meshCounter - 1].Y, 0);
+						}
 
                         if (testAqo.tempMats.Count > 0)
                         {
@@ -536,13 +592,13 @@ namespace OverEasy.Billy
 			if(nj.childObject != null)
 			{
 				nodeId++;
-				IterateNJSObject(nj.childObject, fullVertList, ref nodeId, currentNodeId, modelRoot, skel, mat, gvrTextures, gvrAlphaTypes, rootTfm, aqn, blockVertColors, forcedOpacity, addBones);
+				IterateNJSObject(nj.childObject, fullVertList, ref nodeId, currentNodeId, modelRoot, skel, mat, gvrTextures, gvrAlphaTypes, rootTfm, ref meshCounter, skipMeshes, uvAdjustDict, aqn, blockVertColors, forcedOpacity, addBones);
 			}
 
 			if(nj.siblingObject != null)
 			{
 				nodeId++;
-				IterateNJSObject(nj.siblingObject, fullVertList, ref nodeId, parentId, modelRoot, skel, parentMatrix, gvrTextures, gvrAlphaTypes, rootTfm, aqn, blockVertColors, forcedOpacity, addBones);
+				IterateNJSObject(nj.siblingObject, fullVertList, ref nodeId, parentId, modelRoot, skel, parentMatrix, gvrTextures, gvrAlphaTypes, rootTfm, ref meshCounter, skipMeshes, uvAdjustDict, aqn, blockVertColors, forcedOpacity, addBones);
 			}
 		}
 

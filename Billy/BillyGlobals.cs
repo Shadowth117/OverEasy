@@ -1468,7 +1468,7 @@ namespace OverEasy
 						break;
 					case "IntProperty1":
 						var intProperty1Value = (int)GetSpinBoxValue("IntProperty1");
-						if ((objRaw.objectId == 50 || objRaw.objectId == 25 || objRaw.objectId == 11 || objRaw.objectId == 10) && objRaw.intProperty1 != intProperty1Value)
+						if ((objRaw.objectId == 50 || objRaw.objectId == 25 || objRaw.objectId == 11 || objRaw.objectId == 10 || objRaw.objectId == 4) && objRaw.intProperty1 != intProperty1Value)
 						{
 							shouldReloadModel = true;
 						}

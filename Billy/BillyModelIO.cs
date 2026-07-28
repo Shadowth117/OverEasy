@@ -162,6 +162,13 @@ namespace OverEasy.Billy
 
             switch(obj.objectId)
             {
+                case 4:
+                    name += $"_{obj.intProperty1}";
+                    if (obj.intProperty1 != 0 && obj.intProperty1 != 1 && obj.intProperty1 != 2 && !OverEasyGlobals.modelDictionary.ContainsKey(name))
+                    {
+                        name = "object_4_5";
+                    }
+                    break;
                 case 10:
                     string objectBank = "Local";
                     if(obj.intProperty2 == 1)
@@ -459,6 +466,14 @@ namespace OverEasy.Billy
         {
             List<int> diffuseAsAlphaList = new List<int> { 15, 16, 27, 28 };
             ModelConversion.LoadGVM("geobjCommon", commonGeo.gvm, out var gvmTextures, out var gvrAlphaTypes, diffuseAsAlphaList);
+
+            //Switches
+            CacheModel($"object_4_0", commonGeo.models[$"model_{0}"], commonGeo.texLists["texList_0"], commonGeo.gvm, false, true, 0.5f);
+            CacheModel($"object_4_1", commonGeo.models[$"model_{0}"], commonGeo.texLists["texList_0"], commonGeo.gvm, false, true, 0.5f);
+            CacheModel($"object_4_2", commonGeo.models[$"model_{0}"], commonGeo.texLists["texList_0"], commonGeo.gvm, false, true, 0.5f);
+            CacheModel($"object_4_3", commonGeo.models[$"model_{0}"], commonGeo.texLists["texList_0"], commonGeo.gvm, false, true);
+            CacheModel($"object_4_4", commonGeo.models[$"model_{0}"], commonGeo.texLists["texList_0"], commonGeo.gvm, false, true);
+            CacheModel($"object_4_5", commonGeo.models[$"model_{0}"], commonGeo.texLists["texList_0"], commonGeo.gvm, false, true);
 
             //Fruit balls
             var tfm = System.Numerics.Matrix4x4.CreateTranslation(new System.Numerics.Vector3(0, 5, 0));
