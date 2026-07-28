@@ -676,7 +676,11 @@ namespace OverEasy
 						var commonGeobj = new GEObj_Stage(currentCommonPRD.files[i]);
 						BillyModelIO.CacheGeobjCommon(commonGeobj);
 						break;
-					case "set_light_param.bin":
+					case "geobj_emblem.arc":
+						var emblemObj = new GEObj_Object(currentCommonPRD.files[i]);
+						BillyModelIO.CacheModel("object_37", emblemObj.models["model"], emblemObj.texLists["texlist"], emblemObj.gvm, false, false);
+						break;
+                    case "set_light_param.bin":
 						currentLightsParam = new SetLightParam(currentCommonPRD.files[i]);
 						break;
 					case "stgobj_common.arc":

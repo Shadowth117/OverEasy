@@ -381,6 +381,13 @@ namespace OverEasy.Billy
                 CacheEggContentData(geEgg, gplTextures, gplAlphaTypes);
             }
 
+            var emblemPath = OverEasyGlobals.GetAssetPath("geobj_emblem.arc");
+            if (emblemPath != "")
+            {
+                var emblemObj = new GEObj_Object(File.ReadAllBytes(emblemPath));
+                CacheModel("object_37", emblemObj.models["model"], emblemObj.texLists["texlist"], emblemObj.gvm, false, false);
+            }
+
             //Load common geobj data
             var commonObjectsPath = OverEasyGlobals.GetAssetPath("geobj_common.arc");
             var commonObjectsDefPath = OverEasyGlobals.GetAssetPath("stgobj_common.arc");
@@ -458,6 +465,12 @@ namespace OverEasy.Billy
                 CacheModel($"object_1285", stageGeo.models[$"MODEL_DOOR02"], stageGeo.texLists["TLS_MODEL_DOOR02"], stageGeo.gvm, true, true);
             }
 
+            //Platforms
+            if (stageGeo.models.ContainsKey($"MODEL_STAND"))
+            {
+                CacheModel($"object_12", stageGeo.models[$"MODEL_STAND"], stageGeo.texLists["TLS_MODEL_STAND"], stageGeo.gvm, false, true);
+            }
+
             //Scenery
             for (int i = 0; i < stgobj.objEntries.Count; i++)
             {
@@ -496,6 +509,18 @@ namespace OverEasy.Billy
             {
                 CacheModel($"object_1285", commonGeo.models[$"MODEL_DOOR02"], commonGeo.texLists["TLS_MODEL_DOOR02"], commonGeo.gvm, false, true);
             }
+
+            //Platforms
+            if (commonGeo.models.ContainsKey($"MODEL_STAND"))
+            {
+                CacheModel($"object_12", commonGeo.models[$"MODEL_STAND"], commonGeo.texLists["TLS_MODEL_STAND"], commonGeo.gvm, false, true);
+            }
+
+            //Fire Pillar
+            CacheModel($"object_13", commonGeo.models[$"model_1"], commonGeo.texLists["texList_0"], commonGeo.gvm, false, true);
+
+            //Climbing Rung
+            CacheModel($"object_17", commonGeo.models[$"model_34"], commonGeo.texLists["texList_0"], commonGeo.gvm, false, true);
 
             //Fruit balls
             var tfm = System.Numerics.Matrix4x4.CreateTranslation(new System.Numerics.Vector3(0, 5, 0));
