@@ -448,6 +448,16 @@ namespace OverEasy.Billy
         {
             ModelConversion.LoadGVM("geobjStage", stageGeo.gvm, out var gvmTextures, out var gvrAlphaTypes);
 
+            //Gates
+            if(stageGeo.models.ContainsKey($"MODEL_DOOR01"))
+            {
+                CacheModel($"object_5", stageGeo.models[$"MODEL_DOOR01"], stageGeo.texLists["TLS_MODEL_DOOR01"], stageGeo.gvm, true, true);
+            }
+            if(stageGeo.models.ContainsKey($"MODEL_DOOR02"))
+            {
+                CacheModel($"object_1285", stageGeo.models[$"MODEL_DOOR02"], stageGeo.texLists["TLS_MODEL_DOOR02"], stageGeo.gvm, true, true);
+            }
+
             //Scenery
             for (int i = 0; i < stgobj.objEntries.Count; i++)
             {
@@ -474,6 +484,18 @@ namespace OverEasy.Billy
             CacheModel($"object_4_3", commonGeo.models[$"model_{0}"], commonGeo.texLists["texList_0"], commonGeo.gvm, false, true);
             CacheModel($"object_4_4", commonGeo.models[$"model_{0}"], commonGeo.texLists["texList_0"], commonGeo.gvm, false, true);
             CacheModel($"object_4_5", commonGeo.models[$"model_{0}"], commonGeo.texLists["texList_0"], commonGeo.gvm, false, true);
+
+            //Gates
+            //These won't normally be here, but in theory the game will try to load them here if they aren't in the local world's geobj
+            //The collision models for these ARE used in the common, but aren't used in OverEasy currently
+            if (commonGeo.models.ContainsKey($"MODEL_DOOR01"))
+            {
+                CacheModel($"object_5", commonGeo.models[$"MODEL_DOOR01"], commonGeo.texLists["TLS_MODEL_DOOR01"], commonGeo.gvm, false, true);
+            }
+            if (commonGeo.models.ContainsKey($"MODEL_DOOR02"))
+            {
+                CacheModel($"object_1285", commonGeo.models[$"MODEL_DOOR02"], commonGeo.texLists["TLS_MODEL_DOOR02"], commonGeo.gvm, false, true);
+            }
 
             //Fruit balls
             var tfm = System.Numerics.Matrix4x4.CreateTranslation(new System.Numerics.Vector3(0, 5, 0));

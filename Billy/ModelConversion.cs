@@ -217,14 +217,19 @@ namespace OverEasy.Billy
 		public static List<Texture2D> GetTextureSubset(List<Texture2D> textureList, NJTextureList texList, List<int> alphaTypes, out List<int> newAlphaTypes)
 		{
 			List<Texture2D> newTextures = new List<Texture2D>();
-			newAlphaTypes = new List<int>();
+            newAlphaTypes = new List<int>();
+            for (int i = 0; i < texList.texNames.Count; i++)
+			{
+				newTextures.Add(null);
+				newAlphaTypes.Add(-1);
+            }
 			for(int i = 0; i < textureList.Count; i++)
 			{
-				if (texList.texNames.Contains(Path.GetFileNameWithoutExtension(textureList[i].ResourceName)))
+				var index = texList.texNames.IndexOf(Path.GetFileNameWithoutExtension(textureList[i].ResourceName));
+				if (index != -1)
 				{
-					newTextures.Add(textureList[i]);
-					newAlphaTypes.Add(alphaTypes[i]);
-
+					newTextures[index] = (textureList[i]);
+					newAlphaTypes[index] = (alphaTypes[i]);
 				}
 			}
 
