@@ -376,8 +376,16 @@ namespace OverEasy.Billy
 		private static void GetOverlayMaterial(string name, List<Texture2D> gvrTextures, Dictionary<int, Material> overlayMaterials)
 		{
 			switch (name)
-			{
-				case "object_38_blue":
+            {
+                case "object_28":
+                    ShaderMaterial eggGold = new();
+                    eggGold.Shader = (Shader)GD.Load("res://Shaders/matcapVariableAlphaMultiply.gdshader");
+                    eggGold.SetShaderParameter("matcap", gvrTextures[2]);
+                    eggGold.SetShaderParameter("alphaValue", 1.0f);
+                    eggGold.SetShaderParameter("albedoMultiplier", 3.0f);
+                    overlayMaterials.Add(0, eggGold);
+                    break;
+                case "object_38_blue":
 					gvrTextures[0] = gvrTextures[2]; //Hack to avoid reassigning tex id
 					ShaderMaterial blueCoinShad = new();
 					blueCoinShad.Shader = (Shader)GD.Load("res://Shaders/matcapVariableAlpha.gdshader");
@@ -394,7 +402,15 @@ namespace OverEasy.Billy
 					redCoinShad.SetShaderParameter("albedoMultiplier", 3.0f);
 					overlayMaterials.Add(0, redCoinShad);
 					break;
-				case "object_47":
+                case "object_46":
+                    ShaderMaterial eggSuit = new();
+                    eggSuit.Shader = (Shader)GD.Load("res://Shaders/matcapVariableAlphaMultiply.gdshader");
+                    eggSuit.SetShaderParameter("matcap", gvrTextures[2]);
+                    eggSuit.SetShaderParameter("alphaValue", 1.0f);
+                    eggSuit.SetShaderParameter("albedoMultiplier", 1.0f);
+                    overlayMaterials.Add(0, eggSuit);
+                    break;
+                case "object_47":
 					ShaderMaterial ccoin = new();
 					ccoin.Shader = (Shader)GD.Load("res://Shaders/matcapVariableAlpha.gdshader");
 					ccoin.SetShaderParameter("matcap", gvrTextures[1]);
@@ -423,7 +439,7 @@ namespace OverEasy.Billy
 					ShaderMaterial eggShiny = new();
 					eggShiny.Shader = (Shader)GD.Load("res://Shaders/matcapVariableAlphaMultiply.gdshader");
 					eggShiny.SetShaderParameter("matcap", gvrTextures[1]);
-					eggShiny.SetShaderParameter("alphaValue", 0.5f);
+					eggShiny.SetShaderParameter("alphaValue", 1.0f);
 					eggShiny.SetShaderParameter("albedoMultiplier", 1.0f);
 					overlayMaterials.Add(0, eggShiny);
 					break;

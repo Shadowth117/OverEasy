@@ -391,6 +391,12 @@ namespace OverEasy.Billy
 				CacheEggContentData(geEgg, gplTextures, gplAlphaTypes);
 			}
 
+            var eggGoldPath = OverEasyGlobals.GetAssetPath("egg_gold.arc");
+            if (eggGoldPath != "")
+            {
+                var eggGoldObj = new EggGold_Suit(File.ReadAllBytes(eggGoldPath));
+                CacheModel("object_28", eggGoldObj.models[0], null, eggGoldObj.gvm, false, false);
+            }
             var cagePath = OverEasyGlobals.GetAssetPath("geobj_cage.arc");
             if (cagePath != "")
             {
@@ -423,9 +429,14 @@ namespace OverEasy.Billy
 				var coinObjRed = new GEObj_Object(File.ReadAllBytes(objCoinPath));
 				CacheModel("object_38_red", coinObjRed.models["model"], null, coinObjRed.gvm, false, false);
 			}
-
-			//Load common geobj data
-			var commonObjectsPath = OverEasyGlobals.GetAssetPath("geobj_common.arc");
+            var eggSuitPath = OverEasyGlobals.GetAssetPath("egg_suit.arc");
+            if (eggSuitPath != "")
+            {
+                var eggSuitObj = new EggGold_Suit(File.ReadAllBytes(eggSuitPath));
+                CacheModel("object_46", eggSuitObj.models[0], null, eggSuitObj.gvm, false, false);
+            }
+            //Load common geobj data
+            var commonObjectsPath = OverEasyGlobals.GetAssetPath("geobj_common.arc");
 			var commonObjectsDefPath = OverEasyGlobals.GetAssetPath("stgobj_common.arc");
 			if(commonObjectsPath != "" && commonObjectsDefPath != "")
 			{
@@ -665,6 +676,10 @@ namespace OverEasy.Billy
 					posMat = System.Numerics.Matrix4x4.CreateTranslation(0, 1.5f, 0);
 					rootTfm = System.Numerics.Matrix4x4.Identity * posMat;
 					break;
+				case "object_28":
+				case "object_46":
+					rootTfm = System.Numerics.Matrix4x4.CreateScale(1.5f, 1.5f, 1.5f) * System.Numerics.Matrix4x4.CreateTranslation(new System.Numerics.Vector3(0, 7.5f, 0));
+                    break;
 			}
 
 			var modelNode = ModelConversion.NinjaToGDModel(name, nj, textureSubSet, texAlphaTypes, null, null, null, rootTfm, blockVertColors, forceOpacity);

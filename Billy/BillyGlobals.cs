@@ -742,8 +742,13 @@ namespace OverEasy
 				{
 					var bantam = new GEPlayer(currentPRD.files[i]);
 					BillyModelIO.CachePlayerModel("player_4", bantam, true);
-				}
-				else if (currentPRD.fileNames[i] == "geobj_darkgate.arc")
+                }
+                else if (currentPRD.fileNames[i] == "egg_gold.arc")
+                {
+                    var eggGold = new EggGold_Suit(currentPRD.files[i]);
+                    BillyModelIO.CacheModel("object_28", eggGold.models[0], null, eggGold.gvm, false, false);
+                }
+                else if (currentPRD.fileNames[i] == "geobj_darkgate.arc")
 				{
 					var darkGate = new GEObj_Object(currentPRD.files[i]);
 					BillyModelIO.CacheModel("object_35", darkGate.models["model"], darkGate.texLists["texlist"], darkGate.gvm, false, false);
@@ -759,8 +764,13 @@ namespace OverEasy
 					BillyModelIO.CacheModel("object_38_blue", coinObjBlue.models["model"], null, coinObjBlue.gvm, false, false);
 					var coinObjRed = new GEObj_Object(currentPRD.files[i]);
 					BillyModelIO.CacheModel("object_38_red", coinObjRed.models["model"], null, coinObjRed.gvm, false, false);
-				}
-				else
+                }
+                else if (currentPRD.fileNames[i] == "egg_suit.arc")
+                {
+                    var eggSuit = new EggGold_Suit(currentPRD.files[i]);
+                    BillyModelIO.CacheModel("object_46", eggSuit.models[0], null, eggSuit.gvm, false, false);
+                }
+                else
 
 				//Load Set Camera
 
