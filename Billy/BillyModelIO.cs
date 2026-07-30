@@ -391,7 +391,13 @@ namespace OverEasy.Billy
 				CacheEggContentData(geEgg, gplTextures, gplAlphaTypes);
 			}
 
-			var darkGatePath = OverEasyGlobals.GetAssetPath("geobj_darkgate.arc");
+            var cagePath = OverEasyGlobals.GetAssetPath("geobj_cage.arc");
+            if (cagePath != "")
+            {
+                var cageObj = new GEObj_Object(File.ReadAllBytes(cagePath));
+                CacheModel("object_33", cageObj.models["model"], cageObj.texLists["texlist"], cageObj.gvm, false, false);
+            }
+            var darkGatePath = OverEasyGlobals.GetAssetPath("geobj_darkgate.arc");
 			if (darkGatePath != "")
 			{
 				var darkGateObj = new GEObj_Object(File.ReadAllBytes(darkGatePath));

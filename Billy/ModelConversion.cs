@@ -410,15 +410,15 @@ namespace OverEasy.Billy
 				case "egg_61":
 				case "egg_62":
 				case "egg_63":
-                    ShaderMaterial eggSonic = new();
-                    eggSonic.Shader = (Shader)GD.Load("res://Shaders/matcapRedAlpha.gdshader");
-                    eggSonic.SetShaderParameter("matcap", gvrTextures[1]);
-                    eggSonic.SetShaderParameter("maskTex", gvrTextures[0]);
-                    eggSonic.SetShaderParameter("alphaValue", 1f);
-                    eggSonic.SetShaderParameter("albedoMultiplier", 1.0f);
-                    overlayMaterials.Add(0, eggSonic);
-                    break;
-                case "egg_64":
+					ShaderMaterial eggSonic = new();
+					eggSonic.Shader = (Shader)GD.Load("res://Shaders/matcapRedAlpha.gdshader");
+					eggSonic.SetShaderParameter("matcap", gvrTextures[1]);
+					eggSonic.SetShaderParameter("maskTex", gvrTextures[0]);
+					eggSonic.SetShaderParameter("alphaValue", 1f);
+					eggSonic.SetShaderParameter("albedoMultiplier", 1.0f);
+					overlayMaterials.Add(0, eggSonic);
+					break;
+				case "egg_64":
 				case "egg_65":
 					ShaderMaterial eggShiny = new();
 					eggShiny.Shader = (Shader)GD.Load("res://Shaders/matcapVariableAlphaMultiply.gdshader");
@@ -902,7 +902,7 @@ namespace OverEasy.Billy
 				//These could technically contain multiple nodes per model, but they don't. Howver the nodes that are there do transform the model, unlike the static models
 				foreach (var modelSet in lnd.arcLndAnimatedMeshDataList)
 				{
-					string modelName = $"{modelSet.GetHashCode()}_{modelSet.MPLAnimId}";
+					string modelName = $"{modelSet.GetHashCode()}_{modelSet.MPLAnimKey}";
 					Node3D node = new Node3D();
 					node.Name = modelName;
 					AddARCLNDModelData(lnd, modelSet.model, node, gvmTextures, gvrAlphaTypes, true);

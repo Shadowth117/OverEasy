@@ -443,7 +443,8 @@ namespace OverEasy
 
 			var root = setDataTree.CreateItem();
 			setDataTree.HideRoot = true;
-			var defsDictKeys = stgDef.defsDict.Keys.ToList();
+			var stgDefDict = stgDef.GetDefsDict();
+			var defsDictKeys = stgDefDict.Keys.ToList();
 			foreach (var mission in mapKeyOrderList)
 			{
 				if (defsDictKeys.Contains(mission))
@@ -458,7 +459,7 @@ namespace OverEasy
 
 					//Store node type as int, store actual stageDef id for later use
 					node.SetMetadata(0, 1);
-					node.SetMetadata(1, stgDef.defs.IndexOf(stgDef.defsDict[mission]));
+					node.SetMetadata(1, stgDef.defs.IndexOf(stgDefDict[mission]));
 
 					defsDictKeys.Remove(mission);
 				}
@@ -472,7 +473,7 @@ namespace OverEasy
 
 				//Store node type as int, store actual stageDef id for later use
 				node.SetMetadata(0, 1);
-				node.SetMetadata(1, stgDef.defs.IndexOf(stgDef.defsDict[mission]));
+				node.SetMetadata(1, stgDef.defs.IndexOf(stgDefDict[mission]));
 			}
 		}
 
@@ -676,7 +677,11 @@ namespace OverEasy
 						var commonGeobj = new GEObj_Stage(currentCommonPRD.files[i]);
 						BillyModelIO.CacheGeobjCommon(commonGeobj);
 						break;
-					case "geobj_emblem.arc":
+                    case "geobj_cage.arc":
+                        var cageObj = new GEObj_Object(currentCommonPRD.files[i]);
+                        BillyModelIO.CacheModel("object_33", cageObj.models["model"], cageObj.texLists["texlist"], cageObj.gvm, false, false);
+                        break;
+                    case "geobj_emblem.arc":
 						var emblemObj = new GEObj_Object(currentCommonPRD.files[i]);
 						BillyModelIO.CacheModel("object_37", emblemObj.models["model"], emblemObj.texLists["texlist"], emblemObj.gvm, false, false);
 						break;
@@ -737,25 +742,25 @@ namespace OverEasy
 				{
 					var bantam = new GEPlayer(currentPRD.files[i]);
 					BillyModelIO.CachePlayerModel("player_4", bantam, true);
-                }
-                else if (currentPRD.fileNames[i] == "geobj_darkgate.arc")
-                {
+				}
+				else if (currentPRD.fileNames[i] == "geobj_darkgate.arc")
+				{
 					var darkGate = new GEObj_Object(currentPRD.files[i]);
 					BillyModelIO.CacheModel("object_35", darkGate.models["model"], darkGate.texLists["texlist"], darkGate.gvm, false, false);
-                }
-                else if (currentPRD.fileNames[i] == "geobj_goal.arc")
-                {
-                    var goal = new GEObj_Object(currentPRD.files[i]);
-                    BillyModelIO.CacheModel("object_36", goal.models["model"], goal.texLists["texlist"], goal.gvm, false, false);
-                }
-                else if (currentPRD.fileNames[i] == "geobj_ring.arc")
-                {
-                    var coinObjBlue = new GEObj_Object(currentPRD.files[i]);
-                    BillyModelIO.CacheModel("object_38_blue", coinObjBlue.models["model"], null, coinObjBlue.gvm, false, false);
-                    var coinObjRed = new GEObj_Object(currentPRD.files[i]);
-                    BillyModelIO.CacheModel("object_38_red", coinObjRed.models["model"], null, coinObjRed.gvm, false, false);
-                }
-                else
+				}
+				else if (currentPRD.fileNames[i] == "geobj_goal.arc")
+				{
+					var goal = new GEObj_Object(currentPRD.files[i]);
+					BillyModelIO.CacheModel("object_36", goal.models["model"], goal.texLists["texlist"], goal.gvm, false, false);
+				}
+				else if (currentPRD.fileNames[i] == "geobj_ring.arc")
+				{
+					var coinObjBlue = new GEObj_Object(currentPRD.files[i]);
+					BillyModelIO.CacheModel("object_38_blue", coinObjBlue.models["model"], null, coinObjBlue.gvm, false, false);
+					var coinObjRed = new GEObj_Object(currentPRD.files[i]);
+					BillyModelIO.CacheModel("object_38_red", coinObjRed.models["model"], null, coinObjRed.gvm, false, false);
+				}
+				else
 
 				//Load Set Camera
 
@@ -936,6 +941,7 @@ namespace OverEasy
 					fakeDefEntryStart = stgDef.defs.Count;
 
 					//Add unused maps
+					var stgDefDict = stgDef.GetDefsDict();
 					stgDef.defs.Add(new StageDef.StageDefinition()
 					{
 						missionName = "stg_battle_red",
@@ -945,41 +951,40 @@ namespace OverEasy
 						setDesignFilename = "set_design_battle_red.bin",
 						setEnemyFilename = "set_ene_battle_red.bin",
 						setObjFilename = "set_obj_battle_red.bin",
-						commonData = stgDef.defsDict["red1"].commonData
+						commonData = stgDefDict["red1"].commonData
 					});
-					stgDef.defsDict.Add(stgDef.defs[^1].missionName, stgDef.defs[^1]);
 					stgDef.defs.Add(new StageDef.StageDefinition()
 					{
 						missionName = "stg_blue_night",
 						lndFilename = "stg_blue_night.lnd",
 						setDesignFilename = "set_design_blue_night.bin",
-						commonData = stgDef.defsDict["blue1"].commonData
+						commonData = stgDefDict["blue1"].commonData
 					});
-					stgDef.defsDict.Add(stgDef.defs[^1].missionName, stgDef.defs[^1]);
+					stgDefDict.Add(stgDef.defs[^1].missionName, stgDef.defs[^1]);
 					stgDef.defs.Add(new StageDef.StageDefinition()
 					{
 						missionName = "stg_pur_boss",
 						lndFilename = "stg_pur_boss.lnd",
 						mc2Filename = "stg_pur_boss.mc2",
-						commonData = stgDef.defsDict["purple1"].commonData
+						commonData = stgDefDict["purple1"].commonData
 					});
-					stgDef.defsDict.Add(stgDef.defs[^1].missionName, stgDef.defs[^1]);
+					stgDefDict.Add(stgDef.defs[^1].missionName, stgDef.defs[^1]);
 					stgDef.defs.Add(new StageDef.StageDefinition()
 					{
 						missionName = "stg_purple_n",
 						lndFilename = "stg_purple_n.lnd",
 						setDesignFilename = "set_design_purple_n.bin",
-						commonData = stgDef.defsDict["purple1"].commonData
+						commonData = stgDefDict["purple1"].commonData
 					});
-					stgDef.defsDict.Add(stgDef.defs[^1].missionName, stgDef.defs[^1]);
+					stgDefDict.Add(stgDef.defs[^1].missionName, stgDef.defs[^1]);
 					stgDef.defs.Add(new StageDef.StageDefinition()
 					{
 						missionName = "stg_purple_night",
 						lndFilename = "stg_purple_night.lnd",
 						setDesignFilename = "set_design_purple_night.bin",
-						commonData = stgDef.defsDict["purple1"].commonData
+						commonData = stgDefDict["purple1"].commonData
 					});
-					stgDef.defsDict.Add(stgDef.defs[^1].missionName, stgDef.defs[^1]);
+					stgDefDict.Add(stgDef.defs[^1].missionName, stgDef.defs[^1]);
 					stgDef.defs.Add(new StageDef.StageDefinition()
 					{
 						missionName = "stg_test",
@@ -989,9 +994,9 @@ namespace OverEasy
 						setDesignFilename = "set_design_test.bin",
 						setEnemyFilename = "set_ene_test01.bin",
 						setObjFilename = "set_obj_test01.bin",
-						commonData = stgDef.defsDict["red1"].commonData
+						commonData = stgDefDict["red1"].commonData
 					});
-					stgDef.defsDict.Add(stgDef.defs[^1].missionName, stgDef.defs[^1]);
+					stgDefDict.Add(stgDef.defs[^1].missionName, stgDef.defs[^1]);
 					stgDef.defs.Add(new StageDef.StageDefinition()
 					{
 						missionName = "stg_test2",
@@ -1001,17 +1006,17 @@ namespace OverEasy
 						setDesignFilename = "set_design_test2.bin",
 						setEnemyFilename = "set_ene_test02.bin",
 						setObjFilename = "set_obj_test02.bin",
-						commonData = stgDef.defsDict["blue1"].commonData
+						commonData = stgDefDict["blue1"].commonData
 					});
-					stgDef.defsDict.Add(stgDef.defs[^1].missionName, stgDef.defs[^1]);
+					stgDefDict.Add(stgDef.defs[^1].missionName, stgDef.defs[^1]);
 					stgDef.defs.Add(new StageDef.StageDefinition()
 					{
 						missionName = "stg_test2_n",
 						lndFilename = "stg_test2_n.lnd",
 						setDesignFilename = "set_design_test2_n.bin",
-						commonData = stgDef.defsDict["blue1"].commonData
+						commonData = stgDefDict["blue1"].commonData
 					});
-					stgDef.defsDict.Add(stgDef.defs[^1].missionName, stgDef.defs[^1]);
+					stgDefDict.Add(stgDef.defs[^1].missionName, stgDef.defs[^1]);
 					stgDef.defs.Add(new StageDef.StageDefinition()
 					{
 						missionName = "stg_test07",
@@ -1019,9 +1024,9 @@ namespace OverEasy
 						setCameraFilename = "set_cam_test07.bin",
 						setEnemyFilename = "set_ene_test07.bin",
 						setObjFilename = "set_obj_test07.bin",
-						commonData = stgDef.defsDict["purple1"].commonData
+						commonData = stgDefDict["purple1"].commonData
 					});
-					stgDef.defsDict.Add(stgDef.defs[^1].missionName, stgDef.defs[^1]);
+					stgDefDict.Add(stgDef.defs[^1].missionName, stgDef.defs[^1]);
 					stgDef.defs.Add(new StageDef.StageDefinition()
 					{
 						missionName = "stg_test08",
@@ -1029,9 +1034,9 @@ namespace OverEasy
 						setCameraFilename = "set_cam_test08.bin",
 						setEnemyFilename = "set_ene_test08.bin",
 						setObjFilename = "set_obj_test08.bin",
-						commonData = stgDef.defsDict["blue1"].commonData
+						commonData = stgDefDict["blue1"].commonData
 					});
-					stgDef.defsDict.Add(stgDef.defs[^1].missionName, stgDef.defs[^1]);
+					stgDefDict.Add(stgDef.defs[^1].missionName, stgDef.defs[^1]);
 
 					return true;
 				}
