@@ -19,34 +19,34 @@ using Material = Godot.Material;
 namespace OverEasy.Billy
 {
 	public class ModelConversion
-    {
-        private static Dictionary<string, List<int>> SkipMeshesDict = new Dictionary<string, List<int>>()
-        {
-            { "object_4_0", new List<int>() { 3 } },
-            { "object_4_1", new List<int>() { 3 } },
-            { "object_4_2", new List<int>() { 3 } },
-            { "object_4_3", new List<int>() { 3 } },
+	{
+		private static Dictionary<string, List<int>> SkipMeshesDict = new Dictionary<string, List<int>>()
+		{
+			{ "object_4_0", new List<int>() { 3 } },
+			{ "object_4_1", new List<int>() { 3 } },
+			{ "object_4_2", new List<int>() { 3 } },
+			{ "object_4_3", new List<int>() { 3 } },
 			{ "object_4_4", new List<int>() { 3 } },
 			{ "object_4_5", new List<int>() { 3 } },
 		};
 
 		private static Dictionary<string, Dictionary<int, Vector2>> UVAdjustmentDict = new Dictionary<string, Dictionary<int, Vector2>>()
-        {
-            { "object_4_3", new Dictionary<int, Vector2>() //Switch variant 3
+		{
+			{ "object_4_3", new Dictionary<int, Vector2>() //Switch variant 3
 				{ 
 					{0, new Vector2(0.25f, 0) }, //Switch icon
-                    {1, new Vector2(-0.25f, 0) }, //Switch body
-                } 
+					{1, new Vector2(-0.25f, 0) }, //Switch body
+				} 
 			},
-            { "object_4_4", new Dictionary<int, Vector2>() //Switch variant 4 (5 is the default, 0-2 don't have models)
-                {
-                    {0, new Vector2(-0.25f, 0) }, //Switch icon
-                    {1, new Vector2(-0.25f, 0) }, //Switch body
-                }
-            },
-        };
+			{ "object_4_4", new Dictionary<int, Vector2>() //Switch variant 4 (5 is the default, 0-2 don't have models)
+				{
+					{0, new Vector2(-0.25f, 0) }, //Switch icon
+					{1, new Vector2(-0.25f, 0) }, //Switch body
+				}
+			},
+		};
 
-        public static void BillyModeNightToggleParent(Node3D parentNode)
+		public static void BillyModeNightToggleParent(Node3D parentNode)
 		{
 			OverEasyGlobals.SetBillyLighting();
 			BillyModeNightToggle(parentNode);
@@ -217,12 +217,12 @@ namespace OverEasy.Billy
 		public static List<Texture2D> GetTextureSubset(List<Texture2D> textureList, NJTextureList texList, List<int> alphaTypes, out List<int> newAlphaTypes)
 		{
 			List<Texture2D> newTextures = new List<Texture2D>();
-            newAlphaTypes = new List<int>();
-            for (int i = 0; i < texList.texNames.Count; i++)
+			newAlphaTypes = new List<int>();
+			for (int i = 0; i < texList.texNames.Count; i++)
 			{
 				newTextures.Add(null);
 				newAlphaTypes.Add(-1);
-            }
+			}
 			for(int i = 0; i < textureList.Count; i++)
 			{
 				var index = texList.texNames.IndexOf(Path.GetFileNameWithoutExtension(textureList[i].ResourceName));
@@ -245,21 +245,23 @@ namespace OverEasy.Billy
 		{
 			//Skip meshes dict
 			List<int> skipMeshes;
-			if(SkipMeshesDict.ContainsKey(name))
+			if (SkipMeshesDict.ContainsKey(name))
 			{
 				skipMeshes = SkipMeshesDict[name];
-			} else
+			}
+			else
 			{
 				skipMeshes = new();
 			}
 
 			//UV adjustment dict
 			Dictionary<int, Vector2> uvAdjustDict;
-			if(UVAdjustmentDict.ContainsKey(name))
+			if (UVAdjustmentDict.ContainsKey(name))
 			{
 				uvAdjustDict = UVAdjustmentDict[name];
 
-            } else
+			}
+			else
 			{
 				uvAdjustDict = new();
 			}
@@ -286,7 +288,7 @@ namespace OverEasy.Billy
 				fullVertList.ProcessToPSO2Weights();
 			}
 
-			if(baseTfm == null)
+			if (baseTfm == null)
 			{
 				baseTfm = System.Numerics.Matrix4x4.Identity;
 			}
@@ -295,10 +297,16 @@ namespace OverEasy.Billy
 				rootTfm = System.Numerics.Matrix4x4.Identity;
 			}
 			int meshCounter = 0;
-			IterateNJSObject(nj, fullVertList, ref nodeId, -1, root, root is Skeleton3D ? (Skeleton3D)root : new Skeleton3D(), (System.Numerics.Matrix4x4)baseTfm, gvrTextures, gvrAlphaTypes, (System.Numerics.Matrix4x4)rootTfm, ref meshCounter, skipMeshes, uvAdjustDict,
-				aqn, blockVertColors, forcedOpacity, addBones);
 
-            /*
+			Dictionary<int, Material> overrideMaterials = new();
+			GetOverrideMaterial(name, gvrTextures, overrideMaterials);
+
+			Dictionary<int, Material> overlayMaterials = new();
+			GetOverlayMaterial(name, gvrTextures, overlayMaterials);
+			IterateNJSObject(nj, fullVertList, ref nodeId, -1, root, root is Skeleton3D ? (Skeleton3D)root : new Skeleton3D(), (System.Numerics.Matrix4x4)baseTfm, gvrTextures, gvrAlphaTypes, (System.Numerics.Matrix4x4)rootTfm, ref meshCounter,
+				overrideMaterials, overlayMaterials, skipMeshes, uvAdjustDict, aqn, blockVertColors, forcedOpacity, addBones);
+
+			/*
 			 This won't work here
 #if DEBUG
 			AnimationPlayer animPlayer = new AnimationPlayer();
@@ -327,12 +335,104 @@ namespace OverEasy.Billy
 			root.AddChild(animPlayer);
 #endif
 			 */
-            return root;
+			return root;
+		}
+
+		private static void GetOverrideMaterial(string name, List<Texture2D> gvrTextures, Dictionary<int, Material> overrideMaterials)
+		{
+			switch (name)
+			{
+				case "object_37":
+					ShaderMaterial emblem = new();
+					emblem.Shader = (Shader)GD.Load("res://Shaders/brightUnlit.gdshader");
+					emblem.SetShaderParameter("albedoTexture", gvrTextures[0]);
+					emblem.SetShaderParameter("albedoMultiplier", 1f);
+					overrideMaterials.Add(0, emblem);
+					break;
+				case "object_38_blue":
+					ShaderMaterial blueCoinShad = new();
+					blueCoinShad.Shader = (Shader)GD.Load("res://Shaders/brightUnlit.gdshader");
+					blueCoinShad.SetShaderParameter("albedoTexture", gvrTextures[2]);
+					blueCoinShad.SetShaderParameter("albedoMultiplier", 3f);
+					overrideMaterials.Add(0, blueCoinShad);
+					break;
+				case "object_38_red":
+					ShaderMaterial redCoinShad = new();
+					redCoinShad.Shader = (Shader)GD.Load("res://Shaders/brightUnlit.gdshader");
+					redCoinShad.SetShaderParameter("albedoTexture", gvrTextures[0]);
+					redCoinShad.SetShaderParameter("albedoMultiplier", 3f);
+					overrideMaterials.Add(0, redCoinShad);
+					break;
+				case "object_47":
+					ShaderMaterial ccoin = new();
+					ccoin.Shader = (Shader)GD.Load("res://Shaders/brightUnlit.gdshader");
+					ccoin.SetShaderParameter("albedoTexture", gvrTextures[0]);
+					ccoin.SetShaderParameter("albedoMultiplier", 1f);
+					overrideMaterials.Add(0, ccoin);
+					break;
+			}
+		}
+
+		private static void GetOverlayMaterial(string name, List<Texture2D> gvrTextures, Dictionary<int, Material> overlayMaterials)
+		{
+			switch (name)
+			{
+				case "object_38_blue":
+					gvrTextures[0] = gvrTextures[2]; //Hack to avoid reassigning tex id
+					ShaderMaterial blueCoinShad = new();
+					blueCoinShad.Shader = (Shader)GD.Load("res://Shaders/matcapVariableAlpha.gdshader");
+					blueCoinShad.SetShaderParameter("matcap", gvrTextures[3]);
+					blueCoinShad.SetShaderParameter("alphaValue", 0.5f);
+					blueCoinShad.SetShaderParameter("albedoMultiplier", 3.0f);
+					overlayMaterials.Add(0, blueCoinShad);
+					break;
+				case "object_38_red":
+					ShaderMaterial redCoinShad = new();
+					redCoinShad.Shader = (Shader)GD.Load("res://Shaders/matcapVariableAlpha.gdshader");
+					redCoinShad.SetShaderParameter("matcap", gvrTextures[1]);
+					redCoinShad.SetShaderParameter("alphaValue", 0.5f);
+					redCoinShad.SetShaderParameter("albedoMultiplier", 3.0f);
+					overlayMaterials.Add(0, redCoinShad);
+					break;
+				case "object_47":
+					ShaderMaterial ccoin = new();
+					ccoin.Shader = (Shader)GD.Load("res://Shaders/matcapVariableAlpha.gdshader");
+					ccoin.SetShaderParameter("matcap", gvrTextures[1]);
+					ccoin.SetShaderParameter("alphaValue", 0.5f);
+					ccoin.SetShaderParameter("albedoMultiplier", 1.0f);
+					overlayMaterials.Add(0, ccoin);
+					break;
+				case "egg_56":
+				case "egg_57":
+				case "egg_58":
+				case "egg_59":
+				case "egg_60":
+				case "egg_61":
+				case "egg_62":
+				case "egg_63":
+                    ShaderMaterial eggSonic = new();
+                    eggSonic.Shader = (Shader)GD.Load("res://Shaders/matcapRedAlpha.gdshader");
+                    eggSonic.SetShaderParameter("matcap", gvrTextures[1]);
+                    eggSonic.SetShaderParameter("maskTex", gvrTextures[0]);
+                    eggSonic.SetShaderParameter("alphaValue", 1f);
+                    eggSonic.SetShaderParameter("albedoMultiplier", 1.0f);
+                    overlayMaterials.Add(0, eggSonic);
+                    break;
+                case "egg_64":
+				case "egg_65":
+					ShaderMaterial eggShiny = new();
+					eggShiny.Shader = (Shader)GD.Load("res://Shaders/matcapVariableAlphaMultiply.gdshader");
+					eggShiny.SetShaderParameter("matcap", gvrTextures[1]);
+					eggShiny.SetShaderParameter("alphaValue", 0.5f);
+					eggShiny.SetShaderParameter("albedoMultiplier", 1.0f);
+					overlayMaterials.Add(0, eggShiny);
+					break;
+			}
 		}
 
 		private static void IterateNJSObject(NJSObject nj, VTXL fullVertList, ref int nodeId, int parentId, Node3D modelRoot, Skeleton3D skel,
-			System.Numerics.Matrix4x4 parentMatrix, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes, System.Numerics.Matrix4x4 rootTfm, ref int meshCounter, List<int> skipMeshes, Dictionary<int, Vector2> uvAdjustDict, 
-			AquaNode aqn = null, bool blockVertColors = false, float? forcedOpacity = null, bool addBones = true)
+			System.Numerics.Matrix4x4 parentMatrix, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes, System.Numerics.Matrix4x4 rootTfm, ref int meshCounter, Dictionary<int, Material> overrideMaterials, Dictionary<int, Material> overlayMaterials, 
+			List<int> skipMeshes, Dictionary<int, Vector2> uvAdjustDict, AquaNode aqn = null, bool blockVertColors = false, float? forcedOpacity = null, bool addBones = true)
 		{
 			int currentNodeId = nodeId;
 			if(addBones)
@@ -411,7 +511,7 @@ namespace OverEasy.Billy
 					{
 						continue;
 					}
-                    MeshInstance3D meshInst = new MeshInstance3D();
+					MeshInstance3D meshInst = new MeshInstance3D();
 					ArrayMesh mesh = new ArrayMesh();
 					var arrays = new Godot.Collections.Array();
 					arrays.Resize((int)Mesh.ArrayType.Max);
@@ -505,86 +605,96 @@ namespace OverEasy.Billy
 					Material gdMaterial;
 					var matId = tempTri.matIdList.Count > 0 ? tempTri.matIdList[0] : 0;
 					
-					if(tempTri.matIdList.Count > 0 && testAqo.tempMats.Count > matId && testAqo.tempMats[matId].matName.Contains("#envmap"))
+					if(overrideMaterials.ContainsKey(meshCounter - 1))
+					{
+						gdMaterial = overrideMaterials[meshCounter - 1];
+					} else if(tempTri.matIdList.Count > 0 && testAqo.tempMats.Count > matId && testAqo.tempMats[matId].matName.Contains("#envmap"))
 					{
 						gdMaterial = new ShaderMaterial();
 						var shad = (ShaderMaterial)gdMaterial;
 						
-                        var texId = Int32.Parse(testAqo.tempMats[matId].texNames[0]);
-                        if (texId >= 0)
-                        {
-                            if (texId < gvrTextures.Count)
-                            {
-                                shad.SetShaderParameter("matcap", gvrTextures[texId]);
+						var texId = Int32.Parse(testAqo.tempMats[matId].texNames[0]);
+						if (texId >= 0)
+						{
+							if (texId < gvrTextures.Count)
+							{
+								shad.SetShaderParameter("matcap", gvrTextures[texId]);
 								var alphaType = gvrAlphaTypes[texId];
 
 								if(alphaType == 0)
-                                {
-                                    shad.Shader = (Shader)GD.Load("res://Shaders/matcapValueAsAlpha.gdshader");
-                                } else
-                                {
-                                    shad.Shader = (Shader)GD.Load("res://Shaders/matcap.gdshader");
-                                }
-                            } 
-                        }
-                    } else
+								{
+									shad.Shader = (Shader)GD.Load("res://Shaders/matcapValueAsAlpha.gdshader");
+								} else
+								{
+									shad.Shader = (Shader)GD.Load("res://Shaders/matcap.gdshader");
+								}
+							} 
+						}
+					} else
 					{
-                        gdMaterial = new StandardMaterial3D();
+						gdMaterial = new StandardMaterial3D();
 						var smat = (StandardMaterial3D)gdMaterial;
-                        smat.ShadingMode = BaseMaterial3D.ShadingModeEnum.PerPixel;
-                        smat.CullMode = BaseMaterial3D.CullModeEnum.Disabled;
+						smat.ShadingMode = BaseMaterial3D.ShadingModeEnum.PerPixel;
+						smat.CullMode = BaseMaterial3D.CullModeEnum.Disabled;
+						smat.DiffuseMode = BaseMaterial3D.DiffuseModeEnum.Lambert;
 						
 						if(uvAdjustDict.ContainsKey(meshCounter - 1))
 						{
 							smat.Uv1Offset = new Vector3(uvAdjustDict[meshCounter - 1].X, uvAdjustDict[meshCounter - 1].Y, 0);
 						}
 
-                        if (testAqo.tempMats.Count > 0)
-                        {
-                            var texId = Int32.Parse(testAqo.tempMats[matId].texNames[0]);
-                            if (texId >= 0)
-                            {
-                                if (texId < gvrTextures.Count)
-                                {
-                                    smat.AlbedoTexture = gvrTextures[texId];
-                                }
-                                if (gvrAlphaTypes.Count > texId)
-                                {
-                                    switch (gvrAlphaTypes[texId])
-                                    {
-                                        case 0:
-                                            smat.Transparency = BaseMaterial3D.TransparencyEnum.Disabled;
-                                            break;
-                                        case 1:
-                                            smat.Transparency = BaseMaterial3D.TransparencyEnum.AlphaScissor;
-                                            break;
-                                        case 2:
-                                            smat.Transparency = BaseMaterial3D.TransparencyEnum.Alpha;
-                                            break;
-                                    }
-                                }
-                            }
-                        }
+						if (testAqo.tempMats.Count > 0)
+						{
+							var texId = Int32.Parse(testAqo.tempMats[matId].texNames[0]);
+							if (texId >= 0)
+							{
+								if (texId < gvrTextures.Count)
+								{
+									smat.AlbedoTexture = gvrTextures[texId];
+								}
+								if (gvrAlphaTypes.Count > texId)
+								{
+									switch (gvrAlphaTypes[texId])
+									{
+										case 0:
+											smat.Transparency = BaseMaterial3D.TransparencyEnum.Disabled;
+											break;
+										case 1:
+											smat.Transparency = BaseMaterial3D.TransparencyEnum.AlphaScissor;
+											break;
+										case 2:
+											smat.Transparency = BaseMaterial3D.TransparencyEnum.Alpha;
+											break;
+									}
+								}
+							}
+						}
 
-                        //In case we want to force a transparent model
-                        if (forcedOpacity != null)
-                        {
-                            var albedo = smat.AlbedoColor;
-                            albedo.A = forcedOpacity.Value;
-                            smat.AlbedoColor = albedo;
-                            smat.Transparency = BaseMaterial3D.TransparencyEnum.Alpha;
-                        }
-                        else
-                        {
-                            smat.VertexColorUseAsAlbedo = true;
-                        }
-                    }
+						//In case we want to force a transparent model
+						if (forcedOpacity != null)
+						{
+							var albedo = smat.AlbedoColor;
+							albedo.A = forcedOpacity.Value;
+							smat.AlbedoColor = albedo;
+							smat.Transparency = BaseMaterial3D.TransparencyEnum.Alpha;
+						}
+						else
+						{
+							smat.VertexColorUseAsAlbedo = true;
+						}
+					}
 
 					mesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, arrays, null, null);
 					mesh.SurfaceSetMaterial(0, gdMaterial);
 
 					//Final assignment steps
 					meshInst.Mesh = mesh;
+
+					if(overlayMaterials.ContainsKey(meshCounter - 1))
+					{
+						meshInst.MaterialOverlay = overlayMaterials[meshCounter - 1];
+					}
+
 					System.Numerics.Matrix4x4.Decompose(rootTfm, out var scale, out var rot, out var pos);
 					meshInst.Scale = scale.ToGVec3();
 					meshInst.Quaternion = rot.ToGQuat();
@@ -597,13 +707,13 @@ namespace OverEasy.Billy
 			if(nj.childObject != null)
 			{
 				nodeId++;
-				IterateNJSObject(nj.childObject, fullVertList, ref nodeId, currentNodeId, modelRoot, skel, mat, gvrTextures, gvrAlphaTypes, rootTfm, ref meshCounter, skipMeshes, uvAdjustDict, aqn, blockVertColors, forcedOpacity, addBones);
+				IterateNJSObject(nj.childObject, fullVertList, ref nodeId, currentNodeId, modelRoot, skel, mat, gvrTextures, gvrAlphaTypes, rootTfm, ref meshCounter, overrideMaterials, overlayMaterials, skipMeshes, uvAdjustDict, aqn, blockVertColors, forcedOpacity, addBones);
 			}
 
 			if(nj.siblingObject != null)
 			{
 				nodeId++;
-				IterateNJSObject(nj.siblingObject, fullVertList, ref nodeId, parentId, modelRoot, skel, parentMatrix, gvrTextures, gvrAlphaTypes, rootTfm, ref meshCounter, skipMeshes, uvAdjustDict, aqn, blockVertColors, forcedOpacity, addBones);
+				IterateNJSObject(nj.siblingObject, fullVertList, ref nodeId, parentId, modelRoot, skel, parentMatrix, gvrTextures, gvrAlphaTypes, rootTfm, ref meshCounter, overrideMaterials, overlayMaterials, skipMeshes, uvAdjustDict, aqn, blockVertColors, forcedOpacity, addBones);
 			}
 		}
 

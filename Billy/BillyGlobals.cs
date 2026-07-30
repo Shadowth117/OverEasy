@@ -705,6 +705,7 @@ namespace OverEasy
 			PuyoFile titleObjTex = null;
 			GEObj_Stage localGeobj = null;
 			StageObj localStgobj = null;
+
 			for (int i = 0; i < currentPRD.files.Count; i++)
 			{
 				//Hold Enemy GVM
@@ -736,8 +737,25 @@ namespace OverEasy
 				{
 					var bantam = new GEPlayer(currentPRD.files[i]);
 					BillyModelIO.CachePlayerModel("player_4", bantam, true);
-				}
-				else
+                }
+                else if (currentPRD.fileNames[i] == "geobj_darkgate.arc")
+                {
+					var darkGate = new GEObj_Object(currentPRD.files[i]);
+					BillyModelIO.CacheModel("object_35", darkGate.models["model"], darkGate.texLists["texlist"], darkGate.gvm, false, false);
+                }
+                else if (currentPRD.fileNames[i] == "geobj_goal.arc")
+                {
+                    var goal = new GEObj_Object(currentPRD.files[i]);
+                    BillyModelIO.CacheModel("object_36", goal.models["model"], goal.texLists["texlist"], goal.gvm, false, false);
+                }
+                else if (currentPRD.fileNames[i] == "geobj_ring.arc")
+                {
+                    var coinObjBlue = new GEObj_Object(currentPRD.files[i]);
+                    BillyModelIO.CacheModel("object_38_blue", coinObjBlue.models["model"], null, coinObjBlue.gvm, false, false);
+                    var coinObjRed = new GEObj_Object(currentPRD.files[i]);
+                    BillyModelIO.CacheModel("object_38_red", coinObjRed.models["model"], null, coinObjRed.gvm, false, false);
+                }
+                else
 
 				//Load Set Camera
 
@@ -770,7 +788,7 @@ namespace OverEasy
 					terrainModels.Add(lnd);
 					modelRoot.AddChild(lnd);
 				}
-
+				
 				//Load Title objects (if this is the title screen prd)
 				//Title screen scenery objects are special and show up in an arc closer to what enemies use
 				if (currentPRD.fileNames[i] == "ar_obj_title.arc")
@@ -1472,7 +1490,7 @@ namespace OverEasy
 						break;
 					case "IntProperty1":
 						var intProperty1Value = (int)GetSpinBoxValue("IntProperty1");
-						if ((objRaw.objectId == 50 || objRaw.objectId == 25 || objRaw.objectId == 11 || objRaw.objectId == 10 || objRaw.objectId == 4) && objRaw.intProperty1 != intProperty1Value)
+						if ((objRaw.objectId == 50 || objRaw.objectId == 38 || objRaw.objectId == 25 || objRaw.objectId == 11 || objRaw.objectId == 10 || objRaw.objectId == 4) && objRaw.intProperty1 != intProperty1Value)
 						{
 							shouldReloadModel = true;
 						}

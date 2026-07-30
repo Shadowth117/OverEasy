@@ -5,11 +5,11 @@ render_mode unshaded; // remove this if you wish to make it shaded
 
 uniform sampler2D matcap : source_color, hint_default_black; // Sampler 2d of the matcap
 
-// Bread and buter: Generates the MatCap's UV's
+// Bread and butter: Generates the MatCap's UV's
 vec2 generate_matcap_uv(vec3 _normal, vec3 _node_position_view) {
 	vec3 cross_space = cross(normalize(_node_position_view), _normal); // cross products the normal with it's base position
 	vec2 mat_space = vec2(cross_space.y * 1.0, cross_space.x); // converts to a Vec2 UV, having to switch x and y
-	mat_space *= vec2(-0.5, -0.5); // modifies the mat space's size to fit into uv coords, & flips it
+	mat_space *= vec2(0.5, -0.5); // modifies the mat space's size to fit into uv coords, & flips it
 	mat_space += vec2(0.5, 0.5); // transforms the mat space into uv coords
 	return mat_space; // export the final uv's
 }
