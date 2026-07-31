@@ -8,5 +8,5 @@
   "RotationY": null,
   "RotationZ": null,
   "IntProperty1": "Is Animated?",
-  "IntProperty1Hint":  "0 - No\n1 - Yes"
+  "IntProperty1Hint": "0 - No\n1 - Yes"
 }

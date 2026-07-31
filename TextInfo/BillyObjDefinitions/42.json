@@ -7,12 +7,14 @@
   "RotationX": null,
   "RotationY": null,
   "RotationZ": null,
-  "IntProperty1": "Unknown",
-  "IntProperty1Hint": "",
+  "IntProperty1": "???",
+  "IntProperty1Hint": "0/0",
   "IntProperty3": "Script ID",
   "IntProperty3Hint": "Script ID in event_X.arc script file for mission",
   "IntProperty4": "Emblem Event ID",
   "IntProperty4Hint": "The ID of the emblem spawn\nscript if minigame passes\nRequires script to use this\nfor sw_off/on commands",
+  "ByteProperty1": "Cam Flag",
+  "ByteProperty1Hint": "(Freezes briefly even if no cam event)",
+  "ByteProperty2": "Flag Unique ID",
   "ByteProperty2Hint": "Needs to be unique amongst all objects"
-
 }

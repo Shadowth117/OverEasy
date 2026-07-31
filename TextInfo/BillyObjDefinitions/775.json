@@ -1,0 +1,15 @@
+{
+  "ObjectName": "Bone Dragon Head",
+  "ObjectId": 775,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Head ID. Do Not Change",
+  "IntProperty2": "HP",
+  "IntProperty2Hint": "1 ice shard is 100 HP of damage",
+  "IntProperty4": "Script ID To set flag",
+  "FloatProperty1": "unused?"
+}

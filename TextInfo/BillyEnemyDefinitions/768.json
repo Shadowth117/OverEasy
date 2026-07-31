@@ -1,4 +1,10 @@
 {
   "EnemyName": "Topo",
-  "EnemyId": 768
+  "EnemyId": 768,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null
 }

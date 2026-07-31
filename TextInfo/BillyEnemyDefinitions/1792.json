@@ -1,4 +1,10 @@
 {
   "EnemyName": "Dark Raven",
-  "EnemyId": 1792
+  "EnemyId": 1792,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null
 }

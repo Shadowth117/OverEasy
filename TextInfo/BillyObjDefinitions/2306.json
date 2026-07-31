@@ -1,0 +1,12 @@
+{
+  "ObjectName": "Disappearing Switch",
+  "ObjectId": 2306,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty2": "Event Script ID",
+  "IntProperty4": "Self ID for Event sw_chk_on group"
+}

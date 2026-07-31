@@ -1,0 +1,14 @@
+{
+  "ObjectName": "Fog Setting Level default",
+  "ObjectId": 1,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Fog ID",
+  "IntProperty1Hint": "See Fog ID sheet",
+  "IntProperty3": "Time of Day?",
+  "IntProperty3Hint": "0 - All the time\n1 - Day only\n2 - Night Only"
+}

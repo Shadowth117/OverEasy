@@ -1,0 +1,17 @@
+{
+  "ObjectName": "Trigger to start event for statue fog",
+  "ObjectId": 1800,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Event ID of statue",
+  "IntProperty2": "Fog ID",
+  "IntProperty2Hint": "(see fog_param.bin)",
+  "FloatProperty1": "Trigger X axis width",
+  "FloatProperty1Hint": "(measured from center)",
+  "FloatProperty2": "Trigger Y axis height",
+  "FloatProperty3": "Trigger Z axis depth"
+}

@@ -1,0 +1,17 @@
+{
+  "ObjectName": "Lava Mesh B (Has limited draw distance unlike A)",
+  "ObjectId": 769,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Shape;",
+  "IntProperty1Hint": "0 - Wall Lava Veins\n1- Giant Circle (for entire level)\n2 - Small Spike\n3 - Small Stretched Rounded Hexagon\n4 - Flat Lake (Wedge)\n5 - Connected 2 wedges",
+  "IntProperty2": "Texture Warp formula used*",
+  "IntProperty2Hint": "0-2\n\n*Check how Sonic Heroes Does it!",
+  "FloatProperty1": "Horizontal Texture Scroll speed",
+  "FloatProperty2": "Indirect Strength",
+  "FloatProperty3": "Vertical Texture Scroll speed"
+}

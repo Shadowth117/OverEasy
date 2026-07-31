@@ -1,0 +1,15 @@
+{
+  "ObjectName": "Dash Panel (2002 Proto only)",
+  "ObjectId": 7,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "FloatProperty1": "Scale Modifier",
+  "FloatProperty2": "Object Trigger Y offset",
+  "FloatProperty3": "Forward speed",
+  "FloatProperty4": "Trigger radius multiplier",
+  "FloatProperty4Hint": "(default 0 is too big, use decimal like 0.2)"
+}

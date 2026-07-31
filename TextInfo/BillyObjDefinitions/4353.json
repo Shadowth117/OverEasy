@@ -1,0 +1,16 @@
+{
+  "ObjectName": "Waterfall (Era Gecko)",
+  "ObjectId": 4353,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "FloatProperty1": "UV Scale (unused)",
+  "FloatProperty1Hint": "Higher values make it more dense",
+  "FloatProperty2": "Vertical Texture Scroll speed",
+  "FloatProperty2Hint": "Measured Texture height per second",
+  "FloatProperty3": "Indirect Texture Strength. Fails for PC",
+  "FloatProperty4": "Horizontal Texture Scroll speed"
+}

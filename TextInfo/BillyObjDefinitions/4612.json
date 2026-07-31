@@ -1,0 +1,12 @@
+{
+  "ObjectName": "Title Screen Chick",
+  "ObjectId": 4612,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "FloatProperty2": "Speed Modifier",
+  "FloatProperty2Hint": "Default might be 0.6 units per frame, subtract to limit speed\n\nCrashes if under -0.49"
+}

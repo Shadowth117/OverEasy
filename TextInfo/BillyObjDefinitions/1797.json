@@ -1,0 +1,13 @@
+{
+  "ObjectName": "falling pillar",
+  "ObjectId": 1797,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Damage",
+  "IntProperty1Hint": "(Player starts with 100)",
+  "FloatProperty1": "Detection range radius"
+}

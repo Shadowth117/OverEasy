@@ -1,0 +1,21 @@
+{
+  "ObjectName": "Dark Gate (w/ cutscene & loads _boss stage when you step on it)",
+  "ObjectId": 35,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Spawn state",
+  "IntProperty1Hint": "[0  = Doesn't need event, 1 = Requires event]",
+  "IntProperty2": "Script ID in Event_x.arc to trigger this to spawn in",
+  "IntProperty3": "???",
+  "FloatProperty1": "No X?",
+  "FloatProperty2": "Event Camera Pos. Y",
+  "FloatProperty3": "Event Camera Pos. Z",
+  "ByteProperty1": "Cam Flag",
+  "ByteProperty1Hint": "(Freezes briefly even if no cam event)",
+  "ByteProperty2": "Flag Unique ID",
+  "ByteProperty2Hint": "Needs to be unique across ALL objects in map"
+}

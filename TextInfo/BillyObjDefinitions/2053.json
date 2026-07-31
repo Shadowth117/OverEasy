@@ -1,0 +1,18 @@
+{
+  "ObjectName": "Goop Floor",
+  "ObjectId": 2053,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Distortion Strength for Refraction",
+  "IntProperty1Hint": "-5 or less: Faint\n-4: Minimal Distortion\n-3: Vanilla Distortion\n-2: Distorted\n-1: Very Distorted\n0: Intensely Distorted",
+  "FloatProperty1": "Diameter",
+  "FloatProperty1Hint": "(this is oddly a square)",
+  "FloatProperty2": "Ripple Wave Intensity/Speed",
+  "FloatProperty2Hint": "Vanilla is around -0.4 to 0.4\nAccepts negative (reverse) direction",
+  "FloatProperty3": "Ripple Wave Density (Additive)",
+  "FloatProperty3Hint": "Default 0 uses model UVs. Higher the value, the more compact the waves"
+}

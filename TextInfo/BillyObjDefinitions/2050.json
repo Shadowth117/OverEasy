@@ -1,0 +1,17 @@
+{
+  "ObjectName": "Egg Shell Chick NPC",
+  "ObjectId": 2050,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Textbox ID",
+  "IntProperty2": "Egg Shell Chick is running around?",
+  "IntProperty2Hint": "[0 = No, 1+ = Yes]",
+  "FloatProperty2": "Range Radius for Running",
+  "FloatProperty2Hint": "Note: Default 0 is actually around 50, use negative numbers to shrink the radius",
+  "FloatProperty3": "Speed Modifier",
+  "FloatProperty3Hint": "Default might be 0.6 units per frame, subtract to limit speed\n\nCrashes if under -0.49"
+}

@@ -24,7 +24,7 @@
   "FloatProperty4": "Event Camera Pos Z",
   "FloatProperty4Hint": "Camera Position for Z axis during event",
   "ByteProperty1": "Camera Flag",
-  "ByteProperty1Hint":  "Req to do Camera events,\nelse it softlocks",
+  "ByteProperty1Hint": "Req to do Camera events,\nelse it softlocks",
   "ByteProperty2": "Camera Identifier",
   "ByteProperty2Hint": "Needs to be unique across all objects in map"
 }

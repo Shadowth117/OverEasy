@@ -1,0 +1,11 @@
+{
+  "ObjectName": "Windmill",
+  "ObjectId": 4097,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Event ID it Triggers"
+}

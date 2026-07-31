@@ -1,0 +1,16 @@
+{
+  "ObjectName": "Final Boss Giant Egg Object",
+  "ObjectId": 2305,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty3": "Mesh Rotation Speed",
+  "IntProperty3Hint": "(Only applies to Egg shape, default zero is counterclockwise at a slow rate)",
+  "FloatProperty1": "UV Scale",
+  "FloatProperty1Hint": "Higher values make it more dense",
+  "FloatProperty2": "Horizontal Texture Scroll speed",
+  "FloatProperty3": "Vertical Texture Scroll speed"
+}

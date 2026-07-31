@@ -1,0 +1,12 @@
+{
+  "ObjectName": "Breakable X Platform",
+  "ObjectId": 49,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "# of hits to break",
+  "IntProperty1Hint": "(0 = 1 hit) [unsigned]"
+}

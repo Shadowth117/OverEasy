@@ -1,0 +1,13 @@
+{
+  "ObjectName": "Final Boss Giant Egg Object (cutscene particle spawn?)",
+  "ObjectId": 2304,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Particle Type?",
+  "IntProperty1Hint": "MIght relate to level PAD entry",
+  "FloatProperty2": "???"
+}

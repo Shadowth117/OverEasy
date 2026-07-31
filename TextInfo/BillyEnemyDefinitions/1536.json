@@ -1,4 +1,10 @@
 {
   "EnemyName": "Dark Corvo",
-  "EnemyId": 1536
+  "EnemyId": 1536,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null
 }

@@ -1,0 +1,11 @@
+{
+  "ObjectName": "clocktower battery",
+  "ObjectId": 1281,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Script ID in Event_x.arc"
+}

@@ -1,0 +1,11 @@
+{
+  "ObjectName": "Elder After a Boss Fight  *Hardcoded to spawn Emblem if there's one in the level (calls event script 250)",
+  "ObjectId": 21,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Textbox ID"
+}

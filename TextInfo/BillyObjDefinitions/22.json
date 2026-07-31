@@ -1,0 +1,19 @@
+{
+  "ObjectName": "Early Egg Hoop (in 2002 Demo, nulled in final)",
+  "ObjectId": 22,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Color",
+  "IntProperty1Hint": "0: orange (WorldY axis move)\n1: orange (World X axis move)\n2: orange (World Z axis move)\n3: hot pink (stationary)\n4: mint (spin)\n5: green\n6: blue (launches flipped)\n7: blue (travels, launches flipped)\n8: blue (buggy, Billy gets stuck for all blues)",
+  "IntProperty2": "Is Moving?",
+  "IntProperty2Hint": "0 - Yes\n1 - No\n\n(only applies to Orange)",
+  "IntProperty3": "Hoop Travel Distance",
+  "FloatProperty1": "Hoop Travel/Rotation Speed",
+  "FloatProperty2": "Hoop Release Speed",
+  "FloatProperty3": "Hoop Travel Speed",
+  "FloatProperty3Hint": "(overrides Float 1)"
+}

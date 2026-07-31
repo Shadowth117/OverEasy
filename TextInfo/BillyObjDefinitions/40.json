@@ -9,7 +9,7 @@
   "RotationZ": null,
   "IntProperty1": "Char ID",
   "IntProperty1Hint": "0 - Billy (unused)\n1 - Rolly\n2 - Chick\n3 - Bantam",
-  "IntProperty2": "IntProperty2",
+  "IntProperty2": "If 0, they can't be talked to despite button icon",
   "IntProperty2Hint": "",
   "IntProperty3": "IntProperty3",
   "IntProperty3Hint": "",

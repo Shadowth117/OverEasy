@@ -1,0 +1,17 @@
+{
+  "ObjectName": "Crow Ghosts & the Crow Ghost killing Portal",
+  "ObjectId": 2051,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Trigger ID",
+  "FloatProperty1": "Radius range for Crow Ghosts",
+  "FloatProperty2": "Seems to affect if the egg can collide with ghosts or not. Too low it doesn't, too high they free themselves after a couple of seconds",
+  "FloatProperty2Hint": "Try 20-40",
+  "FloatProperty3": "Radius endpoint to spawn Portal",
+  "FloatProperty3Hint": "(This is stupid)",
+  "FloatProperty4": "Radius from portal that kills ghosts (0 it fails to)"
+}

@@ -1,0 +1,12 @@
+{
+  "ObjectName": "Bomb from the Save missions",
+  "ObjectId": 39,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Time of Fuse in Minutes",
+  "IntProperty2": "Script ID in Event_x.arc when it blows up successfully without killing the player/kidnapped char"
+}

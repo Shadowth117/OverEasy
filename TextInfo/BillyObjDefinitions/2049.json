@@ -1,0 +1,12 @@
+{
+  "ObjectName": "Rabbish Torch Pedestal",
+  "ObjectId": 2049,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Self ID for Event sw_chk_on group",
+  "IntProperty2": "Event Script ID"
+}

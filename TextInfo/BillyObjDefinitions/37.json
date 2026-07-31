@@ -11,6 +11,7 @@
   "IntProperty1Hint": "0 - No\n1 - Yes",
   "IntProperty2": "Self Event ID",
   "IntProperty2Hint": "For Saving Chickens, this needs to be 200 higher than the first chicken's Event ID",
+  "IntProperty3": "???",
   "ByteProperty1": "Cam Flag",
   "ByteProperty1Hint": "Leave as 1 if using event",
   "ByteProperty2": "Cam Identifier",
