@@ -265,50 +265,50 @@ namespace OverEasy.Billy
             switch (obj.intProperty3)
             {
                 case 0:
-                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { }, ModelConversion.AllChickAccessoryNames);
+                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { }, ModelConversion.AllToggleableChickAccessoryNames);
                     break;
                 case 1:
-                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCBowTie }, ModelConversion.AllChickAccessoryNames);
+                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCBowTie }, ModelConversion.AllToggleableChickAccessoryNames);
                     break;
                 case 2:
-                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCHairBow }, ModelConversion.AllChickAccessoryNames);
+                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCHairBow }, ModelConversion.AllToggleableChickAccessoryNames);
                     break;
                 case 3:
-                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCEggShellCap }, ModelConversion.AllChickAccessoryNames);
+                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCEggShellCap }, ModelConversion.AllToggleableChickAccessoryNames);
                     break;
                 case 4:
-                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCHairBow, ModelConversion.ChickNPCBowTie }, ModelConversion.AllChickAccessoryNames);
+                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCHairBow, ModelConversion.ChickNPCBowTie }, ModelConversion.AllToggleableChickAccessoryNames);
                     break;
                 case 5:
-                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCEggShellCap, ModelConversion.ChickNPCBowTie }, ModelConversion.AllChickAccessoryNames);
+                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCEggShellCap, ModelConversion.ChickNPCBowTie }, ModelConversion.AllToggleableChickAccessoryNames);
                     break;
                 case 6:
-                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCHairBow, ModelConversion.ChickNPCEggShellCap, ModelConversion.ChickNPCBowTie }, ModelConversion.AllChickAccessoryNames);
+                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCHairBow, ModelConversion.ChickNPCEggShellCap, ModelConversion.ChickNPCBowTie }, ModelConversion.AllToggleableChickAccessoryNames);
                     break;
                 case 7:
-                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCHairBow, ModelConversion.ChickNPCEggShellCap }, ModelConversion.AllChickAccessoryNames);
+                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCHairBow, ModelConversion.ChickNPCEggShellCap }, ModelConversion.AllToggleableChickAccessoryNames);
                     break;
                 case 8:
-                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCBaseballCap, }, ModelConversion.AllChickAccessoryNames);
+                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCBaseballCap, }, ModelConversion.AllToggleableChickAccessoryNames);
                     break;
                 case 9:
-                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCDress, }, ModelConversion.AllChickAccessoryNames);
+                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCDress, }, ModelConversion.AllToggleableChickAccessoryNames);
                     break;
                 case 10:
-                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCBaseballCap, ModelConversion.ChickNPCBowTie }, ModelConversion.AllChickAccessoryNames);
+                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCBaseballCap, ModelConversion.ChickNPCBowTie }, ModelConversion.AllToggleableChickAccessoryNames);
                     break;
                 case 11:
-                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCBaseballCap, ModelConversion.ChickNPCDress }, ModelConversion.AllChickAccessoryNames);
+                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCBaseballCap, ModelConversion.ChickNPCDress }, ModelConversion.AllToggleableChickAccessoryNames);
                     break;
                 case 12:
-                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCHairBow, ModelConversion.ChickNPCDress }, ModelConversion.AllChickAccessoryNames);
+                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCHairBow, ModelConversion.ChickNPCDress }, ModelConversion.AllToggleableChickAccessoryNames);
                     break;
                 case 13:
-                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCEggShellCap, ModelConversion.ChickNPCDress }, ModelConversion.AllChickAccessoryNames);
+                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCEggShellCap, ModelConversion.ChickNPCDress }, ModelConversion.AllToggleableChickAccessoryNames);
                     break;
                 case 14:
 				default:
-                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCHairBow, ModelConversion.ChickNPCEggShellCap, ModelConversion.ChickNPCDress }, ModelConversion.AllChickAccessoryNames);
+                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCHairBow, ModelConversion.ChickNPCEggShellCap, ModelConversion.ChickNPCDress }, ModelConversion.AllToggleableChickAccessoryNames);
                     break;
             }
             switch (obj.intProperty4)

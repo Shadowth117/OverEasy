@@ -19,8 +19,15 @@ using Material = Godot.Material;
 namespace OverEasy.Billy
 {
 	public class ModelConversion
-	{
-		private static Dictionary<string, List<int>> SkipMeshesDict = new Dictionary<string, List<int>>()
+    {
+        public const string ChickNPCBaseballCap = "chickNPCBaseballCap";
+        public const string ChickNPCHairBow = "chickNPCHairBow";
+        public const string ChickNPCBowTie = "chickNPCBowTie";
+        public const string ChickNPCEggShellCap = "chickNPCEggShellCap";
+        public const string ChickNPCDress = "chickNPCDress";
+        public const string ChickNPCHairTie = "chickNPCHairTie";
+
+        private static Dictionary<string, List<int>> SkipMeshesDict = new Dictionary<string, List<int>>()
 		{
 			{ "object_4_0", new List<int>() { 3 } },
 			{ "object_4_1", new List<int>() { 3 } },
@@ -35,22 +42,17 @@ namespace OverEasy.Billy
             "chickNPCBaseballCap",
 			"chickNPCHairBow",
 			"chickNPCBowTie",
-			"chickNPCDress"
+			"chickNPCDress",
+            "chickNPCHairTie"
         };
 
-		public const string ChickNPCBaseballCap = "chickNPCBaseballCap";
-		public const string ChickNPCHairBow = "chickNPCHairBow";
-		public const string ChickNPCBowTie = "chickNPCBowTie";
-		public const string ChickNPCEggShellCap = "chickNPCEggShellCap";
-		public const string ChickNPCDress = "chickNPCDress";
-
-        public static List<string> AllChickAccessoryNames = new List<string>()
+        public static List<string> AllToggleableChickAccessoryNames = new List<string>()
         {
             "chickNPCBaseballCap",
             "chickNPCHairBow",
             "chickNPCBowTie",
             "chickNPCEggShellCap",
-            "chickNPCDress"
+            "chickNPCDress",
         };
 
         private static Dictionary<string, Dictionary<int, Vector2>> UVAdjustmentDict = new Dictionary<string, Dictionary<int, Vector2>>()
@@ -402,7 +404,8 @@ namespace OverEasy.Billy
 					var mat = ar.SurfaceGetMaterial(0);
                     if (mat.HasMeta("matname"))
 					{
-                        if (matNamesToColor.Contains(mat.GetMeta("matname").ToString()))
+						var matName = mat.GetMeta("matname").ToString();
+                        if (matNamesToColor.Contains(matName))
                         {
                             meshInst.SetInstanceShaderParameter("dyeColor", color);
                         }
@@ -436,6 +439,13 @@ namespace OverEasy.Billy
                     overrideMaterials.Add(3, chickClothing);
                     overrideMaterials.Add(4, chickClothing);
                     overrideMaterials.Add(5, chickClothing);
+                    break;
+				case "chickNPC":
+                    ShaderMaterial chickHairTie = new();
+                    chickHairTie.SetMeta("matname", ChickNPCHairTie);
+                    chickHairTie.Shader = (Shader)GD.Load("res://Shaders/BasicShaderDyeable.gdshader");
+                    chickHairTie.SetShaderParameter("albedoTexture", gvrTextures[0]);
+                    overrideMaterials.Add(0, chickHairTie);
                     break;
                 case "object_37":
 					ShaderMaterial emblem = new();
