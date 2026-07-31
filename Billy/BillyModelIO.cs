@@ -599,8 +599,14 @@ namespace OverEasy.Billy
 				CacheModel($"object_12", stageGeo.models[$"MODEL_STAND"], stageGeo.texLists["TLS_MODEL_STAND"], stageGeo.gvm, false, true);
 			}
 
-			//Scenery
-			for (int i = 0; i < stgobj.objEntries.Count; i++)
+            //Chicken Elder
+            if (stageGeo.models.ContainsKey($"MODEL_CHICKEN_BOSS"))
+            {
+                CacheModel($"object_21", stageGeo.models[$"MODEL_CHICKEN_BOSS"], stageGeo.texLists["TLS_MODEL_CHICKEN_BOSS"], stageGeo.gvm, false, true);
+            }
+
+            //Scenery
+            for (int i = 0; i < stgobj.objEntries.Count; i++)
 			{
 				var objEntry = stgobj.objEntries[i];
 
@@ -661,6 +667,12 @@ namespace OverEasy.Billy
             var dress = ModelConversion.NinjaToGDModel("chickNPCDress", commonGeo.models["model_19"], ModelConversion.GetTextureSubset(gvmTextures, commonGeo.texLists["texList_13"], gvrAlphaTypes, out var chickAlphaTypes5), chickAlphaTypes, null, null, chickNPC, System.Numerics.Matrix4x4.CreateTranslation(chickAQN.nodeList[38].GetInverseBindPoseMatrixInverted().Translation));
 			ModelConversion.CreateObjectCollision(chickNPC);
 			OverEasyGlobals.modelDictionary["chickNPC"] = chickNPC;
+
+            //Bowling Ball
+            if (commonGeo.models.ContainsKey($"model_20"))
+            {
+                CacheModel($"object_23", commonGeo.models[$"model_20"], new NJTextureList() { texNames = new List<string>() { "h_common0564", "h_common0464" } }, commonGeo.gvm, false, true);
+            }
 
             //Egg Bounce Switch
             var switchTexSet = ModelConversion.GetTextureSubset(gvmTextures, commonGeo.texLists["texList_11"], gvrAlphaTypes, out var bounceAlphaTypes);

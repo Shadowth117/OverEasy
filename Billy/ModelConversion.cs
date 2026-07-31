@@ -482,6 +482,17 @@ namespace OverEasy.Billy
 		{
 			switch (name)
             {
+                case "object_23":
+					/*
+                    ShaderMaterial bowlingBall = new();
+                    bowlingBall.Shader = (Shader)GD.Load("res://Shaders/matcapRedAlpha.gdshader");
+                    bowlingBall.SetShaderParameter("matcap", gvrTextures[1]);
+                    bowlingBall.SetShaderParameter("maskTex", gvrTextures[0]);
+                    bowlingBall.SetShaderParameter("alphaValue", 1.0f);
+                    bowlingBall.SetShaderParameter("albedoMultiplier", 3.0f);
+                    overlayMaterials.Add(0, bowlingBall);
+					*/
+                    break;
                 case "object_28":
                     ShaderMaterial eggGold = new();
                     eggGold.Shader = (Shader)GD.Load("res://Shaders/matcapVariableAlphaMultiply.gdshader");
