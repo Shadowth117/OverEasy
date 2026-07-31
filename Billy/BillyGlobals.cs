@@ -1521,15 +1521,20 @@ namespace OverEasy
 						break;
 					case "IntProperty3":
 						var intProperty3Value = (int)GetSpinBoxValue("IntProperty3");
-						if (objRaw.objectId == 11 && objRaw.intProperty3 != intProperty3Value)
+						if ((objRaw.objectId == 11 || objRaw.objectId == 18) && objRaw.intProperty3 != intProperty3Value)
 						{
 							shouldReloadModel = true;
 						}
 						objRaw.intProperty3 = intProperty3Value;
 						break;
 					case "IntProperty4":
-						objRaw.intProperty4 = (int)GetSpinBoxValue("IntProperty4");
-						break;
+                        var intProperty4Value = (int)GetSpinBoxValue("IntProperty4");
+                        if ((objRaw.objectId == 18) && objRaw.intProperty3 != intProperty4Value)
+                        {
+                            shouldReloadModel = true;
+                        }
+                        objRaw.intProperty4 = intProperty4Value;
+                        break;
 					case "FloatProperty1":
 						objRaw.fltProperty1 = (float)GetSpinBoxValue("FloatProperty1");
 						break;

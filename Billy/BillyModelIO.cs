@@ -180,7 +180,10 @@ namespace OverEasy.Billy
 				case 11:
 					name += $"_{obj.intProperty1}";
 					break;
-				case 25:
+                case 18:
+					name = "chickNPC";
+                    break;
+                case 25:
 					name = $"egg_{obj.intProperty1}";
 					if(!OverEasyGlobals.modelDictionary.ContainsKey(name))
 					{
@@ -240,13 +243,16 @@ namespace OverEasy.Billy
 				}
 			}
 
-			//Handle object scale
+			//Handle special object data
 			switch (obj.objectId)
 			{
 				case 11:
 					modelNode.Scale = obj.intProperty3 == 1 ? new Vector3(2, 2, 2) : new Vector3(1, 1, 1);
 					break;
-				default:
+                case 18:
+                    SetChickInfo(obj, modelNode);
+                    break;
+                default:
 					modelNode.Scale = new Vector3(1, 1, 1);
 					break;
 			}
@@ -254,7 +260,82 @@ namespace OverEasy.Billy
 			return modelNode;
 		}
 
-		public static void CleanModelNode(Node3D modelNode)
+        private static void SetChickInfo(SetObj obj, Node3D modelNode)
+        {
+            switch (obj.intProperty3)
+            {
+                case 0:
+                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { }, ModelConversion.AllChickAccessoryNames);
+                    break;
+                case 1:
+                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCBowTie }, ModelConversion.AllChickAccessoryNames);
+                    break;
+                case 2:
+                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCHairBow }, ModelConversion.AllChickAccessoryNames);
+                    break;
+                case 3:
+                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCEggShellCap }, ModelConversion.AllChickAccessoryNames);
+                    break;
+                case 4:
+                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCHairBow, ModelConversion.ChickNPCBowTie }, ModelConversion.AllChickAccessoryNames);
+                    break;
+                case 5:
+                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCEggShellCap, ModelConversion.ChickNPCBowTie }, ModelConversion.AllChickAccessoryNames);
+                    break;
+                case 6:
+                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCHairBow, ModelConversion.ChickNPCEggShellCap, ModelConversion.ChickNPCBowTie }, ModelConversion.AllChickAccessoryNames);
+                    break;
+                case 7:
+                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCHairBow, ModelConversion.ChickNPCEggShellCap }, ModelConversion.AllChickAccessoryNames);
+                    break;
+                case 8:
+                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCBaseballCap, }, ModelConversion.AllChickAccessoryNames);
+                    break;
+                case 9:
+                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCDress, }, ModelConversion.AllChickAccessoryNames);
+                    break;
+                case 10:
+                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCBaseballCap, ModelConversion.ChickNPCBowTie }, ModelConversion.AllChickAccessoryNames);
+                    break;
+                case 11:
+                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCBaseballCap, ModelConversion.ChickNPCDress }, ModelConversion.AllChickAccessoryNames);
+                    break;
+                case 12:
+                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCHairBow, ModelConversion.ChickNPCDress }, ModelConversion.AllChickAccessoryNames);
+                    break;
+                case 13:
+                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCEggShellCap, ModelConversion.ChickNPCDress }, ModelConversion.AllChickAccessoryNames);
+                    break;
+                case 14:
+				default:
+                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCHairBow, ModelConversion.ChickNPCEggShellCap, ModelConversion.ChickNPCDress }, ModelConversion.AllChickAccessoryNames);
+                    break;
+            }
+            switch (obj.intProperty4)
+            {
+                case 0:
+                    ModelConversion.SetDyeableColor(modelNode, ModelConversion.DyeableChickAccessoryNames, new Vector4(1, 0, 0, 1));  //Red
+                    break;
+                case 1:
+                    ModelConversion.SetDyeableColor(modelNode, ModelConversion.DyeableChickAccessoryNames, new Vector4(0, 0.5f, 0, 1)); //Green
+                    break;
+                case 2:
+                    ModelConversion.SetDyeableColor(modelNode, ModelConversion.DyeableChickAccessoryNames, new Vector4(0, 0, 1, 1)); //Blue
+                    break;
+                case 3:
+                    ModelConversion.SetDyeableColor(modelNode, ModelConversion.DyeableChickAccessoryNames, new Vector4(0.5f, 0, 0.5f, 1)); //Purple
+                    break;
+                case 4:
+                    ModelConversion.SetDyeableColor(modelNode, ModelConversion.DyeableChickAccessoryNames, new Vector4(0, 0.5f, 1, 1)); //Aqua
+                    break;
+                case 5:
+                default:
+                    ModelConversion.SetDyeableColor(modelNode, ModelConversion.DyeableChickAccessoryNames, new Vector4(1, 0.5f, 0, 1)); //Orange
+                    break;
+            }
+        }
+
+        public static void CleanModelNode(Node3D modelNode)
 		{
 			bool reAddCamera = false;
 			bool reAddTransform = false;
@@ -569,8 +650,33 @@ namespace OverEasy.Billy
 			//Climbing Rung
 			CacheModel($"object_17", commonGeo.models[$"model_34"], commonGeo.texLists["texList_0"], commonGeo.gvm, false, true);
 
-			//Chick Coin
-			CacheModel($"object_47", commonGeo.models[$"model_52"], commonGeo.texLists["texList_45"], commonGeo.gvm, false, true);
+			//Chick NPC
+			//We'll load the pieces in for this, then enable/disable them dynamically and color it dynamically via shader parameters
+			var chickAQN = new AquaNode();
+			var chickNPC = ModelConversion.NinjaToGDModel("chickNPC", commonGeo.models["model_14"], ModelConversion.GetTextureSubset(gvmTextures, commonGeo.texLists["texList_13"], gvrAlphaTypes, out var chickAlphaTypes), chickAlphaTypes, chickAQN);
+			var baseballCap = ModelConversion.NinjaToGDModel("chickNPCBaseballCap", commonGeo.models["model_15"], ModelConversion.GetTextureSubset(gvmTextures, commonGeo.texLists["texList_13"], gvrAlphaTypes, out var chickAlphaTypes1), chickAlphaTypes, null, null, chickNPC, System.Numerics.Matrix4x4.CreateTranslation(chickAQN.nodeList[14].GetInverseBindPoseMatrixInverted().Translation));
+			var hairBow = ModelConversion.NinjaToGDModel("chickNPCHairBow", commonGeo.models["model_16"], ModelConversion.GetTextureSubset(gvmTextures, commonGeo.texLists["texList_13"], gvrAlphaTypes, out var chickAlphaTypes2), chickAlphaTypes, null, null, chickNPC, System.Numerics.Matrix4x4.CreateTranslation(chickAQN.nodeList[14].GetInverseBindPoseMatrixInverted().Translation));
+            var bowTie = ModelConversion.NinjaToGDModel("chickNPCBowTie", commonGeo.models["model_17"], ModelConversion.GetTextureSubset(gvmTextures, commonGeo.texLists["texList_13"], gvrAlphaTypes, out var chickAlphaTypes3), chickAlphaTypes, null, null, chickNPC, System.Numerics.Matrix4x4.CreateTranslation(chickAQN.nodeList[38].GetInverseBindPoseMatrixInverted().Translation));
+            var eggshellCap = ModelConversion.NinjaToGDModel("chickNPCEggShellCap", commonGeo.models["model_18"], ModelConversion.GetTextureSubset(gvmTextures, commonGeo.texLists["texList_13"], gvrAlphaTypes, out var chickAlphaTypes4), chickAlphaTypes, null, null, chickNPC, System.Numerics.Matrix4x4.CreateTranslation(chickAQN.nodeList[14].GetInverseBindPoseMatrixInverted().Translation));
+            var dress = ModelConversion.NinjaToGDModel("chickNPCDress", commonGeo.models["model_19"], ModelConversion.GetTextureSubset(gvmTextures, commonGeo.texLists["texList_13"], gvrAlphaTypes, out var chickAlphaTypes5), chickAlphaTypes, null, null, chickNPC, System.Numerics.Matrix4x4.CreateTranslation(chickAQN.nodeList[38].GetInverseBindPoseMatrixInverted().Translation));
+			ModelConversion.CreateObjectCollision(chickNPC);
+			OverEasyGlobals.modelDictionary["chickNPC"] = chickNPC;
+
+            //Egg Bounce Switch
+            var switchTexSet = ModelConversion.GetTextureSubset(gvmTextures, commonGeo.texLists["texList_11"], gvrAlphaTypes, out var bounceAlphaTypes);
+            var eggBounceSwitchModel = ModelConversion.NinjaToGDModel($"object_26_base", commonGeo.models[$"model_32"], switchTexSet, bounceAlphaTypes);
+            var eggBounceSwitchFinalModel = ModelConversion.NinjaToGDModel($"object_26", commonGeo.models[$"model_33"], switchTexSet, bounceAlphaTypes, null, null, eggBounceSwitchModel);
+            ModelConversion.CreateObjectCollision(eggBounceSwitchFinalModel);
+            OverEasyGlobals.modelDictionary["object_26"] = eggBounceSwitchFinalModel;
+
+            //Animal breakable
+            CacheModel($"object_27", commonGeo.models[$"model_36"], commonGeo.texLists["texList_36"], commonGeo.gvm, false, true);
+
+            //Cannon
+            CacheModel($"object_29", commonGeo.models[$"model_35"], commonGeo.texLists["texList_34"], commonGeo.gvm, false, true);
+
+            //Chick Coin
+            CacheModel($"object_47", commonGeo.models[$"model_52"], commonGeo.texLists["texList_45"], commonGeo.gvm, false, true);
 
 			//Fruit balls
 			var tfm = System.Numerics.Matrix4x4.CreateTranslation(new System.Numerics.Vector3(0, 5, 0));

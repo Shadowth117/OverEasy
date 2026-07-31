@@ -30,7 +30,30 @@ namespace OverEasy.Billy
 			{ "object_4_5", new List<int>() { 3 } },
 		};
 
-		private static Dictionary<string, Dictionary<int, Vector2>> UVAdjustmentDict = new Dictionary<string, Dictionary<int, Vector2>>()
+		public static List<string> DyeableChickAccessoryNames = new List<string>()
+		{
+            "chickNPCBaseballCap",
+			"chickNPCHairBow",
+			"chickNPCBowTie",
+			"chickNPCDress"
+        };
+
+		public const string ChickNPCBaseballCap = "chickNPCBaseballCap";
+		public const string ChickNPCHairBow = "chickNPCHairBow";
+		public const string ChickNPCBowTie = "chickNPCBowTie";
+		public const string ChickNPCEggShellCap = "chickNPCEggShellCap";
+		public const string ChickNPCDress = "chickNPCDress";
+
+        public static List<string> AllChickAccessoryNames = new List<string>()
+        {
+            "chickNPCBaseballCap",
+            "chickNPCHairBow",
+            "chickNPCBowTie",
+            "chickNPCEggShellCap",
+            "chickNPCDress"
+        };
+
+        private static Dictionary<string, Dictionary<int, Vector2>> UVAdjustmentDict = new Dictionary<string, Dictionary<int, Vector2>>()
 		{
 			{ "object_4_3", new Dictionary<int, Vector2>() //Switch variant 3
 				{ 
@@ -338,11 +361,83 @@ namespace OverEasy.Billy
 			return root;
 		}
 
-		private static void GetOverrideMaterial(string name, List<Texture2D> gvrTextures, Dictionary<int, Material> overrideMaterials)
+        /// <summary>
+        /// matNamesToEnable are material names whose objects should be visible.
+		/// matNamesToAffect are material names whose objects should not be visible unless sthey are in matNamesToEnable.
+        /// </summary>
+        public static void SetEnabledFromMatName(Node parentNode, List<string> matNamesToEnable, List<string> matNamesToAffect)
+        {
+            if (parentNode is MeshInstance3D meshInst)
+            {
+                if (meshInst.Mesh is ArrayMesh ar)
+                {
+                    var mat = ar.SurfaceGetMaterial(0);
+					if(mat.HasMeta("matname"))
+                    {
+                        var matName = mat.GetMeta("matname").ToString();
+                        if (matNamesToEnable.Contains(matName))
+                        {
+                            meshInst.Visible = true;
+                        }
+                        else if (matNamesToAffect.Contains(matName))
+                        {
+                            meshInst.Visible = false;
+                        }
+                    }	
+                }
+            }
+            var nodes = parentNode.GetChildren();
+            foreach (var node in nodes)
+            {
+                SetEnabledFromMatName(node, matNamesToEnable, matNamesToAffect);
+            }
+        }
+
+        public static void SetDyeableColor(Node parentNode, List<string> matNamesToColor, Vector4 color)
+        {
+            if (parentNode is MeshInstance3D meshInst)
+            {
+                if (meshInst.Mesh is ArrayMesh ar)
+                {
+					var mat = ar.SurfaceGetMaterial(0);
+                    if (mat.HasMeta("matname"))
+					{
+                        if (matNamesToColor.Contains(mat.GetMeta("matname").ToString()))
+                        {
+                            meshInst.SetInstanceShaderParameter("dyeColor", color);
+                        }
+                    }
+                        
+                }
+            }
+            var nodes = parentNode.GetChildren();
+            foreach (var node in nodes)
+            {
+                SetDyeableColor(node, matNamesToColor, color);
+            }
+        }
+
+        private static void GetOverrideMaterial(string name, List<Texture2D> gvrTextures, Dictionary<int, Material> overrideMaterials)
 		{
 			switch (name)
 			{
-				case "object_37":
+				case "chickNPCBaseballCap":
+				case "chickNPCHairBow":
+				case "chickNPCBowTie":
+				case "chickNPCEggShellCap":
+				case "chickNPCDress":
+					ShaderMaterial chickClothing = new();
+					chickClothing.SetMeta("matname", name);
+					chickClothing.Shader = (Shader)GD.Load("res://Shaders/BasicShaderDyeable.gdshader");
+                    chickClothing.SetShaderParameter("albedoTexture", gvrTextures[0]);
+                    overrideMaterials.Add(0, chickClothing);
+                    overrideMaterials.Add(1, chickClothing);
+                    overrideMaterials.Add(2, chickClothing);
+                    overrideMaterials.Add(3, chickClothing);
+                    overrideMaterials.Add(4, chickClothing);
+                    overrideMaterials.Add(5, chickClothing);
+                    break;
+                case "object_37":
 					ShaderMaterial emblem = new();
 					emblem.Shader = (Shader)GD.Load("res://Shaders/brightUnlit.gdshader");
 					emblem.SetShaderParameter("albedoTexture", gvrTextures[0]);
