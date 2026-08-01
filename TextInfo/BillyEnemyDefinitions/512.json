@@ -1,4 +1,10 @@
 {
   "EnemyName": "Captain Glur",
-  "EnemyId": 512
+  "EnemyId": 512,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null
 }

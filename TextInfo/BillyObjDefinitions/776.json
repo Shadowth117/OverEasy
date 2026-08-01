@@ -1,0 +1,13 @@
+{
+  "ObjectName": "Bone Dragon Meteor Spawner",
+  "ObjectId": 776,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Meteor Spawner ID (match Head ID)",
+  "FloatProperty1": "Trigger and spawn size Horizontal radius",
+  "FloatProperty2": "Trigger size Vertical radius"
+}

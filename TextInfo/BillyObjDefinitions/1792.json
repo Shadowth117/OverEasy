@@ -24,7 +24,7 @@
   "FloatProperty4": "Event Cam Focus Y axis",
   "FloatProperty4Hint": "Default (0) is right on the gate's position",
   "ByteProperty1": "Camera Flag",
-  "ByteProperty1Hint":  "Req to do Camera events,\nelse it softlocks\nNeeds to be 0",
+  "ByteProperty1Hint": "Req to do Camera events,\nelse it softlocks\nNeeds to be 0",
   "ByteProperty2": "Camera Identifier",
   "ByteProperty2Hint": "Needs to be unique across all objects in map"
 }

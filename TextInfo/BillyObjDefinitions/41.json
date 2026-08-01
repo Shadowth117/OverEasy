@@ -9,6 +9,6 @@
   "RotationZ": null,
   "IntProperty1": "Chicken Type",
   "IntProperty1Hint": "Appearance mainly\n0 = White w/ Red Bow\n1 = Pink\n2 = Brown\n3 = Green\n4 = White w/ Red Bow & beady eyes\n5 = Blue\n6 = Purple\n7 = White w/ Red Bandana",
-  "IntProperty2": "IntProperty2",
+  "IntProperty2": "Script ID in Event_x.arc. Unlike other Multi objects, this uses the set command instead of sw_chk_on, likely to retain the fact it's collected even if you die. Hardcoded to run script 250 (Emblem spawn) when 8 are collected",
   "IntProperty2Hint": ""
 }

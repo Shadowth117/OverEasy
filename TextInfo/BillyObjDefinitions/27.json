@@ -1,0 +1,12 @@
+{
+  "ObjectName": "Boulder to block path (destroyable by tames)",
+  "ObjectId": 27,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "???",
+  "FloatProperty4": "Scale Modifier"
+}

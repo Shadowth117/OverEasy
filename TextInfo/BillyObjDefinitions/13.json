@@ -7,7 +7,7 @@
   "RotationX": null,
   "RotationY": null,
   "RotationZ": null,
-  "IntProperty1": "",
+  "IntProperty1": "???",
   "IntProperty1Hint": "",
   "IntProperty2": "Time Period",
   "IntProperty2Hint": "-3- = Off\n-2 = Burn Indefinitely\n-1 to 1 = Burn 1s Wait 1s\n2 = Burn 1s Wait 3s\n3 = Burn 1s Wait 5s\n4 = Burn 1s, Wait 6s...etc?",

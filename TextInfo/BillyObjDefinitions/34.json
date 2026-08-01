@@ -1,0 +1,15 @@
+{
+  "ObjectName": "Light Gate (in 2002 Demo, nulled in final)",
+  "ObjectId": 34,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Doesn't do anything, but probably was meant to mimic Dark Gates",
+  "ByteProperty1": "Cam Flag",
+  "ByteProperty1Hint": "(Freezes briefly even if no cam event)",
+  "ByteProperty2": "Flag Unique ID",
+  "ByteProperty2Hint": "Needs to be unique across ALL objects in map"
+}

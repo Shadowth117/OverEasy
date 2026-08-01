@@ -1,0 +1,15 @@
+{
+  "ObjectName": "crow fireshooters",
+  "ObjectId": 1793,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Time Period",
+  "IntProperty1Hint": "0 - Burn 3 seconds, wait 6 seconds, repeat\n1+ - Burn indefinitely",
+  "IntProperty2": "Damage Dealt",
+  "IntProperty2Hint": "Oddly calculated differently than other objects\n\nAdditive to default 25HP of damage (player starts at 100)\n\nuse negative numbers to reduce damage",
+  "IntProperty4": "???"
+}

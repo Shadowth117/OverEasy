@@ -1,0 +1,11 @@
+{
+  "ObjectName": "sand flow",
+  "ObjectId": 1799,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Event ID (refer to Stage event_x.arc script)"
+}

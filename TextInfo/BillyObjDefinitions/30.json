@@ -1,16 +1,16 @@
 {
-  "ObjectName": "Bridge",
-  "ObjectId": 3,
+  "ObjectName": "Bridge (object_bin for test2, short01) Bridge (design_bin other stages)  Appearance based on level ID",
+  "ObjectId": 30,
   "PositionX": null,
   "PositionY": null,
   "PositionZ": null,
   "RotationX": null,
   "RotationY": null,
   "RotationZ": null,
-  "IntProperty1": "Segment Count Additive",
-  "IntProperty1Hint": "Default 0 is 2 segments long. Add or subtract",
+  "IntProperty1": "Segment length additive",
+  "IntProperty1Hint": "Default 0 is 2 segments, measured from center",
   "IntProperty2": "???",
-  "IntProperty2Hint": "Typically 1 or 3",
+  "IntProperty2Hint": "0 or 1 (levels)\n1 or 3 (test)",
   "IntProperty3": "???",
-  "IntProperty3Hint": "Typically 4-8"
+  "IntProperty3Hint": "4-8 (test)\n4 (Blue and Green stage)\n8 (Red stage)"
 }

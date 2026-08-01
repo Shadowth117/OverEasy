@@ -1,0 +1,13 @@
+{
+  "ObjectName": "Minigame Coin",
+  "ObjectId": 38,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Coin Color",
+  "IntProperty1Hint": "[0 = Blue, 1+ = Red]",
+  "IntProperty4": "Event ID referenced in event_x.arc script file for the sw_on/off command"
+}

@@ -1,0 +1,16 @@
+{
+  "ObjectName": "Light Gate and surrounding Gates",
+  "ObjectId": 1803,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Self ID Event to trigger glowing",
+  "IntProperty2": "Event right before cutscene of rainbow gate",
+  "IntProperty3": "Event after cutscene of rainbow gate",
+  "IntProperty4": "Event script ID for failing to have 25 Emblems",
+  "ByteProperty1": "Cam Flag",
+  "ByteProperty2": "Cam Identifier"
+}

@@ -1,4 +1,10 @@
 {
   "EnemyName": "Saltim",
-  "EnemyId": 1280
+  "EnemyId": 1280,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null
 }

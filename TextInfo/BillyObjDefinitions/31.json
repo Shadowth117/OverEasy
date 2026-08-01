@@ -8,9 +8,9 @@
   "RotationY": null,
   "RotationZ": null,
   "IntProperty1": "Particle ID?",
-  "IntProperty1Hint": "",
-  "IntProperty2": "",
-  "IntProperty2Hint": "",
+  "IntProperty1Hint": "Some world's have 5, others have over 10",
+  "IntProperty2": "Particle set ID",
+  "IntProperty2Hint": "Most use 1 to define Geo Obj specific ones. 0 is the default",
   "IntProperty3": "",
   "IntProperty3Hint": ""
 }

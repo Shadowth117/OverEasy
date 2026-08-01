@@ -1,0 +1,20 @@
+{
+  "ObjectName": "Level Caustics",
+  "ObjectId": 2048,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Shape ID",
+  "IntProperty1Hint": "0 - Walls/Pillars of entire level (Giant Palace)\n1 - Giant Egg",
+  "IntProperty2": "Distortion Strength for Caustics",
+  "IntProperty2Hint": "-5 or less: Faint\n-4: Minimal Distortion\n-3: Low Distortion\n-2: Distorted\n-1: Vanilla, Very Distorted\n0: Intensely Distorted",
+  "IntProperty3": "Mesh Rotation Speed",
+  "IntProperty3Hint": "(Only applies to Egg shape, default zero is counterclockwise at a slow rate)",
+  "FloatProperty1": "UV Scale",
+  "FloatProperty1Hint": "Higher values make it more dense",
+  "FloatProperty2": "Horizontal Texture Scroll speed",
+  "FloatProperty3": "Vertical Texture Scroll speed"
+}

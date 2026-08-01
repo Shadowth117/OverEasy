@@ -1,0 +1,12 @@
+{
+  "ObjectName": "Egg Animal Without Egg! (only in 2002 Proto)",
+  "ObjectId": 28675,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Egg Animal ID (Sep 2002)",
+  "IntProperty1Hint": "0 - Clippin\n1 - Richie\n2 - Runny\n3 - Cipher\n4 - Recky\n5 - Peliwan"
+}

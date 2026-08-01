@@ -1,4 +1,10 @@
 {
   "EnemyName": "Dark Raven Stage 2",
-  "EnemyId": 2048
+  "EnemyId": 2048,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null
 }

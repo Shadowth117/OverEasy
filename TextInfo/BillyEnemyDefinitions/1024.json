@@ -1,4 +1,10 @@
 {
   "EnemyName": "Moles",
-  "EnemyId": 1024
+  "EnemyId": 1024,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null
 }

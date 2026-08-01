@@ -1,0 +1,14 @@
+{
+  "ObjectName": "sand room platforms",
+  "ObjectId": 1798,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Script ID (200)",
+  "IntProperty2": "Script ID 2 (201)",
+  "ByteProperty1": "Cam Flag",
+  "ByteProperty2": "Cam Identifier"
+}

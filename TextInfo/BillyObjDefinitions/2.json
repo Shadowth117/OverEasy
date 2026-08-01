@@ -1,0 +1,22 @@
+{
+  "ObjectName": "Light Trigger",
+  "ObjectId": 2,
+  "PositionX": null,
+  "PositionY": null,
+  "PositionZ": null,
+  "RotationX": null,
+  "RotationY": null,
+  "RotationZ": null,
+  "IntProperty1": "Light ID",
+  "IntProperty2": "???",
+  "IntProperty3": "???",
+  "IntProperty4": "???",
+  "FloatProperty1": "How fast it updates lighting?",
+  "FloatProperty2": "X trigger radius",
+  "FloatProperty3": "Y trigger radius (unused)",
+  "FloatProperty4": "Z trigger radius (unused)",
+  "ByteProperty1": "???",
+  "ByteProperty2": "???",
+  "ByteProperty4": "Setting to override Level Lighting",
+  "ByteProperty4Hint": "0 - Always On\n1 - Day Only\n2 - Night Only"
+}

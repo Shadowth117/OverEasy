@@ -19,7 +19,7 @@
   "FloatProperty3": "Unused",
   "FloatProperty4": "Unused",
   "ByteProperty1": "Unused",
-  "ByteProperty2": "Unknown",
+  "ByteProperty2": "???",
   "ByteProperty2Hint": "Has the value 0 everywhere except in set_obj_orng.bin the value is FA (250)",
   "ByteProperty3": "Unused",
   "ByteProperty4": "Unused"
