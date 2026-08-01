@@ -276,7 +276,7 @@ public partial class ViewerCamera : Camera3D
 			var mousePosition = OverEasyGlobals.setDataTree.GetGlobalMousePosition();
 			if(dragButtonHeld)
 			{
-                if (isDragging == false && !mousePosition.IsEqualApprox(dragStart))
+				if (isDragging == false && !mousePosition.IsEqualApprox(dragStart))
 				{
 					dragStartPosition = OverEasyGlobals.TransformGizmo.GlobalPosition.ToSNVec3();
 					if(OverEasyGlobals.TransformGizmoWorld)
@@ -394,9 +394,9 @@ public partial class ViewerCamera : Camera3D
 	private void _ProcessTransformation(double delta)
 	{
 		if (OverEasyGlobals.CanAccess3d || mouseRightClickedIn3d || oneTimeProcessTransform)
-        {
-            this.GetViewport().GuiReleaseFocus();
-            switch (cameraMode)
+		{
+			this.GetViewport().GuiReleaseFocus();
+			switch (cameraMode)
 			{
 				case CameraMode.Orbit:
 					_ProcessOrbit(delta);
@@ -440,16 +440,16 @@ public partial class ViewerCamera : Camera3D
 		}
 
 		scrollSpeed = 0;
-        //spinSpeed = 0
+		//spinSpeed = 0
 
-        this.SetIdentity();
-        this.TranslateObjectLocal(new Vector3(0, 0, (float)_distance));
-        targetNode.SetIdentity();
-        var targetNodeTfm = targetNode.Transform;
-        targetNodeTfm.Basis = new Basis(Godot.Quaternion.FromEuler(_orbitRotation));
-        targetNode.Transform = targetNodeTfm;
+		this.SetIdentity();
+		this.TranslateObjectLocal(new Vector3(0, 0, (float)_distance));
+		targetNode.SetIdentity();
+		var targetNodeTfm = targetNode.Transform;
+		targetNodeTfm.Basis = new Basis(Godot.Quaternion.FromEuler(_orbitRotation));
+		targetNode.Transform = targetNodeTfm;
 
-    }
+	}
 
 	public void _ProcessFreecam(double delta)
 	{
@@ -544,34 +544,34 @@ public partial class ViewerCamera : Camera3D
 	public void ToggleMode()
 	{
 		if (cameraMode == CameraMode.Orbit)
-        {
-            SetToFreecam();
-        }
-        else if (cameraMode == CameraMode.Freecam)
+		{
+			SetToFreecam();
+		}
+		else if (cameraMode == CameraMode.Freecam)
 		{
 			cameraMode = CameraMode.Orbit;
 			TrySetOrbitCam();
 		}
 	}
 
-    public void SetToFreecam()
-    {
-        cameraMode = CameraMode.Freecam;
-        this.Reparent(GetTree().Root);
+	public void SetToFreecam()
+	{
+		cameraMode = CameraMode.Freecam;
+		this.Reparent(GetTree().Root);
 
-        //Adjust targetNode while it's not parented
+		//Adjust targetNode while it's not parented
 		if(Node.IsInstanceValid(targetNode))
-        {
-            targetNode.GlobalRotation = new Vector3(0, targetNode.GlobalRotation.Y, targetNode.GlobalRotation.Z);
-            targetNode.Reparent(GetTree().Root, true);
-            this.Reparent(targetNode);
-        }
+		{
+			targetNode.GlobalRotation = new Vector3(0, targetNode.GlobalRotation.Y, targetNode.GlobalRotation.Z);
+			targetNode.Reparent(GetTree().Root, true);
+			this.Reparent(targetNode);
+		}
 
-        //Reparent back to targetNode after its adjustment
-        freecamTotalPitch = -(this.Rotation.X * 180 / Mathf.Pi);
-    }
+		//Reparent back to targetNode after its adjustment
+		freecamTotalPitch = -(this.Rotation.X * 180 / Mathf.Pi);
+	}
 
-    public bool TrySetOrbitCam()
+	public bool TrySetOrbitCam()
 	{
 		if (Node.IsInstanceValid(orbitFocusNode) && orbitFocusNode != null)
 		{
@@ -685,6 +685,10 @@ public partial class ViewerCamera : Camera3D
 							{
 								OverEasyGlobals.PreviousMouseSelectionPointRidCache.Add((Godot.Rid)result["rid"]);
 								var parentNode = ((Node3D)result["collider"]).GetParent().GetParent();
+								if(parentNode.HasMeta("parentNode"))
+								{
+									parentNode = (Node3D)parentNode.GetMeta("parentNode");
+								}
 
 								orbitFocusNode = (Node3D)parentNode;
 								if(cameraMode == CameraMode.Orbit)

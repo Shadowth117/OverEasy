@@ -1505,7 +1505,7 @@ namespace OverEasy
 						break;
 					case "IntProperty1":
 						var intProperty1Value = (int)GetSpinBoxValue("IntProperty1");
-						if ((objRaw.objectId == 50 || objRaw.objectId == 38 || objRaw.objectId == 25 || objRaw.objectId == 11 || objRaw.objectId == 10 || objRaw.objectId == 4) && objRaw.intProperty1 != intProperty1Value)
+						if ((objRaw.objectId == 50 || objRaw.objectId == 38 || objRaw.objectId == 30 || objRaw.objectId == 25 || objRaw.objectId == 11 || objRaw.objectId == 10 || objRaw.objectId == 4) && objRaw.intProperty1 != intProperty1Value)
 						{
 							shouldReloadModel = true;
 						}
@@ -1545,7 +1545,12 @@ namespace OverEasy
 						objRaw.fltProperty3 = (float)GetSpinBoxValue("FloatProperty3");
 						break;
 					case "FloatProperty4":
-						objRaw.fltProperty4 = (float)GetSpinBoxValue("FloatProperty4");
+						var floatProperty4Value = (float)GetSpinBoxValue("FloatProperty4");
+						if(objRaw.objectId == 27 && objRaw.fltProperty4 != floatProperty4Value)
+						{
+							shouldReloadModel = true;
+                        }
+						objRaw.fltProperty4 = floatProperty4Value;
 						break;
 					case "ByteProperty1":
 						objRaw.btProperty1 = (byte)GetSpinBoxValue("ByteProperty1");
@@ -1571,8 +1576,8 @@ namespace OverEasy
 			parentNode.GlobalPosition = new Vector3(objPosition.X, objPosition.Y, objPosition.Z);
 			parentNode.RotationDegrees = new Vector3(objRotation.X, objRotation.Y, objRotation.Z);
 
-			//Insert over original file object values
-			setObjList.setObjs[objectId] = objRaw;
+            //Insert over original file object values
+            setObjList.setObjs[objectId] = objRaw;
 		}
 
 		public static void UpdateBillySetEnemies(int objectId)

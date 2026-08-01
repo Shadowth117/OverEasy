@@ -1,14 +1,16 @@
+using AquaModelLibrary.Data.BillyHatcher;
 using AquaModelLibrary.Data.BillyHatcher.ARCData;
 using AquaModelLibrary.Data.BillyHatcher.SetData;
-using AquaModelLibrary.Data.Ninja.Model;
 using AquaModelLibrary.Data.Ninja;
+using AquaModelLibrary.Data.Ninja.Model;
+using AquaModelLibrary.Data.PSO2.Aqua;
+using AquaModelLibrary.Data.PSO2.Aqua.AquaNodeData;
 using ArchiveLib;
 using Godot;
 using OverEasy.TextInfo;
 using System.Collections.Generic;
 using System.IO;
-using AquaModelLibrary.Data.PSO2.Aqua;
-using AquaModelLibrary.Data.BillyHatcher;
+using System.Xml.Linq;
 using VrSharp.Gvr;
 
 namespace OverEasy.Billy
@@ -190,6 +192,9 @@ namespace OverEasy.Billy
 						name = "egg_0";
 					}
 					break;
+				case 30:
+					name = "bridge";
+					break;
 				case 38:
 					name += obj.intProperty1 != 0 ? "_red" : "_blue";
 					break;
@@ -207,11 +212,11 @@ namespace OverEasy.Billy
 			{
 				CleanModelNode(modelNode);
 			}
-			if (OverEasyGlobals.modelDictionary.ContainsKey(name))
+			if (OverEasyGlobals.modelDictionary.ContainsKey(name) && obj.objectId != 30)
 			{
 				modelNode = ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary[name], modelNode);
 			}
-			else if (obj.objectId == 0)
+			else if (obj.objectId == 0 || obj.objectId == 30)
 			{
 				if(modelNode == null)
 				{
@@ -252,6 +257,12 @@ namespace OverEasy.Billy
                 case 18:
                     SetChickInfo(obj, modelNode);
                     break;
+				case 27:
+                    modelNode.Scale = new Vector3(1 + obj.fltProperty4, 1 + obj.fltProperty4, 1 + obj.fltProperty4);
+                    break;
+                case 30:
+                    SetBridgeModel(obj, modelNode);
+                    break;
                 default:
 					modelNode.Scale = new Vector3(1, 1, 1);
 					break;
@@ -259,6 +270,72 @@ namespace OverEasy.Billy
 
 			return modelNode;
 		}
+
+        private static void SetBridgeModel(SetObj obj, Node3D modelNode)
+        {
+            //Bridges are laid out with segments made of either columns or rope, then a plank model in between with columns on either end as well.
+            int numSegments = obj.intProperty1 > 0 ? obj.intProperty1 : 0;
+            //Create planks and rope + columns
+            for (int i = 0; i < numSegments + 2; i++)
+            {
+                var node = GetBridgePlankSegment(numSegments, i);
+                node.SetMeta("parentNode", modelNode);
+                modelNode.AddChild(node);
+                node.Position += new Vector3(0, 0, 40 * i);
+
+                var columnNode = ((i + numSegments) & 1) > 0 ? ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary["MODEL_TURIBASHI_ROPE"]) : ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary["MODEL_TURIBASHI_HASHIRA01"]);
+                columnNode.SetMeta("parentNode", modelNode);
+                modelNode.AddChild(columnNode);
+                columnNode.Position += new Vector3(0, 0, 40 * i);
+
+                if (i != 0)
+                {
+                    var nodeOpposite = GetBridgePlankSegment(numSegments, -i);
+                    nodeOpposite.SetMeta("parentNode", modelNode);
+                    modelNode.AddChild(nodeOpposite);
+                    nodeOpposite.Position += new Vector3(0, 0, 40 * -i);
+
+                    var columnNodeOpposite = ((i + numSegments) & 1) > 0 ? ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary["MODEL_TURIBASHI_ROPE"]) : ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary["MODEL_TURIBASHI_HASHIRA01"]);
+                    columnNodeOpposite.SetMeta("parentNode", modelNode); 
+					modelNode.AddChild(columnNodeOpposite);
+                    columnNodeOpposite.Position += new Vector3(0, 0, 40 * -i);
+                }
+            }
+
+            //Create end columns
+            var end = ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary["MODEL_TURIBASHI_HASHIRA02"]);
+            end.SetMeta("parentNode", modelNode);
+            modelNode.AddChild(end);
+            end.RotateY(Mathf.Pi);
+            end.Position += new Vector3(3.5f, 0, 40 * (numSegments + 2));
+
+            var endOpposite = ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary["MODEL_TURIBASHI_HASHIRA02"]);
+			endOpposite.SetMeta("parentNode", modelNode);
+            modelNode.AddChild(endOpposite);
+            endOpposite.Position += new Vector3(0, 0, 40 * -(numSegments + 2));
+            ModelConversion.CreateObjectCollision(modelNode);
+        }
+
+        private static Node3D GetBridgePlankSegment(int numSegments, int currentSegment)
+		{
+			if(currentSegment < 0)
+			{
+				currentSegment = Mathf.Abs(currentSegment) + 1;
+			}
+			int segmentSequence = currentSegment + numSegments;
+			int segmentId = segmentSequence % 3;
+			switch(segmentId)
+			{
+				case 0:
+					return ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary["MODEL_TURIBASHI_ITA03"]);
+                case 1:
+                    return ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary["MODEL_TURIBASHI_ITA01"]);
+                case 2:
+                    return ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary["MODEL_TURIBASHI_ITA02"]);
+            }
+
+			throw new System.Exception("Unexpected segment Id");
+        }
 
         private static void SetChickInfo(SetObj obj, Node3D modelNode)
         {
@@ -584,25 +661,51 @@ namespace OverEasy.Billy
 			ModelConversion.LoadGVM("geobjStage", stageGeo.gvm, out var gvmTextures, out var gvrAlphaTypes);
 
 			//Gates
-			if(stageGeo.models.ContainsKey($"MODEL_DOOR01"))
+			if(stageGeo.models.ContainsKey("MODEL_DOOR01"))
 			{
-				CacheModel($"object_5", stageGeo.models[$"MODEL_DOOR01"], stageGeo.texLists["TLS_MODEL_DOOR01"], stageGeo.gvm, true, true);
+				CacheModel("object_5", stageGeo.models["MODEL_DOOR01"], stageGeo.texLists["TLS_MODEL_DOOR01"], stageGeo.gvm, true, true);
 			}
-			if(stageGeo.models.ContainsKey($"MODEL_DOOR02"))
+			if(stageGeo.models.ContainsKey("MODEL_DOOR02"))
 			{
-				CacheModel($"object_1285", stageGeo.models[$"MODEL_DOOR02"], stageGeo.texLists["TLS_MODEL_DOOR02"], stageGeo.gvm, true, true);
+				CacheModel("object_1285", stageGeo.models["MODEL_DOOR02"], stageGeo.texLists["TLS_MODEL_DOOR02"], stageGeo.gvm, true, true);
 			}
 
 			//Platforms
-			if (stageGeo.models.ContainsKey($"MODEL_STAND"))
+			if (stageGeo.models.ContainsKey("MODEL_STAND"))
 			{
-				CacheModel($"object_12", stageGeo.models[$"MODEL_STAND"], stageGeo.texLists["TLS_MODEL_STAND"], stageGeo.gvm, false, true);
+				CacheModel("object_12", stageGeo.models["MODEL_STAND"], stageGeo.texLists["TLS_MODEL_STAND"], stageGeo.gvm, false, true);
 			}
 
             //Chicken Elder
-            if (stageGeo.models.ContainsKey($"MODEL_CHICKEN_BOSS"))
+            if (stageGeo.models.ContainsKey("MODEL_CHICKEN_BOSS"))
             {
-                CacheModel($"object_21", stageGeo.models[$"MODEL_CHICKEN_BOSS"], stageGeo.texLists["TLS_MODEL_CHICKEN_BOSS"], stageGeo.gvm, false, true);
+                CacheModel("object_21", stageGeo.models["MODEL_CHICKEN_BOSS"], stageGeo.texLists["TLS_MODEL_CHICKEN_BOSS"], stageGeo.gvm, false, true);
+            }
+
+			//Bridge
+			if (stageGeo.models.ContainsKey("MODEL_TURIBASHI_HASHIRA01"))
+			{
+				CacheModel("MODEL_TURIBASHI_HASHIRA01", stageGeo.models["MODEL_TURIBASHI_HASHIRA01"], stageGeo.texLists["TLS_MODEL_TURIBASHI_HASHIRA01"], stageGeo.gvm, false, true, null, true);
+            }
+            if (stageGeo.models.ContainsKey("MODEL_TURIBASHI_HASHIRA02"))
+            {
+                CacheModel("MODEL_TURIBASHI_HASHIRA02", stageGeo.models["MODEL_TURIBASHI_HASHIRA02"], stageGeo.texLists["TLS_MODEL_TURIBASHI_HASHIRA02"], stageGeo.gvm, false, true, null, true);
+            }
+            if (stageGeo.models.ContainsKey("MODEL_TURIBASHI_ITA01"))
+            {
+                CacheModel("MODEL_TURIBASHI_ITA01", stageGeo.models["MODEL_TURIBASHI_ITA01"], stageGeo.texLists["TLS_MODEL_TURIBASHI_ITA01"], stageGeo.gvm, false, true, null, true);
+            }
+            if (stageGeo.models.ContainsKey("MODEL_TURIBASHI_ITA02"))
+            {
+                CacheModel("MODEL_TURIBASHI_ITA02", stageGeo.models["MODEL_TURIBASHI_ITA02"], stageGeo.texLists["TLS_MODEL_TURIBASHI_ITA02"], stageGeo.gvm, false, true, null, true);
+            }
+            if (stageGeo.models.ContainsKey("MODEL_TURIBASHI_ITA03"))
+            {
+                CacheModel("MODEL_TURIBASHI_ITA03", stageGeo.models["MODEL_TURIBASHI_ITA03"], stageGeo.texLists["TLS_MODEL_TURIBASHI_ITA03"], stageGeo.gvm, false, true, null, true);
+            }
+            if (stageGeo.models.ContainsKey("MODEL_TURIBASHI_ROPE"))
+            {
+                CacheModel("MODEL_TURIBASHI_ROPE", stageGeo.models["MODEL_TURIBASHI_ROPE"], stageGeo.texLists["TLS_MODEL_TURIBASHI_ROPE"], stageGeo.gvm, false, true, null, true);
             }
 
             //Scenery
@@ -703,7 +806,7 @@ namespace OverEasy.Billy
             ModelConversion.CreateObjectCollision(eggBounceSwitchFinalModel);
             OverEasyGlobals.modelDictionary["object_26"] = eggBounceSwitchFinalModel;
 
-            //Animal breakable
+            //Animal Breakable Boulder
             CacheModel($"object_27", commonGeo.models[$"model_36"], commonGeo.texLists["texList_36"], commonGeo.gvm, false, true);
 
             //Cannon
@@ -787,7 +890,7 @@ namespace OverEasy.Billy
 			return modelNode;
 		}
 
-		public static Node3D CacheModel(string name, NJSObject nj, NJTextureList njtl, PuyoFile gvm, bool forceAdd, bool blockVertColors = false, float? forceOpacity = null)
+		public static Node3D CacheModel(string name, NJSObject nj, NJTextureList njtl, PuyoFile gvm, bool forceAdd, bool blockVertColors = false, float? forceOpacity = null, bool skipCollision = false)
 		{
 			ModelConversion.LoadGVM(name, gvm, out var gvmTextures, out var gvrAlphaTypes);
 			List<Texture2D> textureSubSet;
@@ -816,14 +919,17 @@ namespace OverEasy.Billy
 					posMat = System.Numerics.Matrix4x4.CreateTranslation(0, 1.5f, 0);
 					rootTfm = System.Numerics.Matrix4x4.Identity * posMat;
 					break;
-				case "object_28":
+                case "object_28":
 				case "object_46":
 					rootTfm = System.Numerics.Matrix4x4.CreateScale(1.5f, 1.5f, 1.5f) * System.Numerics.Matrix4x4.CreateTranslation(new System.Numerics.Vector3(0, 7.5f, 0));
                     break;
 			}
 
 			var modelNode = ModelConversion.NinjaToGDModel(name, nj, textureSubSet, texAlphaTypes, null, null, null, rootTfm, blockVertColors, forceOpacity);
-			ModelConversion.CreateObjectCollision(modelNode);
+			if(!skipCollision)
+            {
+                ModelConversion.CreateObjectCollision(modelNode);
+            }
 			if (forceAdd || !OverEasyGlobals.modelDictionary.ContainsKey(name))
 			{
 				OverEasyGlobals.modelDictionary[name] = modelNode;
