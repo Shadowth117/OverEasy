@@ -1,0 +1,1537 @@
+[
+  {
+    "ObjectName": "Fog Setting Level default",
+    "ObjectId": 1,
+    "IntProperty1": "Fog ID",
+    "IntProperty1Hint": "See Fog ID sheet",
+    "IntProperty3": "Time of Day?",
+    "IntProperty3Hint": "0 - All the time\n1 - Day only\n2 - Night Only"
+  },
+  {
+    "ObjectName": "Light Trigger",
+    "ObjectId": 2,
+    "IntProperty1": "Light ID",
+    "IntProperty2": "unknown",
+    "IntProperty3": "unknown",
+    "IntProperty4": "unknown",
+    "FloatProperty1": "How fast it updates lighting?",
+    "FloatProperty2": "X trigger radius",
+    "FloatProperty3": "Y trigger radius (unused)",
+    "FloatProperty4": "Z trigger radius (unused)",
+    "ByteProperty1": "unknown",
+    "ByteProperty2": "unknown",
+    "ByteProperty4": "Setting to override Level Lighting",
+    "ByteProperty4Hint": "0 - Always On\n1 - Day Only\n2 - Night Only"
+  },
+  {
+    "ObjectName": "Particle (Decoration)",
+    "ObjectId": 3,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Particle Type",
+    "IntProperty1Hint": "Depends on level geobj list",
+    "IntProperty2": "Texture type (leave as 1)",
+    "IntProperty2Hint": "0 - Alpha cut star fallback(broken)\n1 - Regular blend",
+    "IntProperty3": "Time of Day it spawns",
+    "IntProperty3Hint": "0 - Both Day/Night\n1 - Only Day\n2 - Only Night"
+  },
+  {
+    "ObjectName": "Contact Switch",
+    "ObjectId": 4,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Switch Type",
+    "IntProperty1Hint": "0: Invisible, Sphere shape\n1: Invisible, Box shape\n2: Invisible, Pyramid shape\n3: Red w/o Comb graphic, can be activated w/ or w/o egg\n4: Red w/ Comb graphic, only player can activate it\n5: Blue w/ Egg graphic, req. egg to activate",
+    "IntProperty2": "Retriggerable?",
+    "IntProperty2Hint": "0 & 2: No, triggers event immediately\n1: Yes, triggers event immediately\n3: Waits X time after Billy steps off\nbefore resetting. Used for groups",
+    "IntProperty3": "Is part of Chain?",
+    "IntProperty3Hint": "0 - Yes\n1 - No",
+    "IntProperty4": "Trigger ID (Event)",
+    "IntProperty4Hint": "Set to door or other event ID to reference",
+    "FloatProperty1": "Trigger Shape X Width/Radius",
+    "FloatProperty1Hint": "X axis radius/width",
+    "FloatProperty2": "Trigger Shape Box Y Height",
+    "FloatProperty2Hint": "Y axis height, measured from bottom of base",
+    "FloatProperty3": "Trigger Shape Z Depth",
+    "FloatProperty3Hint": "Z axis depth",
+    "FloatProperty4": "Time before reset (Seconds)",
+    "FloatProperty4Hint": "Req. Chain on, is timed\nafter player steps out of trigger/button"
+  },
+  {
+    "ObjectName": "Gate",
+    "ObjectId": 5,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Freezes and Loads Cam?",
+    "IntProperty1Hint": "0 - No\n1 - Yes\nRequires Camera Flag\nto be set to 1",
+    "IntProperty2": "Use Custom Cam Pos?",
+    "IntProperty2Hint": "0 - No\n1 - Yes",
+    "IntProperty3": "null",
+    "IntProperty3Hint": "",
+    "IntProperty4": "Trigger ID (Self)",
+    "IntProperty4Hint": "ID enemy/button events reference",
+    "FloatProperty1": "Event Cam Pos X",
+    "FloatProperty1Hint": "Camera Position for X axis during event",
+    "FloatProperty2": "Event Cam Pos Y",
+    "FloatProperty2Hint": "Camera Position for Y axis during event",
+    "FloatProperty3": "Event Cam Pos Z",
+    "FloatProperty3Hint": "Camera Position for Z axis during event",
+    "FloatProperty4": "Event Cam Focus Y axis",
+    "FloatProperty4Hint": "Default (0) is right on the gate's position",
+    "ByteProperty1": "Camera Flag",
+    "ByteProperty1Hint": "Req to do Camera events,\nelse it softlocks",
+    "ByteProperty2": "Camera Identifier",
+    "ByteProperty2Hint": "Needs to be unique across all objects in map"
+  },
+  {
+    "ObjectName": "Invisible, Uninteractable, No collision",
+    "ObjectId": 6
+  },
+  {
+    "ObjectName": "Dash Panel (2002 Proto only)",
+    "ObjectId": 7,
+    "FloatProperty1": "Scale Modifier",
+    "FloatProperty2": "Object Trigger Y offset",
+    "FloatProperty3": "Forward speed",
+    "FloatProperty4": "Trigger radius multiplier",
+    "FloatProperty4Hint": "(default 0 is too big, use decimal like 0.2)"
+  },
+  {
+    "ObjectName": "test01,2 (already removed in Proto)",
+    "ObjectId": 8
+  },
+  {
+    "ObjectName": "Invisible, Uninteractable, No collision (already removed in Proto)",
+    "ObjectId": 9
+  },
+  {
+    "ObjectName": "Scenery",
+    "ObjectId": 10,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Model2 ID",
+    "IntProperty1Hint": "The id of the model in either\nthe common geobj file or the stage's\nspecific geobj file,\ndepending on the value\nin the next field",
+    "IntProperty2": "IsGeobjCommonModel",
+    "IntProperty2Hint": "A value of 1 means the model\nfor this will be pulled from the\ncommon geobj, otherwise it will\nbe sourced from the world\nspecific geobj",
+    "FloatProperty1": "Scale modifier",
+    "IntProperty3": "unknown",
+    "IntProperty3Hint": "1 in purple_3 only",
+    "IntProperty4": "unknown",
+    "IntProperty4Hint": "26 & 30 in purple_3",
+    "FloatProperty1Hint": "(affects it universally)",
+    "FloatProperty2": "unknown",
+    "ByteProperty2": "unknown",
+    "ByteProperty4": "Fruit type (Boxes)",
+    "ByteProperty4Hint": "101 - Apple\n102 - Banana\n103 - Cherry\n104 - Melon\n105 - Pineapple\n106 - Strawberry\n107 - Watermelon"
+  },
+  {
+    "ObjectName": "Fruit",
+    "ObjectId": 11,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Fruit Type",
+    "IntProperty1Hint": "Determines the type of fruit this will be. 0 = apple, 1 = banana, 2 = cherry, 3 = melon, 4 = pineapple, 5 = strawberry, 6+ = watermelon",
+    "IntProperty2": "Respawn?",
+    "IntProperty2Hint": "Determines if the fruit will respawn",
+    "IntProperty3": "Large Fruit?",
+    "IntProperty3Hint": "Determines if the fruit will be large",
+    "IntProperty4": "Unused",
+    "FloatProperty1": "Unused",
+    "FloatProperty2": "Unused",
+    "FloatProperty3": "Unused",
+    "FloatProperty4": "Unused",
+    "ByteProperty1": "Unused",
+    "ByteProperty2": "Unknown",
+    "ByteProperty2Hint": "Has the value 0 everywhere except in set_obj_orng.bin the value is FA (250)",
+    "ByteProperty3": "Unused",
+    "ByteProperty4": "Unused"
+  },
+  {
+    "ObjectName": "Floating Platform",
+    "ObjectId": 12,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Movement Type",
+    "IntProperty1Hint": "0 - None\n1 - Rotate self(Z axis)\n2 - Spin self(Y axis)\n3 - Vertical Movement\n4 - Horizontal Movement(X axis)\n5 - Orbit around radius\n",
+    "IntProperty2": "unknown",
+    "IntProperty2Hint": "Need to test",
+    "IntProperty3": "Speed Modifier",
+    "IntProperty3Hint": "How long it takes to complete movement\nDefault(0) is 5 seconds\nNegative numbers ignored",
+    "FloatProperty1": "Range",
+    "FloatProperty1Hint": "Treated like radius",
+    "FloatProperty3": "unknown",
+    "FloatProperty3Hint": "FloatProperty3"
+  },
+  {
+    "ObjectName": "Fire Pillar",
+    "ObjectId": 13,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "unknown",
+    "IntProperty1Hint": "",
+    "IntProperty2": "Time Period",
+    "IntProperty2Hint": "-3- = Off\n-2 = Burn Indefinitely\n-1 to 1 = Burn 1s Wait 1s\n2 = Burn 1s Wait 3s\n3 = Burn 1s Wait 5s\n4 = Burn 1s, Wait 6s...etc?",
+    "IntProperty4": "Damage Amount",
+    "IntProperty4Hint": "Player has 50HP\nMinimum damage done is 5HP",
+    "FloatProperty4": "HurtBox Radius",
+    "FloatProperty4Hint": "How big the flame reaches"
+  },
+  {
+    "ObjectName": "Respawn Trigger",
+    "ObjectId": 14,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Respawn Trigger ID",
+    "IntProperty1Hint": "The id of the Respawn Check Point",
+    "IntProperty2": "Trigger shape",
+    "IntProperty2Hint": "0 is Sphere, 1 is Box",
+    "FloatProperty1": "Trigger Box X Width",
+    "FloatProperty1Hint": "X axis radius/width",
+    "FloatProperty2": "Trigger Box Y Height",
+    "FloatProperty2Hint": "Y axis height (measured from bottom for base)",
+    "FloatProperty3": "Trigger Box Z Depth",
+    "FloatProperty3Hint": "Z axis depth"
+  },
+  {
+    "ObjectName": "Respawn Check Point",
+    "ObjectId": 15,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Respawn Trigger ID (self)",
+    "IntProperty1Hint": "The id of itself",
+    "IntProperty2": "???",
+    "IntProperty2Hint": "",
+    "FloatProperty1": "Unused",
+    "FloatProperty2": "Unused",
+    "FloatProperty3": "Unused"
+  },
+  {
+    "ObjectName": "Invisible Wall",
+    "ObjectId": 16,
+    "IntProperty1": "unknown",
+    "IntProperty2": "unknown",
+    "FloatProperty2": "unknown",
+    "FloatProperty3": "unknown",
+    "FloatProperty4": "unknown"
+  },
+  {
+    "ObjectName": "Grabbable Rung",
+    "ObjectId": 17,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "FloatProperty2": "Time?",
+    "FloatProperty2Hint": "Unknown"
+  },
+  {
+    "ObjectName": "Chick",
+    "ObjectId": 18,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Textbox ID",
+    "IntProperty1Hint": "The ID of the textbox used in the\n level message bin file\nFirst ID is 0!",
+    "IntProperty2": "Movement Type",
+    "IntProperty2Hint": "0 is just idling,\na value of 1 is walking",
+    "IntProperty3": "Costume Type",
+    "IntProperty3Hint": "Determines various costume combos Chicks use\n00 - Pigtail (Hairband)\n01 - Pigtail (Hairband) and bowtie\n02 - Pigtail (Bow)\n03 - Pigtail (Hairband) and Egghead\n04 - Pigtail (Bow) and bowtie\n05 - Pigtail (Hairband) and Bowtie and Egghead\n06 - Pigtail (Bow) and Bowtie and Egghead\n07 - Pigtail (Bow) and Egghead\n08 - Hat\n09 - Pigtail (Hairband) and Dress\n10 - Pigtail (Hairband) and Bowtie and Hat\n11 - Pigtail (Hairband) and Dress and Hat\n12 - Pigtail (Hairband) and Dress\n13 - Pigtail (Hairband) and Dress and Egghead\n14 - Pigtail (Bow) and Dress and Egghead",
+    "IntProperty4": "Costume Color",
+    "IntProperty4Hint": "Color for costumes\n0 - Red\n1 - Green\n2 - Blue\n3 - Magenta\n4 - Cyan\n5 - Orange",
+    "FloatProperty1": "unknown",
+    "FloatProperty2": "Walk Range Radius",
+    "FloatProperty2Hint": "Add/Subtracts the default 50 units. Requires Movement type to be 1",
+    "FloatProperty3": "Walk Speed Modifier",
+    "FloatProperty3Hint": "Add/Subtracts the default 0.6 units/frame speed. **Subtracting more than 0.49 crashes the game**"
+  },
+  {
+    "ObjectName": "Invisible, Uninteractable, No collision (also removed in Proto)",
+    "ObjectId": 19
+  },
+  {
+    "ObjectName": "Invisible, Uninteractable, No collision (also removed in Proto)",
+    "ObjectId": 20
+  },
+  {
+    "ObjectName": "Elder After a Boss Fight  *Hardcoded to spawn Emblem if there's one in the level (calls event script 250)",
+    "ObjectId": 21,
+    "IntProperty1": "Textbox ID"
+  },
+  {
+    "ObjectName": "Early Egg Hoop (in 2002 Demo, nulled in final)",
+    "ObjectId": 22,
+    "IntProperty1": "Color",
+    "IntProperty1Hint": "0: orange (WorldY axis move)\n1: orange (World X axis move)\n2: orange (World Z axis move)\n3: hot pink (stationary)\n4: mint (spin)\n5: green\n6: blue (launches flipped)\n7: blue (travels, launches flipped)\n8: blue (buggy, Billy gets stuck for all blues)",
+    "IntProperty2": "Is Moving?",
+    "IntProperty2Hint": "0 - Yes\n1 - No\n\n(only applies to Orange)",
+    "IntProperty3": "Hoop Travel Distance",
+    "FloatProperty1": "Hoop Travel/Rotation Speed",
+    "FloatProperty2": "Hoop Release Speed",
+    "FloatProperty3": "Hoop Travel Speed",
+    "FloatProperty3Hint": "(overrides Float 1)"
+  },
+  {
+    "ObjectName": "Bowling Ball",
+    "ObjectId": 23
+  },
+  {
+    "ObjectName": "Bowling Ball Launcher",
+    "ObjectId": 24
+  },
+  {
+    "ObjectName": "Egg",
+    "ObjectId": 25,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Egg id",
+    "IntProperty1Hint": "The id of the egg in the game data.\nThe chicken suit and elders are not considered\nnormal eggs and are not in this list.\nGBA eggs are hardcoded to load\nas default eggs on PC Billy.",
+    "IntProperty2": "unknown",
+    "ByteProperty4": "unknown"
+  },
+  {
+    "ObjectName": "Egg Bounce Switch",
+    "ObjectId": 26,
+    "IntProperty1": "unknown",
+    "IntProperty2": "Stage Script ID",
+    "IntProperty2Hint": "Refer to event_x.arc files per mission for the script for \"sw_on\"",
+    "IntProperty3": "Is part of group?",
+    "IntProperty3Hint": "0 - Yes (requires group)\n1 - No",
+    "IntProperty4": "Event ID (Solo) / Chain ID (Group)",
+    "IntProperty4Hint": "Needs to be unique across all chained objects, required to be exactly 256 more than what's stated in the event_x.arc script for \"sw_chk_on\""
+  },
+  {
+    "ObjectName": "Boulder to block path (destroyable by tames)",
+    "ObjectId": 27,
+    "IntProperty1": "unknown",
+    "FloatProperty4": "Scale Modifier"
+  },
+  {
+    "ObjectName": "Golden Egg",
+    "ObjectId": 28,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Unused",
+    "IntProperty2": "Script ID",
+    "IntProperty2Hint": "Refer to event_x_script.arc settings",
+    "ByteProperty1": "Camera Flag",
+    "ByteProperty1Hint": "Req. to do Camera events,\nelse it softlocks",
+    "ByteProperty2": "Camera Identifier",
+    "ByteProperty2Hint": "Needs to be unique across all objects in map",
+    "IntProperty1Hint": "20 (Test)"
+  },
+  {
+    "ObjectName": "Cannon(Player)",
+    "ObjectId": 29,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Cannon Power",
+    "IntProperty1Hint": "Determines how far the cannon can shoot you\nTry using above 500, else you're stuck",
+    "IntProperty2": "Shoot Offset Amount",
+    "IntProperty2Hint": "The higher the speed, the smaller it can be\nOtherwise use over 20",
+    "IntProperty3": "null",
+    "IntProperty4": "null",
+    "FloatProperty1": "X axis Rotation Lock(Stick Down)",
+    "FloatProperty1Hint": "Locks range\nTry not to use negative numbers...",
+    "FloatProperty2": "X axis Rotation Lock(Stick Up)",
+    "FloatProperty2Hint": "Locks range\nTry not to use negative numbers...",
+    "FloatProperty3": "Y axis Rotation Lock (Stick Right)",
+    "FloatProperty3Hint": "Locks range\nTry not to use negative numbers...",
+    "FloatProperty4": "Y axis Rotation Lock (Stick Left)",
+    "FloatProperty4Hint": "Locks range\nTry not to use negative numbers...",
+    "ByteProperty1": "Unused",
+    "ByteProperty2": "Unused",
+    "ByteProperty3": "Unused",
+    "ByteProperty4": "Unused"
+  },
+  {
+    "ObjectName": "Bridge (object_bin for test2, short01) Bridge (design_bin other stages)  Appearance based on level ID",
+    "ObjectId": 30,
+    "IntProperty1": "Segment length additive",
+    "IntProperty1Hint": "Default 0 is 2 segments, measured from center",
+    "IntProperty2": "unknown",
+    "IntProperty2Hint": "0 or 1 (levels)\n1 or 3 (test)",
+    "IntProperty3": "unknown",
+    "IntProperty3Hint": "4-8 (test)\n4 (Blue and Green stage)\n8 (Red stage)"
+  },
+  {
+    "ObjectName": "Particle (Level Based)",
+    "ObjectId": 31,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Particle ID?",
+    "IntProperty1Hint": "Some world's have 5, others have over 10",
+    "IntProperty2": "Particle set ID",
+    "IntProperty2Hint": "Most use 1 to define Geo Obj specific ones. 0 is the default",
+    "IntProperty3": "",
+    "IntProperty3Hint": ""
+  },
+  {
+    "ObjectName": "Invisible, Uninteractable, No collision (already removed in Proto)",
+    "ObjectId": 32
+  },
+  {
+    "ObjectName": "Cage(Event)",
+    "ObjectId": 33,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Event ID Reference",
+    "IntProperty1Hint": "The ID of the enemy to kill or\nthe trigger to break the cage",
+    "IntProperty2": "Freezes and Loads Cam?",
+    "IntProperty2Hint": "0 - No\n1 - Yes\nRequires Camera Flag\nto be set to 1",
+    "IntProperty3": "null",
+    "IntProperty3Hint": "",
+    "IntProperty4": "Use Custom Cam Pos?",
+    "IntProperty4Hint": "0 - No\n1 - Yes",
+    "FloatProperty1": "Cage Size",
+    "FloatProperty1Hint": "0 - Small\n1 - Medium\n2+ - Large\nOddly treated like Integer...",
+    "FloatProperty2": "Event Camera Pos X",
+    "FloatProperty2Hint": "Camera Position for X axis during event",
+    "FloatProperty3": "Event Camera Pos Y",
+    "FloatProperty3Hint": "Camera Position for Y axis during event",
+    "FloatProperty4": "Event Camera Pos Z",
+    "FloatProperty4Hint": "Camera Position for Z axis during event",
+    "ByteProperty1": "Camera Flag",
+    "ByteProperty1Hint": "Req to do Camera events,\nelse it softlocks",
+    "ByteProperty2": "Camera Identifier",
+    "ByteProperty2Hint": "Needs to be unique across all objects in map"
+  },
+  {
+    "ObjectName": "Light Gate (in 2002 Demo, nulled in final)",
+    "ObjectId": 34,
+    "IntProperty1": "Doesn't do anything, but probably was meant to mimic Dark Gates",
+    "ByteProperty1": "Cam Flag",
+    "ByteProperty1Hint": "(Freezes briefly even if no cam event)",
+    "ByteProperty2": "Flag Unique ID",
+    "ByteProperty2Hint": "Needs to be unique across ALL objects in map"
+  },
+  {
+    "ObjectName": "Dark Gate (w/ cutscene & loads _boss stage when you step on it)",
+    "ObjectId": 35,
+    "IntProperty1": "Spawn state",
+    "IntProperty1Hint": "[0  = Doesn't need event, 1 = Requires event]",
+    "IntProperty2": "Script ID in Event_x.arc to trigger this to spawn in",
+    "IntProperty3": "unknown",
+    "FloatProperty1": "No X?",
+    "FloatProperty2": "Event Camera Pos. Y",
+    "FloatProperty3": "Event Camera Pos. Z",
+    "ByteProperty1": "Cam Flag",
+    "ByteProperty1Hint": "(Freezes briefly even if no cam event)",
+    "ByteProperty2": "Flag Unique ID",
+    "ByteProperty2Hint": "Needs to be unique across ALL objects in map"
+  },
+  {
+    "ObjectName": "Race Finish Flag",
+    "ObjectId": 36
+  },
+  {
+    "ObjectName": "Emblem Spawn Point",
+    "ObjectId": 37,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Requires Event?",
+    "IntProperty1Hint": "0 - No\n1 - Yes",
+    "IntProperty2": "Self Event ID",
+    "IntProperty2Hint": "For Saving Chickens, this needs to be 200 higher than the first chicken's Event ID",
+    "ByteProperty1": "Cam Flag",
+    "ByteProperty1Hint": "Leave as 1 if using event",
+    "ByteProperty2": "Cam Identifier",
+    "ByteProperty2Hint": "Needs to be unique amongst all objects",
+    "IntProperty3": "unknown"
+  },
+  {
+    "ObjectName": "Minigame Coin",
+    "ObjectId": 38,
+    "IntProperty1": "Coin Color",
+    "IntProperty1Hint": "[0 = Blue, 1+ = Red]",
+    "IntProperty4": "Event ID referenced in event_x.arc script file for the sw_on/off command"
+  },
+  {
+    "ObjectName": "Bomb from the Save missions",
+    "ObjectId": 39,
+    "IntProperty1": "Time of Fuse in Minutes",
+    "IntProperty2": "Script ID in Event_x.arc when it blows up successfully without killing the player/kidnapped char"
+  },
+  {
+    "ObjectName": "Kidnapped Char",
+    "ObjectId": 40,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Char ID",
+    "IntProperty1Hint": "0 - Billy (unused)\n1 - Rolly\n2 - Chick\n3 - Bantam",
+    "IntProperty2": "If 0, they can't be talked to despite button icon",
+    "IntProperty2Hint": "",
+    "IntProperty3": "IntProperty3",
+    "IntProperty3Hint": "",
+    "ByteProperty1": "Cam Flag",
+    "ByteProperty1Hint": "Leave as 1 if using event",
+    "ByteProperty2": "Cam Identifier",
+    "ByteProperty2Hint": "Needs to be unique amongst all objects"
+  },
+  {
+    "ObjectName": "Chicken to Save",
+    "ObjectId": 41,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Chicken Type",
+    "IntProperty1Hint": "Appearance mainly\n0 = White w/ Red Bow\n1 = Pink\n2 = Brown\n3 = Green\n4 = White w/ Red Bow & beady eyes\n5 = Blue\n6 = Purple\n7 = White w/ Red Bandana",
+    "IntProperty2": "Script ID in Event_x.arc. Unlike other Multi objects, this uses the set command instead of sw_chk_on, likely to retain the fact it's collected even if you die. Hardcoded to run script 250 (Emblem spawn) when 8 are collected",
+    "IntProperty2Hint": ""
+  },
+  {
+    "ObjectName": "Minigame Man",
+    "ObjectId": 42,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Unknown",
+    "IntProperty1Hint": "0/0",
+    "IntProperty3": "Script ID",
+    "IntProperty3Hint": "Script ID in event_X.arc script file for mission",
+    "IntProperty4": "Emblem Event ID",
+    "IntProperty4Hint": "The ID of the emblem spawn\nscript if minigame passes\nRequires script to use this\nfor sw_off/on commands",
+    "ByteProperty2Hint": "Needs to be unique amongst all objects",
+    "ByteProperty1": "Cam Flag",
+    "ByteProperty1Hint": "(Freezes briefly even if no cam event)",
+    "ByteProperty2": "Flag Unique ID"
+  },
+  {
+    "ObjectName": "MenieFunie Trigger",
+    "ObjectId": 43,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Textbox ID",
+    "IntProperty1Hint": "The ID of the textbox used in the\nlevel's message bin file.\nFirst ID is 0!",
+    "IntProperty2": "Trigger Shape",
+    "IntProperty2Hint": "0 is Sphere,\n1 is Box",
+    "IntProperty3": "Event Freeze Type",
+    "IntProperty3Hint": "0 Has Lights with player anim listening,\n1 freezes without lights",
+    "IntProperty4": "Unused",
+    "FloatProperty1": "Trigger Box X Width",
+    "FloatProperty1Hint": "X axis radius/width",
+    "FloatProperty2": "Trigger Box Y Height",
+    "FloatProperty2Hint": "Y axis height (measured from bottom for base)",
+    "FloatProperty3": "Trigger Box Z Depth",
+    "FloatProperty3Hint": "Z axis depth",
+    "FloatProperty4": "Unused",
+    "FloatProperty4Hint": "",
+    "ByteProperty1": "Cam Flag",
+    "ByteProperty1Hint": "Leave as 1 if using event",
+    "ByteProperty2": "Cam Identifier",
+    "ByteProperty2Hint": "Needs to be unique amongst all objects",
+    "ByteProperty3": "Unused",
+    "ByteProperty4": "Unused"
+  },
+  {
+    "ObjectName": "Fog Trigger",
+    "ObjectId": 44,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Fog ID",
+    "IntProperty1Hint": "Correlates to entries in fog_param.bin",
+    "IntProperty2": "Trigger shape",
+    "IntProperty2Hint": "0 is Sphere, 1 is Box",
+    "IntProperty3": "Use Custom Cam Pos?",
+    "IntProperty3Hint": "",
+    "IntProperty4": "",
+    "IntProperty4Hint": "",
+    "FloatProperty1": "Trigger Box X Width",
+    "FloatProperty1Hint": "X axis radius/width",
+    "FloatProperty2": "Trigger Box Y Height",
+    "FloatProperty2Hint": "Y axis height (measured from bottom for base)",
+    "FloatProperty3": "Trigger Box Z Depth",
+    "FloatProperty3Hint": "Z axis depth"
+  },
+  {
+    "ObjectName": "Egg Hoop",
+    "ObjectId": 45,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Hoop Type",
+    "IntProperty1Hint": "Determines the type of hoop this will be\n0 = Orange\n1 = Yellow\n2 = Green\n3 = Blue\n4 = Light Blue\n5+ = Magenta",
+    "IntProperty2": "Hoop Power",
+    "IntProperty2Hint": "Determines how far the hoop can launch you.",
+    "IntProperty3": "Already Moving?",
+    "IntProperty3Hint": "Only for Orange\n0 - Yes\n1 - No",
+    "IntProperty4": "null",
+    "FloatProperty1": "Hoop Release Speed",
+    "FloatProperty1Hint": "Determines how long a hoop will hold you before releasing\nHigher numbers mean a faster release,\nhowever 0 will never release\nBelow 0 will instantly release.",
+    "FloatProperty2": "Hoop Travel X",
+    "FloatProperty2Hint": "Determines how far left or right a hoop\nwill travel before launching\nThis is relative to the\nhoop's set rotation.",
+    "FloatProperty3": "Hoop Travel Y",
+    "FloatProperty3Hint": "Determines how far forward or back a hoop\nwill travel before launching\nThis is relative to the\nhoop's set rotation.",
+    "FloatProperty4": "Hoop Travel Z",
+    "FloatProperty4Hint": "Determines how far up or down a hoop\nwill travel before launching\nThis is relative to the\nhoop's set rotation.",
+    "ByteProperty1": "Unused",
+    "ByteProperty2": "Unused",
+    "ByteProperty3": "Unused",
+    "ByteProperty4": "Unused"
+  },
+  {
+    "ObjectName": "ChickenSuitEgg",
+    "ObjectId": 46,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Trigger Flag",
+    "IntProperty1Hint": "To set to so Billy still wears the suit even if he dies"
+  },
+  {
+    "ObjectName": "Chick Coin",
+    "ObjectId": 47,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Coin ID",
+    "IntProperty1Hint": "Potentially Global ID"
+  },
+  {
+    "ObjectName": "Light Trigger B (For Object only?)",
+    "ObjectId": 48
+  },
+  {
+    "ObjectName": "Breakable X Platform",
+    "ObjectId": 49,
+    "IntProperty1": "# of hits to break",
+    "IntProperty1Hint": "(0 = 1 hit) [unsigned]"
+  },
+  {
+    "ObjectName": "Chick Coin Egg",
+    "ObjectId": 50,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Egg id",
+    "IntProperty1Hint": "The id of the egg in the game data. The chicken suit and elders are not considered normal eggs and are not in this list. GBA eggs are hardcoded to load as default eggs on PC Billy.",
+    "IntProperty2": "Chick Coin count?"
+  },
+  {
+    "ObjectName": "invisible??? (red8, removed in proto already)",
+    "ObjectId": 51
+  },
+  {
+    "ObjectName": "Small Auto-Fire Cannon",
+    "ObjectId": 256,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Null",
+    "IntProperty2": "Null",
+    "IntProperty3": "Null",
+    "IntProperty4": "Null",
+    "FloatProperty1": "Null",
+    "FloatProperty2": "Target Trigger Range X",
+    "FloatProperty2Hint": "Trigger X Width\n(box shape, measured from center)",
+    "FloatProperty3": "Target Trigger Range Y",
+    "FloatProperty3Hint": "Trigger Y Height\n(box shape, measured bottom up)",
+    "FloatProperty4": "Target Trigger Range Z",
+    "FloatProperty4Hint": "Trigger Z Depth\n(box shape, measured from center)"
+  },
+  {
+    "ObjectName": "Swinging Anchor",
+    "ObjectId": 257,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Speed",
+    "IntProperty1Hint": "How fast it swings",
+    "IntProperty2": "Rotation Range",
+    "IntProperty2Hint": "How far it can rotate\n(divide by 10 for angle)",
+    "IntProperty4": "Note: Does 50HP of damage (2.5 combs)"
+  },
+  {
+    "ObjectName": "Shark",
+    "ObjectId": 258,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "FloatProperty1": "Null",
+    "FloatProperty2": "Swim Range",
+    "FloatProperty2Hint": "How far it swims\n0 defaults to roughly\na 10 unit radius",
+    "FloatProperty3": "Detection Range",
+    "FloatProperty3Hint": "Trigger radius size to detect\nthen lunge at player"
+  },
+  {
+    "ObjectName": "Reflective Dagger",
+    "ObjectId": 259,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Null",
+    "IntProperty2": "Null",
+    "IntProperty3": "Null",
+    "IntProperty4": "Null",
+    "FloatProperty1": "Null",
+    "FloatProperty2": "Null",
+    "FloatProperty3": "Null",
+    "FloatProperty4": "Null"
+  },
+  {
+    "ObjectName": "Small Waterfall Vent",
+    "ObjectId": 260,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Null",
+    "IntProperty2": "Null",
+    "IntProperty3": "Null",
+    "IntProperty4": "Null",
+    "FloatProperty1": "Null",
+    "FloatProperty2": "Null",
+    "FloatProperty3": "Null",
+    "FloatProperty4": "Null"
+  },
+  {
+    "ObjectName": "Fire Arrow (Req. Spawner)",
+    "ObjectId": 261,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Spawner ID",
+    "IntProperty1Hint": "Spawner it originates from",
+    "IntProperty4": "Event ID",
+    "IntProperty4Hint": "Event that triggers shooting arrows",
+    "FloatProperty4": "???",
+    "FloatProperty4Hint": "???"
+  },
+  {
+    "ObjectName": "Skull and Crossbones\nFire Arrow Spawner",
+    "ObjectId": 262,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Self ID",
+    "IntProperty1Hint": "Arrows reference this\nto spawn from"
+  },
+  {
+    "ObjectName": "Animated Skull and Hook",
+    "ObjectId": 263,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Self Event ID",
+    "IntProperty1Hint": "ID for Switches/Triggers to call\nto start event",
+    "IntProperty2": "Requires Event?",
+    "IntProperty2Hint": "0 - No\n1 - Yes\nIf no, it'll immediately animate\nafter Stage cam intro"
+  },
+  {
+    "ObjectName": "Captain Glur's Ship",
+    "ObjectId": 264,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Is Animated?",
+    "IntProperty1Hint": "0 - No\n1 - Yes"
+  },
+  {
+    "ObjectName": "Flag",
+    "ObjectId": 265,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Recovery Speed;",
+    "IntProperty1Hint": "0 - Very Slow\n1 - Somewhat Slow\n2 - Medium\n3 - Fast\n4 - Very Fast\n5 - Slow, Used",
+    "IntProperty2": "Flag Type;",
+    "IntProperty2Hint": "",
+    "IntProperty3": "Maybe resistence scaled to cannon speed?",
+    "IntProperty4": "Horizontal Fluidity",
+    "IntProperty4Hint": "How much the cloth\nbends for XZ axis\nLower values makes it stiff",
+    "FloatProperty1": "Pushback Amount",
+    "FloatProperty1Hint": "Use under 1,\ncan launch you far otherwise",
+    "FloatProperty2": "Stretch Amount",
+    "FloatProperty2Hint": "For animation without player\nOver 6 is chaotic,\nalso affects collision",
+    "FloatProperty3": "???",
+    "FloatProperty3Hint": "Leave as -0.15,\nelse it glitches",
+    "FloatProperty4": "Cloth Repel Amount",
+    "FloatProperty4Hint": "use under 0, over -0.4"
+  },
+  {
+    "ObjectName": "flag (unused, non-interactive, only in Proto)",
+    "ObjectId": 266
+  },
+  {
+    "ObjectName": "flag (unused, non-interactive)",
+    "ObjectId": 267
+  },
+  {
+    "ObjectName": "null (already null in proto)",
+    "ObjectId": 268
+  },
+  {
+    "ObjectName": "null (already null in proto)",
+    "ObjectId": 269
+  },
+  {
+    "ObjectName": "null (already null in proto)",
+    "ObjectId": 270
+  },
+  {
+    "ObjectName": "unknown (271)",
+    "ObjectId": 271
+  },
+  {
+    "ObjectName": "IDK (blue5)",
+    "ObjectId": 272
+  },
+  {
+    "ObjectName": "Captain Glur Arena Swords",
+    "ObjectId": 512
+  },
+  {
+    "ObjectName": "Captain Glur Arena Ropes",
+    "ObjectId": 513
+  },
+  {
+    "ObjectName": "Lava Mesh",
+    "ObjectId": 768,
+    "IntProperty1": "Shape;",
+    "IntProperty1Hint": "0 - Wall Lava Veins\n1- Giant Circle (for entire level)\n2 - Small Spike\n3 - Small Stretched Rounded Hexagon\n4 - Flat Lake (Wedge)\n5 - Connected 2 wedges",
+    "IntProperty2": "Texture Warp formula used*",
+    "IntProperty2Hint": "0-2\n\n*Check how Sonic Heroes Does it!",
+    "FloatProperty1": "Horizontal Texture Scroll speed",
+    "FloatProperty2": "Indirect Strength",
+    "FloatProperty3": "Vertical Texture Scroll speed"
+  },
+  {
+    "ObjectName": "Lava Mesh B (Has limited draw distance unlike A)",
+    "ObjectId": 769,
+    "IntProperty1": "Shape;",
+    "IntProperty1Hint": "0 - Wall Lava Veins\n1- Giant Circle (for entire level)\n2 - Small Spike\n3 - Small Stretched Rounded Hexagon\n4 - Flat Lake (Wedge)\n5 - Connected 2 wedges",
+    "IntProperty2": "Texture Warp formula used*",
+    "IntProperty2Hint": "0-2\n\n*Check how Sonic Heroes Does it!",
+    "FloatProperty1": "Horizontal Texture Scroll speed",
+    "FloatProperty2": "Indirect Strength",
+    "FloatProperty3": "Vertical Texture Scroll speed"
+  },
+  {
+    "ObjectName": "Invisible, Uninteractable, No collision",
+    "ObjectId": 770
+  },
+  {
+    "ObjectName": "Invisible, Uninteractable, No collision",
+    "ObjectId": 771
+  },
+  {
+    "ObjectName": "Rising Meteor",
+    "ObjectId": 772,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty2": "Damage Dealt",
+    "IntProperty2Hint": "Treats 50 as 2.5 combs lost\nunlike other damaging objects",
+    "FloatProperty1": "Spawning Range Radius",
+    "FloatProperty1Hint": "In units (decimeters, cylinder)\ndetermines when the player\ncan see it from afar"
+  },
+  {
+    "ObjectName": "Invisible, Uninteractable, No collision",
+    "ObjectId": 773
+  },
+  {
+    "ObjectName": "Dino Fire Shooter",
+    "ObjectId": 774,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Time Period",
+    "IntProperty1Hint": "0 - Burn 3 seconds, wait 6, repeat\n1 - Burn Indefinitely",
+    "IntProperty2": "Damage Dealt",
+    "IntProperty2Hint": "0 - 1 or 1.5 comb\n 40 - 3 comb",
+    "IntProperty3": "unknown",
+    "IntProperty3Hint": "",
+    "IntProperty4": "unknown",
+    "IntProperty4Hint": ""
+  },
+  {
+    "ObjectName": "Bone Dragon Head",
+    "ObjectId": 775,
+    "IntProperty1": "Head ID. Do Not Change",
+    "IntProperty2": "HP",
+    "IntProperty2Hint": "1 ice shard is 100 HP of damage",
+    "IntProperty4": "Script ID To set flag",
+    "FloatProperty1": "unused?"
+  },
+  {
+    "ObjectName": "Bone Dragon Meteor Spawner",
+    "ObjectId": 776,
+    "IntProperty1": "Meteor Spawner ID (match Head ID)",
+    "FloatProperty1": "Trigger and spawn size Horizontal radius",
+    "FloatProperty2": "Trigger size Vertical radius"
+  },
+  {
+    "ObjectName": "Aesthetic Lava Ledge thing (no collision or damage)",
+    "ObjectId": 777,
+    "IntProperty1": "Self ID",
+    "IntProperty2": "Maybe Indirect Type? (set to -1)",
+    "IntProperty4": "Script ID to connect to Bone Dragon Head",
+    "FloatProperty1": "Horizontal Texture Scroll speed",
+    "FloatProperty3": "Vertical Texture Scroll speed",
+    "ByteProperty1": "Cam Flag",
+    "ByteProperty1Hint": "(Freezes briefly even if no cam event)",
+    "ByteProperty2": "Flag Unique ID",
+    "ByteProperty2Hint": "Needs to be unique across ALL objects in map"
+  },
+  {
+    "ObjectName": "WWE ropes spawn (1-way collision :O)",
+    "ObjectId": 778,
+    "IntProperty1": "unknown",
+    "IntProperty2": "unknown"
+  },
+  {
+    "ObjectName": "Invisible, Uninteractable, No collision",
+    "ObjectId": 1024
+  },
+  {
+    "ObjectName": "Snowman",
+    "ObjectId": 1025
+  },
+  {
+    "ObjectName": "Snowball spawn",
+    "ObjectId": 1026
+  },
+  {
+    "ObjectName": "Snow Patch",
+    "ObjectId": 1027,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "No settings, but it's approximately hardcoded to be 525 units wide, 800 long",
+    "IntProperty1Hint": ""
+  },
+  {
+    "ObjectName": "Thorns",
+    "ObjectId": 1028,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Damage Amount",
+    "IntProperty1Hint": "Player has 50HP\nMinimum damage done is 5HP"
+  },
+  {
+    "ObjectName": "vertical breakable glass pane",
+    "ObjectId": 1029
+  },
+  {
+    "ObjectName": "horizontal breakable glass pane",
+    "ObjectId": 1030
+  },
+  {
+    "ObjectName": "Snowflake shape out of wood/bolts (may be in ground)",
+    "ObjectId": 1031
+  },
+  {
+    "ObjectName": "Glass Snowflake",
+    "ObjectId": 1032
+  },
+  {
+    "ObjectName": "Giant Snowflake on the side of the building",
+    "ObjectId": 1033
+  },
+  {
+    "ObjectName": "3 pronged windmill blade set",
+    "ObjectId": 1034
+  },
+  {
+    "ObjectName": "snowflake iceshooter",
+    "ObjectId": 1035,
+    "IntProperty1": "Time Period",
+    "IntProperty1Hint": "0 - Chill 3 seconds, wait 6 seconds, repeat\n1+ - Chill indefinitely",
+    "IntProperty2": "Damage Dealt",
+    "IntProperty2Hint": "Oddly calculated differently than other objects\n\nAdditive to default 25HP of damage (player starts at 100)\n\nuse negative numbers to reduce damage",
+    "IntProperty4": "-60"
+  },
+  {
+    "ObjectName": "unknown (1036)",
+    "ObjectId": 1036
+  },
+  {
+    "ObjectName": "IDK (purple1)",
+    "ObjectId": 1037
+  },
+  {
+    "ObjectName": "Card Symbol Puzzle Panel",
+    "ObjectId": 1280,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Event ID",
+    "IntProperty1Hint": "The event to reference if correct",
+    "IntProperty2": "Goal Pattern",
+    "IntProperty2Hint": "0 - Spade\n1 - Heart\n2 - Diamond\n3 - Club"
+  },
+  {
+    "ObjectName": "clocktower battery",
+    "ObjectId": 1281,
+    "IntProperty1": "Script ID in Event_x.arc"
+  },
+  {
+    "ObjectName": "funhouse mirror",
+    "ObjectId": 1282
+  },
+  {
+    "ObjectName": "clocktower gear",
+    "ObjectId": 1283,
+    "ByteProperty1": "Cam Flag",
+    "ByteProperty1Hint": "(Freezes briefly even if no cam event)",
+    "ByteProperty2": "Flag Unique ID",
+    "ByteProperty2Hint": "Needs to be unique across ALL objects in map"
+  },
+  {
+    "ObjectName": "firework spawn",
+    "ObjectId": 1284
+  },
+  {
+    "ObjectName": "Gate(Circus Park FunHouse)",
+    "ObjectId": 1285,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Freezes and Loads Cam?",
+    "IntProperty1Hint": "0 - No\n1 - Yes\nRequires Camera Flag\nto be set to 1",
+    "IntProperty2": "Use Custom Cam Pos?",
+    "IntProperty2Hint": "0 - No\n1 - Yes",
+    "IntProperty3": "null",
+    "IntProperty3Hint": "",
+    "IntProperty4": "Trigger ID (Self)",
+    "IntProperty4Hint": "ID enemy/button events reference",
+    "FloatProperty1": "Event Cam Pos X",
+    "FloatProperty1Hint": "Camera Position for X axis during event",
+    "FloatProperty2": "Event Cam Pos Y",
+    "FloatProperty2Hint": "Camera Position for Y axis during event",
+    "FloatProperty3": "Event Cam Pos Z",
+    "FloatProperty3Hint": "Camera Position for Z axis during event",
+    "FloatProperty4": "Event Cam Focus Y axis",
+    "FloatProperty4Hint": "Default (0) is right on the gate's position",
+    "ByteProperty1": "Camera Flag",
+    "ByteProperty1Hint": "Req to do Camera events,\nelse it softlocks",
+    "ByteProperty2": "Camera Identifier",
+    "ByteProperty2Hint": "Needs to be unique across all objects in map"
+  },
+  {
+    "ObjectName": "a mostly transparent square (no collision, not interactable)",
+    "ObjectId": 1286
+  },
+  {
+    "ObjectName": "fireworks cannon (black wireframe sphere on circus 1?)",
+    "ObjectId": 1287
+  },
+  {
+    "ObjectName": "IDK(orange1)",
+    "ObjectId": 1288
+  },
+  {
+    "ObjectName": "Saltim Arena Fence Post",
+    "ObjectId": 1536,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null
+  },
+  {
+    "ObjectName": "Ground Gate(Sand Ruin)",
+    "ObjectId": 1792,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty1": "Trigger ID (Self)",
+    "IntProperty1Hint": "ID enemy/button events reference",
+    "IntProperty2": "Freezes and Loads Cam?",
+    "IntProperty2Hint": "0 - No\n1 - Yes\nRequires Camera Flag\nto be set to 0\nThis is oddly unused, treated as Yes",
+    "IntProperty3": "Use Custom Cam Pos?",
+    "IntProperty3Hint": "0 - No\n1 - Yes",
+    "IntProperty4": "",
+    "IntProperty4Hint": "",
+    "FloatProperty1": "Event Cam Pos X",
+    "FloatProperty1Hint": "Camera Position for X axis during event",
+    "FloatProperty2": "Event Cam Pos Y",
+    "FloatProperty2Hint": "Camera Position for Y axis during event",
+    "FloatProperty3": "Event Cam Pos Z",
+    "FloatProperty3Hint": "Camera Position for Z axis during event",
+    "FloatProperty4": "Event Cam Focus Y axis",
+    "FloatProperty4Hint": "Default (0) is right on the gate's position",
+    "ByteProperty1": "Camera Flag",
+    "ByteProperty1Hint": "Req to do Camera events,\nelse it softlocks\nNeeds to be 0",
+    "ByteProperty2": "Camera Identifier",
+    "ByteProperty2Hint": "Needs to be unique across all objects in map"
+  },
+  {
+    "ObjectName": "crow fireshooters",
+    "ObjectId": 1793,
+    "IntProperty1": "Time Period",
+    "IntProperty1Hint": "0 - Burn 3 seconds, wait 6 seconds, repeat\n1+ - Burn indefinitely",
+    "IntProperty2": "Damage Dealt",
+    "IntProperty2Hint": "Oddly calculated differently than other objects\n\nAdditive to default 25HP of damage (player starts at 100)\n\nuse negative numbers to reduce damage",
+    "IntProperty4": "unknown"
+  },
+  {
+    "ObjectName": "Tornados?",
+    "ObjectId": 1794,
+    "IntProperty1": "unknown",
+    "FloatProperty1": "unknown",
+    "FloatProperty3": "unknown"
+  },
+  {
+    "ObjectName": "Rooster statue platform",
+    "ObjectId": 1795
+  },
+  {
+    "ObjectName": "Invisible, Uninteractable, No collision",
+    "ObjectId": 1796
+  },
+  {
+    "ObjectName": "falling pillar",
+    "ObjectId": 1797,
+    "IntProperty1": "Damage",
+    "IntProperty1Hint": "(Player starts with 100)",
+    "FloatProperty1": "Detection range radius"
+  },
+  {
+    "ObjectName": "sand room platforms",
+    "ObjectId": 1798,
+    "IntProperty1": "Script ID (200)",
+    "IntProperty2": "Script ID 2 (201)",
+    "ByteProperty1": "Cam Flag",
+    "ByteProperty2": "Cam Identifier"
+  },
+  {
+    "ObjectName": "sand flow",
+    "ObjectId": 1799,
+    "IntProperty1": "Event ID (refer to Stage event_x.arc script)"
+  },
+  {
+    "ObjectName": "Trigger to start event for statue fog",
+    "ObjectId": 1800,
+    "IntProperty1": "Event ID of statue",
+    "IntProperty2": "Fog ID",
+    "IntProperty2Hint": "(see fog_param.bin)",
+    "FloatProperty1": "Trigger X axis width",
+    "FloatProperty1Hint": "(measured from center)",
+    "FloatProperty2": "Trigger Y axis height",
+    "FloatProperty3": "Trigger Z axis depth"
+  },
+  {
+    "ObjectName": "Statue for fog",
+    "ObjectId": 1801,
+    "IntProperty1": "Self Event ID"
+  },
+  {
+    "ObjectName": "unknown (1802)",
+    "ObjectId": 1802
+  },
+  {
+    "ObjectName": "Light Gate and surrounding Gates",
+    "ObjectId": 1803,
+    "IntProperty1": "Self ID Event to trigger glowing",
+    "IntProperty2": "Event right before cutscene of rainbow gate",
+    "IntProperty3": "Event after cutscene of rainbow gate",
+    "IntProperty4": "Event script ID for failing to have 25 Emblems",
+    "ByteProperty1": "Cam Flag",
+    "ByteProperty2": "Cam Identifier"
+  },
+  {
+    "ObjectName": "unknown (1804)",
+    "ObjectId": 1804
+  },
+  {
+    "ObjectName": "unknown (1805)",
+    "ObjectId": 1805
+  },
+  {
+    "ObjectName": "unknown (1806)",
+    "ObjectId": 1806
+  },
+  {
+    "ObjectName": "unknown (1807)",
+    "ObjectId": 1807
+  },
+  {
+    "ObjectName": "unknown (1808)",
+    "ObjectId": 1808
+  },
+  {
+    "ObjectName": "IDK(yellow1)",
+    "ObjectId": 1809
+  },
+  {
+    "ObjectName": "Level Caustics",
+    "ObjectId": 2048,
+    "IntProperty1": "Shape ID",
+    "IntProperty1Hint": "0 - Walls/Pillars of entire level (Giant Palace)\n1 - Giant Egg",
+    "IntProperty2": "Distortion Strength for Caustics",
+    "IntProperty2Hint": "-5 or less: Faint\n-4: Minimal Distortion\n-3: Low Distortion\n-2: Distorted\n-1: Vanilla, Very Distorted\n0: Intensely Distorted",
+    "IntProperty3": "Mesh Rotation Speed",
+    "IntProperty3Hint": "(Only applies to Egg shape, default zero is counterclockwise at a slow rate)",
+    "FloatProperty1": "UV Scale",
+    "FloatProperty1Hint": "Higher values make it more dense",
+    "FloatProperty2": "Horizontal Texture Scroll speed",
+    "FloatProperty3": "Vertical Texture Scroll speed"
+  },
+  {
+    "ObjectName": "Rabbish Torch Pedestal",
+    "ObjectId": 2049,
+    "IntProperty1": "Self ID for Event sw_chk_on group",
+    "IntProperty2": "Event Script ID"
+  },
+  {
+    "ObjectName": "Egg Shell Chick NPC",
+    "ObjectId": 2050,
+    "IntProperty1": "Textbox ID",
+    "IntProperty2": "Egg Shell Chick is running around?",
+    "IntProperty2Hint": "[0 = No, 1+ = Yes]",
+    "FloatProperty2": "Range Radius for Running",
+    "FloatProperty2Hint": "Note: Default 0 is actually around 50, use negative numbers to shrink the radius",
+    "FloatProperty3": "Speed Modifier",
+    "FloatProperty3Hint": "Default might be 0.6 units per frame, subtract to limit speed\n\nCrashes if under -0.49"
+  },
+  {
+    "ObjectName": "Crow Ghosts & the Crow Ghost killing Portal",
+    "ObjectId": 2051,
+    "IntProperty1": "Trigger ID",
+    "FloatProperty1": "Radius range for Crow Ghosts",
+    "FloatProperty2": "Seems to affect if the egg can collide with ghosts or not. Too low it doesn't, too high they free themselves after a couple of seconds",
+    "FloatProperty2Hint": "Try 20-40",
+    "FloatProperty3": "Radius endpoint to spawn Portal",
+    "FloatProperty3Hint": "(This is stupid)",
+    "FloatProperty4": "Radius from portal that kills ghosts (0 it fails to)"
+  },
+  {
+    "ObjectName": "Light Seals",
+    "ObjectId": 2052,
+    "IntProperty1": "Self ID for Event sw_chk_on group",
+    "IntProperty2": "Event Script ID"
+  },
+  {
+    "ObjectName": "Goop Floor",
+    "ObjectId": 2053,
+    "IntProperty1": "Distortion Strength for Refraction",
+    "IntProperty1Hint": "-5 or less: Faint\n-4: Minimal Distortion\n-3: Vanilla Distortion\n-2: Distorted\n-1: Very Distorted\n0: Intensely Distorted",
+    "FloatProperty1": "Diameter",
+    "FloatProperty1Hint": "(this is oddly a square)",
+    "FloatProperty2": "Ripple Wave Intensity/Speed",
+    "FloatProperty2Hint": "Vanilla is around -0.4 to 0.4\nAccepts negative (reverse) direction",
+    "FloatProperty3": "Ripple Wave Density (Additive)",
+    "FloatProperty3Hint": "Default 0 uses model UVs. Higher the value, the more compact the waves"
+  },
+  {
+    "ObjectName": "Final Boss Giant Egg Object (cutscene particle spawn?)",
+    "ObjectId": 2304,
+    "IntProperty1": "Particle Type?",
+    "IntProperty1Hint": "MIght relate to level PAD entry",
+    "FloatProperty2": "???"
+  },
+  {
+    "ObjectName": "Final Boss Giant Egg Object",
+    "ObjectId": 2305,
+    "IntProperty3": "Mesh Rotation Speed",
+    "IntProperty3Hint": "(Only applies to Egg shape, default zero is counterclockwise at a slow rate)",
+    "FloatProperty1": "UV Scale",
+    "FloatProperty1Hint": "Higher values make it more dense",
+    "FloatProperty2": "Horizontal Texture Scroll speed",
+    "FloatProperty3": "Vertical Texture Scroll speed"
+  },
+  {
+    "ObjectName": "Disappearing Switch",
+    "ObjectId": 2306,
+    "IntProperty2": "Event Script ID",
+    "IntProperty4": "Self ID for Event sw_chk_on group"
+  },
+  {
+    "ObjectName": "Pond Water Plane",
+    "ObjectId": 4096,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty2": "??",
+    "IntProperty2Hint": "100",
+    "IntProperty3": "??",
+    "IntProperty4Hint": "",
+    "FloatProperty1": "Vertical UV Scroll Speed",
+    "FloatProperty1Hint": "Measured Units per second",
+    "FloatProperty2": "Horizontal UV Scroll Speed",
+    "FloatProperty2Hint": "Measured Units per second",
+    "FloatProperty3": "???",
+    "FloatProperty4": "????",
+    "IntProperty1": "Type;",
+    "IntProperty1Hint": "0: Pond (Circle)\n1: Pond (Square)\n2: River\n3+: Crash"
+  },
+  {
+    "ObjectName": "Windmill",
+    "ObjectId": 4097,
+    "IntProperty1": "Event ID it Triggers"
+  },
+  {
+    "ObjectName": "Waterfall(Green Village)",
+    "ObjectId": 4098,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null,
+    "IntProperty2": "??",
+    "IntProperty2Hint": "",
+    "FloatProperty1": "?",
+    "FloatProperty2": "Vertical UV Scroll Speed",
+    "FloatProperty2Hint": "Measured Units per frame",
+    "FloatProperty3": "???",
+    "FloatProperty4": "????",
+    "FloatProperty1Hint": "Higher values make it more dense"
+  },
+  {
+    "ObjectName": "Animated Lightshaft set",
+    "ObjectId": 4099,
+    "PositionX": null,
+    "PositionY": null,
+    "PositionZ": null,
+    "RotationX": null,
+    "RotationY": null,
+    "RotationZ": null
+  },
+  {
+    "ObjectName": "Arena Border Fences (Era Gecko)",
+    "ObjectId": 4352
+  },
+  {
+    "ObjectName": "Waterfall (Era Gecko)",
+    "ObjectId": 4353,
+    "FloatProperty1": "UV Scale (unused)",
+    "FloatProperty1Hint": "Higher values make it more dense",
+    "FloatProperty2": "Vertical Texture Scroll speed",
+    "FloatProperty2Hint": "Measured Texture height per second",
+    "FloatProperty3": "Indirect Texture Strength. Fails for PC",
+    "FloatProperty4": "Horizontal Texture Scroll speed"
+  },
+  {
+    "ObjectName": "Pond (Era Gecko)",
+    "ObjectId": 4354,
+    "FloatProperty1": "UV Scale (unused)",
+    "FloatProperty1Hint": "Higher values make it more dense",
+    "FloatProperty2": "Vertical Texture Scroll speed",
+    "FloatProperty2Hint": "Measured Texture height per second",
+    "FloatProperty3": "Indirect Texture Strength. Fails for PC",
+    "FloatProperty4": "Horizontal Texture Scroll speed"
+  },
+  {
+    "ObjectName": "Lightshafts (Era Gecko)",
+    "ObjectId": 4355
+  },
+  {
+    "ObjectName": "Title Screen Bush",
+    "ObjectId": 4608
+  },
+  {
+    "ObjectName": "Title Screen Daisies",
+    "ObjectId": 4609
+  },
+  {
+    "ObjectName": "Title Screen Tiny Flowers",
+    "ObjectId": 4610,
+    "FloatProperty1": "scale?"
+  },
+  {
+    "ObjectName": "Title Screen Tree",
+    "ObjectId": 4611,
+    "FloatProperty1": "scale?"
+  },
+  {
+    "ObjectName": "Title Screen Chick",
+    "ObjectId": 4612,
+    "FloatProperty2": "Speed Modifier",
+    "FloatProperty2Hint": "Default might be 0.6 units per frame, subtract to limit speed\n\nCrashes if under -0.49"
+  },
+  {
+    "ObjectName": "Title Screen Tree",
+    "ObjectId": 4613,
+    "FloatProperty1": "scale?"
+  },
+  {
+    "ObjectName": "Title Screen Tree",
+    "ObjectId": 4614,
+    "FloatProperty1": "scale?"
+  },
+  {
+    "ObjectName": "Title Screen Pond Plane",
+    "ObjectId": 4615,
+    "FloatProperty1": "UV Scale (unused)",
+    "FloatProperty1Hint": "Higher values make it more dense",
+    "FloatProperty2": "Vertical Texture Scroll speed",
+    "FloatProperty2Hint": "Measured Texture height per second",
+    "FloatProperty3": "Indirect Texture Strength. Fails for PC",
+    "FloatProperty4": "Horizontal Texture Scroll speed"
+  },
+  {
+    "ObjectName": "Title Screen Waterfall",
+    "ObjectId": 4616,
+    "FloatProperty1": "UV Scale (unused)",
+    "FloatProperty1Hint": "Higher values make it more dense",
+    "FloatProperty2": "Vertical Texture Scroll speed",
+    "FloatProperty2Hint": "Measured Texture height per second",
+    "FloatProperty3": "Indirect Texture Strength. Fails for PC",
+    "FloatProperty4": "Horizontal Texture Scroll speed"
+  },
+  {
+    "ObjectName": "Title Screen Rainbow",
+    "ObjectId": 4617
+  },
+  {
+    "ObjectName": "Title Screen Tree",
+    "ObjectId": 4618
+  },
+  {
+    "ObjectName": "Egg Animal Without Egg! (only in 2002 Proto)",
+    "ObjectId": 28675,
+    "IntProperty1": "Egg Animal ID (Sep 2002)",
+    "IntProperty1Hint": "0 - Clippin\n1 - Richie\n2 - Runny\n3 - Cipher\n4 - Recky\n5 - Peliwan"
+  }
+]

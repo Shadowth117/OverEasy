@@ -100,16 +100,6 @@ namespace OverEasy
 			}
 		}
 
-		public enum EditingType
-		{
-			None = 0,
-			BillySetObj = 1,
-			BillySetDesign = 2,
-			BillySpawnPoint = 3,
-			BillySetEnemy = 4,
-			BillyStageDef = 5,
-		}
-
 		public static void SetCameraSettings()
 		{
 			ViewerCamera.SCROLL_SPEED = 10;
@@ -374,6 +364,19 @@ namespace OverEasy
 					editBtn.GetPopup().AddItem("Paste Non-Transform Data", 2);
 					editBtn.GetPopup().AddItem("Paste Full Object Data", 3);
 					editBtn.GetPopup().AddItem("Drop Object To Nearest Solid", 4);
+					if (currentEditorType != EditingType.BillySpawnPoint)
+					{
+						editBtn.GetPopup().AddItem("Delete Object", 5);
+					}
+					if (currentEditorType != EditingType.BillySpawnPoint)
+					{
+						editBtn.GetPopup().AddItem("Add Object After Selected", 6);
+						editBtn.GetPopup().AddItem("Move Up", 7);
+						editBtn.GetPopup().AddItem("Move Down", 8);
+						int listCount = GetCurrentListCount();
+						editBtn.GetPopup().SetItemDisabled(editBtn.GetPopup().GetItemIndex(7), currentObjectId <= 0);
+						editBtn.GetPopup().SetItemDisabled(editBtn.GetPopup().GetItemIndex(8), currentObjectId < 0 || currentObjectId >= listCount - 1);
+					}
 					break;
 				case EditingType.BillyStageDef:
 					editBtn.GetPopup().AddItem("Copy Stage Definition Data", 0);
@@ -384,6 +387,15 @@ namespace OverEasy
 				default:
 					break;
 			}
+
+			if (currentEditorType != EditingType.None)
+			{
+				editBtn.GetPopup().AddSeparator();
+			}
+			editBtn.GetPopup().AddItem("Undo (Ctrl+Z)", 10);
+			editBtn.GetPopup().AddItem("Redo (Ctrl+Y)", 11);
+			editBtn.GetPopup().SetItemDisabled(editBtn.GetPopup().GetItemIndex(10), !Editor.EditorHistory.CanUndo);
+			editBtn.GetPopup().SetItemDisabled(editBtn.GetPopup().GetItemIndex(11), !Editor.EditorHistory.CanRedo);
 		}
 
 		/// <summary>
@@ -391,6 +403,16 @@ namespace OverEasy
 		/// </summary>
 		public static void OnEditButtonMenuSelection(long id)
 		{
+			switch (id)
+			{
+				case 10:
+					UndoAction();
+					return;
+				case 11:
+					RedoAction();
+					return;
+			}
+
 			switch (currentEditorType)
 			{
 				case EditingType.BillySetEnemy:
@@ -413,6 +435,18 @@ namespace OverEasy
 							break;
 						case 4:
 							DropObjToNearestSolid();
+							break;
+						case 5:
+							DeleteSelectedObject();
+							break;
+						case 6:
+							AddObjectAfterSelected();
+							break;
+						case 7:
+							MoveObjectUp();
+							break;
+						case 8:
+							MoveObjectDown();
 							break;
 					}
 					break;
@@ -529,6 +563,62 @@ namespace OverEasy
 			}
 		}
 
+		public static void DeleteSelectedObject()
+		{
+			switch (gameType)
+			{
+				case GameType.BillyPC:
+				case GameType.BillyGC:
+					BillyDeleteSelectedObject();
+					break;
+			}
+		}
+
+		public static void AddObjectAfterSelected()
+		{
+			switch (gameType)
+			{
+				case GameType.BillyPC:
+				case GameType.BillyGC:
+					BillyAddObject(currentEditorType);
+					break;
+			}
+		}
+
+		public static void MoveObjectUp()
+		{
+			switch (gameType)
+			{
+				case GameType.BillyPC:
+				case GameType.BillyGC:
+					BillyMoveObject(currentEditorType, -1);
+					break;
+			}
+		}
+
+		public static void MoveObjectDown()
+		{
+			switch (gameType)
+			{
+				case GameType.BillyPC:
+				case GameType.BillyGC:
+					BillyMoveObject(currentEditorType, 1);
+					break;
+			}
+		}
+
+		public static void UndoAction()
+		{
+			ClearObjectSelection();
+			Editor.EditorHistory.Undo();
+		}
+
+		public static void RedoAction()
+		{
+			ClearObjectSelection();
+			Editor.EditorHistory.Redo();
+		}
+
 		/// <summary>
 		/// Attempts to drop an object from its current position in space to the next lowest solid, if one exists.
 		/// This way, we can place objects flush with the ground rather than having to guesstimate constantly.
@@ -589,6 +679,7 @@ namespace OverEasy
 		/// </summary>
 		public static void ResetLoadedData(string path)
 		{
+			Editor.EditorHistory.Clear();
 			ViewCamera.SetToFreecam();
 			ResetTransformGizmo();
 			terrainModels.Clear();
@@ -954,27 +1045,21 @@ namespace OverEasy
 
 		public static void LoadSetObjTemplates(string setObjDefinitionsReference)
 		{
-			var definitions = Directory.GetFiles(Path.Combine(editorRootDirectory, setObjDefinitionsReference));
-			foreach (var defPath in definitions)
+			var filePath = Path.Combine(editorRootDirectory, setObjDefinitionsReference);
+			var definitions = JsonSerializer.Deserialize<List<TextInfo.SetObjDefinition>>(File.ReadAllText(filePath));
+			foreach (var def in definitions)
 			{
-				var fileName = Path.GetFileNameWithoutExtension(defPath);
-				if (Int32.TryParse(fileName, out int id))
-				{
-					cachedBillySetObjDefinitions.Add(id, JsonSerializer.Deserialize<TextInfo.SetObjDefinition>(File.ReadAllText(defPath)));
-				}
+				cachedBillySetObjDefinitions[def.ObjectId] = def;
 			}
 		}
 
 		public static void LoadSetEnemyTemplates(string setEnemyDefinitionsReference)
 		{
-			var definitions = Directory.GetFiles(Path.Combine(editorRootDirectory, setEnemyDefinitionsReference));
-			foreach (var defPath in definitions)
+			var filePath = Path.Combine(editorRootDirectory, setEnemyDefinitionsReference);
+			var definitions = JsonSerializer.Deserialize<List<TextInfo.SetEnemyDefinition>>(File.ReadAllText(filePath));
+			foreach (var def in definitions)
 			{
-				var fileName = Path.GetFileNameWithoutExtension(defPath);
-				if (Int32.TryParse(fileName, out int id))
-				{
-					cachedBillySetEnemyDefinitions.Add(id, JsonSerializer.Deserialize<TextInfo.SetEnemyDefinition>(File.ReadAllText(defPath)));
-				}
+				cachedBillySetEnemyDefinitions[def.EnemyId] = def;
 			}
 		}
 
