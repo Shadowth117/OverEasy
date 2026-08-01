@@ -659,12 +659,13 @@ namespace OverEasy.Billy
 			//Chick NPC
 			//We'll load the pieces in for this, then enable/disable them dynamically and color it dynamically via shader parameters
 			var chickAQN = new AquaNode();
-			var chickNPC = ModelConversion.NinjaToGDModel("chickNPC", commonGeo.models["model_14"], ModelConversion.GetTextureSubset(gvmTextures, commonGeo.texLists["texList_13"], gvrAlphaTypes, out var chickAlphaTypes), chickAlphaTypes, chickAQN);
-			var baseballCap = ModelConversion.NinjaToGDModel("chickNPCBaseballCap", commonGeo.models["model_15"], ModelConversion.GetTextureSubset(gvmTextures, commonGeo.texLists["texList_13"], gvrAlphaTypes, out var chickAlphaTypes1), chickAlphaTypes, null, null, chickNPC, System.Numerics.Matrix4x4.CreateTranslation(chickAQN.nodeList[14].GetInverseBindPoseMatrixInverted().Translation));
-			var hairBow = ModelConversion.NinjaToGDModel("chickNPCHairBow", commonGeo.models["model_16"], ModelConversion.GetTextureSubset(gvmTextures, commonGeo.texLists["texList_13"], gvrAlphaTypes, out var chickAlphaTypes2), chickAlphaTypes, null, null, chickNPC, System.Numerics.Matrix4x4.CreateTranslation(chickAQN.nodeList[14].GetInverseBindPoseMatrixInverted().Translation));
-            var bowTie = ModelConversion.NinjaToGDModel("chickNPCBowTie", commonGeo.models["model_17"], ModelConversion.GetTextureSubset(gvmTextures, commonGeo.texLists["texList_13"], gvrAlphaTypes, out var chickAlphaTypes3), chickAlphaTypes, null, null, chickNPC, System.Numerics.Matrix4x4.CreateTranslation(chickAQN.nodeList[38].GetInverseBindPoseMatrixInverted().Translation));
-            var eggshellCap = ModelConversion.NinjaToGDModel("chickNPCEggShellCap", commonGeo.models["model_18"], ModelConversion.GetTextureSubset(gvmTextures, commonGeo.texLists["texList_13"], gvrAlphaTypes, out var chickAlphaTypes4), chickAlphaTypes, null, null, chickNPC, System.Numerics.Matrix4x4.CreateTranslation(chickAQN.nodeList[14].GetInverseBindPoseMatrixInverted().Translation));
-            var dress = ModelConversion.NinjaToGDModel("chickNPCDress", commonGeo.models["model_19"], ModelConversion.GetTextureSubset(gvmTextures, commonGeo.texLists["texList_13"], gvrAlphaTypes, out var chickAlphaTypes5), chickAlphaTypes, null, null, chickNPC, System.Numerics.Matrix4x4.CreateTranslation(chickAQN.nodeList[38].GetInverseBindPoseMatrixInverted().Translation));
+			var chickTexSubset = ModelConversion.GetTextureSubset(gvmTextures, commonGeo.texLists["texList_13"], gvrAlphaTypes, out var chickAlphaTypes);
+			var chickNPC = ModelConversion.NinjaToGDModel("chickNPC", commonGeo.models["model_14"], chickTexSubset, chickAlphaTypes, chickAQN);
+			var baseballCap = ModelConversion.NinjaToGDModel("chickNPCBaseballCap", commonGeo.models["model_15"], chickTexSubset, chickAlphaTypes, null, null, chickNPC, System.Numerics.Matrix4x4.CreateTranslation(chickAQN.nodeList[14].GetInverseBindPoseMatrixInverted().Translation));
+			var hairBow = ModelConversion.NinjaToGDModel("chickNPCHairBow", commonGeo.models["model_16"], chickTexSubset, chickAlphaTypes, null, null, chickNPC, System.Numerics.Matrix4x4.CreateTranslation(chickAQN.nodeList[14].GetInverseBindPoseMatrixInverted().Translation));
+            var bowTie = ModelConversion.NinjaToGDModel("chickNPCBowTie", commonGeo.models["model_17"], chickTexSubset, chickAlphaTypes, null, null, chickNPC, System.Numerics.Matrix4x4.CreateTranslation(chickAQN.nodeList[38].GetInverseBindPoseMatrixInverted().Translation));
+            var eggshellCap = ModelConversion.NinjaToGDModel("chickNPCEggShellCap", commonGeo.models["model_18"], chickTexSubset, chickAlphaTypes, null, null, chickNPC, System.Numerics.Matrix4x4.CreateTranslation(chickAQN.nodeList[14].GetInverseBindPoseMatrixInverted().Translation));
+            var dress = ModelConversion.NinjaToGDModel("chickNPCDress", commonGeo.models["model_19"], chickTexSubset, chickAlphaTypes, null, null, chickNPC, System.Numerics.Matrix4x4.CreateTranslation(chickAQN.nodeList[38].GetInverseBindPoseMatrixInverted().Translation));
 			ModelConversion.CreateObjectCollision(chickNPC);
 			OverEasyGlobals.modelDictionary["chickNPC"] = chickNPC;
 
@@ -672,6 +673,27 @@ namespace OverEasy.Billy
             if (commonGeo.models.ContainsKey($"model_20"))
             {
                 CacheModel($"object_23", commonGeo.models[$"model_20"], new NJTextureList() { texNames = new List<string>() { "h_common0564", "h_common0464" } }, commonGeo.gvm, false, true);
+            }
+
+			//Bowling Launcher
+            if (commonGeo.models.ContainsKey($"model_21"))
+            { 
+				var bowlingAqn = new AquaNode();
+				var bowlingTexSet = ModelConversion.GetTextureSubset(gvmTextures, new NJTextureList() { texNames = new List<string>() { "h_common03256" } }, gvrAlphaTypes, out var bowlingTexTypes);
+                var bowlingLauncher = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_21"], bowlingTexSet, bowlingTexTypes, bowlingAqn);
+                var bowlingLauncher1 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_22"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher);
+                var bowlingPin0 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(0, 0, 200f), false, 0.15f);
+                var bowlingPin1 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(0, 0, 280f), false, 0.15f);
+                var bowlingPin2 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(23f, 0, 240f), false, 0.15f);
+                var bowlingPin3 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(-23f, 0, 240f), false, 0.15f);
+                var bowlingPin4 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(-46f, 0, 280f), false, 0.15f);
+                var bowlingPin5 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(46f, 0, 280f), false, 0.15f);
+                var bowlingPin6 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(-69f, 0, 320f), false, 0.15f);
+                var bowlingPin7 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(69f, 0, 320f), false, 0.15f);
+                var bowlingPin8 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(-23f, 0, 320f), false, 0.15f);
+                var bowlingPin9 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(23f, 0, 320f), false, 0.15f);
+                ModelConversion.CreateObjectCollision(bowlingLauncher);
+                OverEasyGlobals.modelDictionary["object_24"] = bowlingLauncher;
             }
 
             //Egg Bounce Switch
