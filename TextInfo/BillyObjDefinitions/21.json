@@ -1,5 +1,5 @@
 {
-  "ObjectName": "Elder After a Boss Fight  *Hardcoded to spawn Emblem if there's one in the level (calls event script 250)",
+  "ObjectName": "Elder (Post Boss)  *Hardcoded to spawn Emblem if one exists (calls event script 250)*",
   "ObjectId": 21,
   "PositionX": null,
   "PositionY": null,
