@@ -518,6 +518,14 @@ namespace OverEasy.Billy
 					redCoinShad.SetShaderParameter("albedoMultiplier", 3.0f);
 					overlayMaterials.Add(0, redCoinShad);
 					break;
+                case "object_39":
+                    ShaderMaterial objBombShad = new();
+                    objBombShad.Shader = (Shader)GD.Load("res://Shaders/matcapVariableAlpha.gdshader");
+                    objBombShad.SetShaderParameter("matcap", gvrTextures[1]);
+                    objBombShad.SetShaderParameter("alphaValue", 0.5f);
+                    objBombShad.SetShaderParameter("albedoMultiplier", 3.0f);
+                    overlayMaterials.Add(0, objBombShad);
+                    break;
                 case "object_46":
                     ShaderMaterial eggSuit = new();
                     eggSuit.Shader = (Shader)GD.Load("res://Shaders/matcapVariableAlphaMultiply.gdshader");

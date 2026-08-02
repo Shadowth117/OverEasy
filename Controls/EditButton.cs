@@ -9,11 +9,6 @@ public partial class EditButton : MenuButton
         OverEasyGlobals.editBtn = this;
     }
 
-    // Called every frame. 'delta' is the elapsed time since the previous frame.
-    public override void _Process(double delta)
-    {
-    }
-
     public override void _Pressed()
     {
         OverEasyGlobals.GetCurrentEditMenu();

@@ -3,16 +3,22 @@ using OverEasy;
 
 public partial class DisplayButton : MenuButton
 {
+    //Billy Hatcher
+    public bool dayNightPreviewToggle = true;
+    public bool displayLndTerrain = true;
+    public bool displayMc2Terrain = false;
+
     public override void _Ready()
     {
-        OverEasyGlobals.DisplayBtn = this;
+        OverEasyGlobals.displayBtn = this;
         GetPopup().Connect("id_pressed", new Callable(this, MethodName._onDisplayButtonMenuSelectionLocal));
     }
-
-    // Called every frame. 'delta' is the elapsed time since the previous frame.
-    public override void _Process(double delta)
+    public override void _Pressed()
     {
+        OverEasyGlobals.GetCurrentDisplayMenu();
+        base._Pressed();
     }
+
     public void _onDisplayButtonMenuSelectionLocal(long id)
     {
         OverEasyGlobals.OnDisplayButtonMenuSelection((int)id);

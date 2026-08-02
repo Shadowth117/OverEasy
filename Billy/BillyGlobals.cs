@@ -512,7 +512,7 @@ namespace OverEasy
 			var def = stgDef.defs[currentMissionId];
 			daySkybox = null;
 			nightSkybox = null;
-			SettingsBtn.GetPopup().SetItemChecked(0, true);
+			settingsBtn.GetPopup().SetItemChecked(0, true);
 			isDay = true;
 			SetCameraSettingsBilly();
 			ClearModelAndTextureData();
@@ -581,7 +581,7 @@ namespace OverEasy
 			if (File.Exists(lndPath))
 			{
 				var lnd = Billy.ModelConversion.LNDToGDModel(def.lndFilename, new LND(File.ReadAllBytes(lndPath)));
-				lnd.Visible = DisplayBtn.GetPopup().IsItemChecked(0);
+				lnd.Visible = displayBtn.GetPopup().IsItemChecked(0);
 				terrainModels.Add(lnd);
 				modelRoot.AddChild(lnd);
 			}
@@ -589,7 +589,7 @@ namespace OverEasy
 			if (File.Exists(mc2Path))
 			{
 				var mc2 = Billy.ModelConversion.MC2ToGDModel(def.mc2Filename, new MC2(File.ReadAllBytes(mc2Path)));
-				mc2.Visible = DisplayBtn.GetPopup().IsItemChecked(1);
+				mc2.Visible = displayBtn.GetPopup().IsItemChecked(1);
 				terrainCollision.Add(mc2);
 				modelRoot.AddChild(mc2);
 			}
@@ -609,7 +609,7 @@ namespace OverEasy
 			var def = stgDef.defs[currentMissionId];
 			daySkybox = null;
 			nightSkybox = null;
-			SettingsBtn.GetPopup().SetItemChecked(0, true);
+			settingsBtn.GetPopup().SetItemChecked(0, true);
 			isDay = true;
 			SetCameraSettingsBilly();
 			ClearModelAndTextureData();
@@ -765,6 +765,27 @@ namespace OverEasy
 					var coinObjRed = new GEObj_Object(currentPRD.files[i]);
 					BillyModelIO.CacheModel("object_38_red", coinObjRed.models["model"], null, coinObjRed.gvm, false, false);
                 }
+				else if (currentPRD.fileNames[i] == "obj_ms_bomb.arc")
+				{
+                    var objBomb = new ObjMsBomb(currentPRD.files[i]);
+                    BillyModelIO.CacheModel("object_39", objBomb.model, null, objBomb.gvm, false, false);
+                }
+                else if (currentPRD.fileNames[i] == "geobj_chicken.arc")
+                {
+                    var chicken = new GEObj_Object(currentPRD.files[i]);
+					for(int j = 0; j < chicken.texLists.Count; j++)
+					{
+						if (chicken.texLists.ContainsKey($"texList_{j}"))
+						{	
+							BillyModelIO.CacheModel($"object_41_{j}", chicken.models["model"], chicken.texLists[$"texList_{j}"], chicken.gvm, false, false);
+						}
+					}
+                }
+                else if (currentPRD.fileNames[i] == "geobj_mg_leader.arc")
+                {
+                    var goal = new GEObj_Object(currentPRD.files[i]);
+                    BillyModelIO.CacheModel("object_42", goal.models["models_0"], goal.texLists["texlist"], goal.gvm, false, false);
+                }
                 else if (currentPRD.fileNames[i] == "egg_suit.arc")
                 {
                     var eggSuit = new EggGold_Suit(currentPRD.files[i]);
@@ -799,7 +820,7 @@ namespace OverEasy
 				if (currentPRD.fileNames[i] == def.lndFilename)
 				{
 					var lnd = Billy.ModelConversion.LNDToGDModel(def.lndFilename, new LND(currentPRD.files[i]));
-					lnd.Visible = DisplayBtn.GetPopup().IsItemChecked(0);
+					lnd.Visible = displayBtn.GetPopup().IsItemChecked(0);
 					terrainModels.Add(lnd);
 					modelRoot.AddChild(lnd);
 				}
@@ -839,7 +860,7 @@ namespace OverEasy
 				if (currentPRD.fileNames[i] == def.mc2Filename)
 				{
 					var mc2 = Billy.ModelConversion.MC2ToGDModel(def.mc2Filename, new MC2(currentPRD.files[i]));
-					mc2.Visible = DisplayBtn.GetPopup().IsItemChecked(1);
+					mc2.Visible = displayBtn.GetPopup().IsItemChecked(1);
 					terrainCollision.Add(mc2);
 					modelRoot.AddChild(mc2);
 				}
@@ -1505,7 +1526,8 @@ namespace OverEasy
 						break;
 					case "IntProperty1":
 						var intProperty1Value = (int)GetSpinBoxValue("IntProperty1");
-						if ((objRaw.objectId == 50 || objRaw.objectId == 38 || objRaw.objectId == 30 || objRaw.objectId == 25 || objRaw.objectId == 11 || objRaw.objectId == 10 || objRaw.objectId == 4) && objRaw.intProperty1 != intProperty1Value)
+						if ((objRaw.objectId == 50 || objRaw.objectId == 41 || objRaw.objectId == 40 || objRaw.objectId == 38 || objRaw.objectId == 30 || objRaw.objectId == 25 || objRaw.objectId == 11 
+							|| objRaw.objectId == 10 || objRaw.objectId == 4) && objRaw.intProperty1 != intProperty1Value)
 						{
 							shouldReloadModel = true;
 						}

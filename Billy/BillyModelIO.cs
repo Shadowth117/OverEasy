@@ -182,10 +182,10 @@ namespace OverEasy.Billy
 				case 11:
 					name += $"_{obj.intProperty1}";
 					break;
-                case 18:
+				case 18:
 					name = "chickNPC";
-                    break;
-                case 25:
+					break;
+				case 25:
 					name = $"egg_{obj.intProperty1}";
 					if(!OverEasyGlobals.modelDictionary.ContainsKey(name))
 					{
@@ -197,6 +197,12 @@ namespace OverEasy.Billy
 					break;
 				case 38:
 					name += obj.intProperty1 != 0 ? "_red" : "_blue";
+					break;
+				case 40:
+					name = "player_" + (obj.intProperty1 + 1);
+					break;
+				case 41:
+					name += $"_{obj.intProperty1}";
 					break;
 				case 50:
 					name = $"segg_{obj.intProperty1}";
@@ -254,16 +260,16 @@ namespace OverEasy.Billy
 				case 11:
 					modelNode.Scale = obj.intProperty3 == 1 ? new Vector3(2, 2, 2) : new Vector3(1, 1, 1);
 					break;
-                case 18:
-                    SetChickInfo(obj, modelNode);
-                    break;
+				case 18:
+					SetChickInfo(obj, modelNode);
+					break;
 				case 27:
-                    modelNode.Scale = new Vector3(1 + obj.fltProperty4, 1 + obj.fltProperty4, 1 + obj.fltProperty4);
-                    break;
-                case 30:
-                    SetBridgeModel(obj, modelNode);
-                    break;
-                default:
+					modelNode.Scale = new Vector3(1 + obj.fltProperty4, 1 + obj.fltProperty4, 1 + obj.fltProperty4);
+					break;
+				case 30:
+					SetBridgeModel(obj, modelNode);
+					break;
+				default:
 					modelNode.Scale = new Vector3(1, 1, 1);
 					break;
 			}
@@ -271,52 +277,52 @@ namespace OverEasy.Billy
 			return modelNode;
 		}
 
-        private static void SetBridgeModel(SetObj obj, Node3D modelNode)
-        {
-            //Bridges are laid out with segments made of either columns or rope, then a plank model in between with columns on either end as well.
-            int numSegments = obj.intProperty1 > 0 ? obj.intProperty1 : 0;
-            //Create planks and rope + columns
-            for (int i = 0; i < numSegments + 2; i++)
-            {
-                var node = GetBridgePlankSegment(numSegments, i);
-                node.SetMeta("parentNode", modelNode);
-                modelNode.AddChild(node);
-                node.Position += new Vector3(0, 0, 40 * i);
+		private static void SetBridgeModel(SetObj obj, Node3D modelNode)
+		{
+			//Bridges are laid out with segments made of either columns or rope, then a plank model in between with columns on either end as well.
+			int numSegments = obj.intProperty1 > 0 ? obj.intProperty1 : 0;
+			//Create planks and rope + columns
+			for (int i = 0; i < numSegments + 2; i++)
+			{
+				var node = GetBridgePlankSegment(numSegments, i);
+				node.SetMeta("parentNode", modelNode);
+				modelNode.AddChild(node);
+				node.Position += new Vector3(0, 0, 40 * i);
 
-                var columnNode = ((i + numSegments) & 1) > 0 ? ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary["MODEL_TURIBASHI_ROPE"]) : ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary["MODEL_TURIBASHI_HASHIRA01"]);
-                columnNode.SetMeta("parentNode", modelNode);
-                modelNode.AddChild(columnNode);
-                columnNode.Position += new Vector3(0, 0, 40 * i);
+				var columnNode = ((i + numSegments) & 1) > 0 ? ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary["MODEL_TURIBASHI_ROPE"]) : ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary["MODEL_TURIBASHI_HASHIRA01"]);
+				columnNode.SetMeta("parentNode", modelNode);
+				modelNode.AddChild(columnNode);
+				columnNode.Position += new Vector3(0, 0, 40 * i);
 
-                if (i != 0)
-                {
-                    var nodeOpposite = GetBridgePlankSegment(numSegments, -i);
-                    nodeOpposite.SetMeta("parentNode", modelNode);
-                    modelNode.AddChild(nodeOpposite);
-                    nodeOpposite.Position += new Vector3(0, 0, 40 * -i);
+				if (i != 0)
+				{
+					var nodeOpposite = GetBridgePlankSegment(numSegments, -i);
+					nodeOpposite.SetMeta("parentNode", modelNode);
+					modelNode.AddChild(nodeOpposite);
+					nodeOpposite.Position += new Vector3(0, 0, 40 * -i);
 
-                    var columnNodeOpposite = ((i + numSegments) & 1) > 0 ? ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary["MODEL_TURIBASHI_ROPE"]) : ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary["MODEL_TURIBASHI_HASHIRA01"]);
-                    columnNodeOpposite.SetMeta("parentNode", modelNode); 
+					var columnNodeOpposite = ((i + numSegments) & 1) > 0 ? ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary["MODEL_TURIBASHI_ROPE"]) : ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary["MODEL_TURIBASHI_HASHIRA01"]);
+					columnNodeOpposite.SetMeta("parentNode", modelNode); 
 					modelNode.AddChild(columnNodeOpposite);
-                    columnNodeOpposite.Position += new Vector3(0, 0, 40 * -i);
-                }
-            }
+					columnNodeOpposite.Position += new Vector3(0, 0, 40 * -i);
+				}
+			}
 
-            //Create end columns
-            var end = ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary["MODEL_TURIBASHI_HASHIRA02"]);
-            end.SetMeta("parentNode", modelNode);
-            modelNode.AddChild(end);
-            end.RotateY(Mathf.Pi);
-            end.Position += new Vector3(3.5f, 0, 40 * (numSegments + 2));
+			//Create end columns
+			var end = ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary["MODEL_TURIBASHI_HASHIRA02"]);
+			end.SetMeta("parentNode", modelNode);
+			modelNode.AddChild(end);
+			end.RotateY(Mathf.Pi);
+			end.Position += new Vector3(3.5f, 0, 40 * (numSegments + 2));
 
-            var endOpposite = ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary["MODEL_TURIBASHI_HASHIRA02"]);
+			var endOpposite = ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary["MODEL_TURIBASHI_HASHIRA02"]);
 			endOpposite.SetMeta("parentNode", modelNode);
-            modelNode.AddChild(endOpposite);
-            endOpposite.Position += new Vector3(0, 0, 40 * -(numSegments + 2));
-            ModelConversion.CreateObjectCollision(modelNode);
-        }
+			modelNode.AddChild(endOpposite);
+			endOpposite.Position += new Vector3(0, 0, 40 * -(numSegments + 2));
+			ModelConversion.CreateObjectCollision(modelNode);
+		}
 
-        private static Node3D GetBridgePlankSegment(int numSegments, int currentSegment)
+		private static Node3D GetBridgePlankSegment(int numSegments, int currentSegment)
 		{
 			if(currentSegment < 0)
 			{
@@ -328,91 +334,91 @@ namespace OverEasy.Billy
 			{
 				case 0:
 					return ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary["MODEL_TURIBASHI_ITA03"]);
-                case 1:
-                    return ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary["MODEL_TURIBASHI_ITA01"]);
-                case 2:
-                    return ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary["MODEL_TURIBASHI_ITA02"]);
-            }
+				case 1:
+					return ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary["MODEL_TURIBASHI_ITA01"]);
+				case 2:
+					return ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary["MODEL_TURIBASHI_ITA02"]);
+			}
 
 			throw new System.Exception("Unexpected segment Id");
-        }
+		}
 
-        private static void SetChickInfo(SetObj obj, Node3D modelNode)
-        {
-            switch (obj.intProperty3)
-            {
-                case 0:
-                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { }, ModelConversion.AllToggleableChickAccessoryNames);
-                    break;
-                case 1:
-                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCBowTie }, ModelConversion.AllToggleableChickAccessoryNames);
-                    break;
-                case 2:
-                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCHairBow }, ModelConversion.AllToggleableChickAccessoryNames);
-                    break;
-                case 3:
-                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCEggShellCap }, ModelConversion.AllToggleableChickAccessoryNames);
-                    break;
-                case 4:
-                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCHairBow, ModelConversion.ChickNPCBowTie }, ModelConversion.AllToggleableChickAccessoryNames);
-                    break;
-                case 5:
-                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCEggShellCap, ModelConversion.ChickNPCBowTie }, ModelConversion.AllToggleableChickAccessoryNames);
-                    break;
-                case 6:
-                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCHairBow, ModelConversion.ChickNPCEggShellCap, ModelConversion.ChickNPCBowTie }, ModelConversion.AllToggleableChickAccessoryNames);
-                    break;
-                case 7:
-                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCHairBow, ModelConversion.ChickNPCEggShellCap }, ModelConversion.AllToggleableChickAccessoryNames);
-                    break;
-                case 8:
-                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCBaseballCap, }, ModelConversion.AllToggleableChickAccessoryNames);
-                    break;
-                case 9:
-                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCDress, }, ModelConversion.AllToggleableChickAccessoryNames);
-                    break;
-                case 10:
-                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCBaseballCap, ModelConversion.ChickNPCBowTie }, ModelConversion.AllToggleableChickAccessoryNames);
-                    break;
-                case 11:
-                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCBaseballCap, ModelConversion.ChickNPCDress }, ModelConversion.AllToggleableChickAccessoryNames);
-                    break;
-                case 12:
-                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCHairBow, ModelConversion.ChickNPCDress }, ModelConversion.AllToggleableChickAccessoryNames);
-                    break;
-                case 13:
-                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCEggShellCap, ModelConversion.ChickNPCDress }, ModelConversion.AllToggleableChickAccessoryNames);
-                    break;
-                case 14:
+		private static void SetChickInfo(SetObj obj, Node3D modelNode)
+		{
+			switch (obj.intProperty3)
+			{
+				case 0:
+					ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { }, ModelConversion.AllToggleableChickAccessoryNames);
+					break;
+				case 1:
+					ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCBowTie }, ModelConversion.AllToggleableChickAccessoryNames);
+					break;
+				case 2:
+					ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCHairBow }, ModelConversion.AllToggleableChickAccessoryNames);
+					break;
+				case 3:
+					ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCEggShellCap }, ModelConversion.AllToggleableChickAccessoryNames);
+					break;
+				case 4:
+					ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCHairBow, ModelConversion.ChickNPCBowTie }, ModelConversion.AllToggleableChickAccessoryNames);
+					break;
+				case 5:
+					ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCEggShellCap, ModelConversion.ChickNPCBowTie }, ModelConversion.AllToggleableChickAccessoryNames);
+					break;
+				case 6:
+					ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCHairBow, ModelConversion.ChickNPCEggShellCap, ModelConversion.ChickNPCBowTie }, ModelConversion.AllToggleableChickAccessoryNames);
+					break;
+				case 7:
+					ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCHairBow, ModelConversion.ChickNPCEggShellCap }, ModelConversion.AllToggleableChickAccessoryNames);
+					break;
+				case 8:
+					ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCBaseballCap, }, ModelConversion.AllToggleableChickAccessoryNames);
+					break;
+				case 9:
+					ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCDress, }, ModelConversion.AllToggleableChickAccessoryNames);
+					break;
+				case 10:
+					ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCBaseballCap, ModelConversion.ChickNPCBowTie }, ModelConversion.AllToggleableChickAccessoryNames);
+					break;
+				case 11:
+					ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCBaseballCap, ModelConversion.ChickNPCDress }, ModelConversion.AllToggleableChickAccessoryNames);
+					break;
+				case 12:
+					ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCHairBow, ModelConversion.ChickNPCDress }, ModelConversion.AllToggleableChickAccessoryNames);
+					break;
+				case 13:
+					ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCEggShellCap, ModelConversion.ChickNPCDress }, ModelConversion.AllToggleableChickAccessoryNames);
+					break;
+				case 14:
 				default:
-                    ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCHairBow, ModelConversion.ChickNPCEggShellCap, ModelConversion.ChickNPCDress }, ModelConversion.AllToggleableChickAccessoryNames);
-                    break;
-            }
-            switch (obj.intProperty4)
-            {
-                case 0:
-                    ModelConversion.SetDyeableColor(modelNode, ModelConversion.DyeableChickAccessoryNames, new Vector4(1, 0, 0, 1));  //Red
-                    break;
-                case 1:
-                    ModelConversion.SetDyeableColor(modelNode, ModelConversion.DyeableChickAccessoryNames, new Vector4(0, 0.5f, 0, 1)); //Green
-                    break;
-                case 2:
-                    ModelConversion.SetDyeableColor(modelNode, ModelConversion.DyeableChickAccessoryNames, new Vector4(0, 0, 1, 1)); //Blue
-                    break;
-                case 3:
-                    ModelConversion.SetDyeableColor(modelNode, ModelConversion.DyeableChickAccessoryNames, new Vector4(0.5f, 0, 0.5f, 1)); //Purple
-                    break;
-                case 4:
-                    ModelConversion.SetDyeableColor(modelNode, ModelConversion.DyeableChickAccessoryNames, new Vector4(0, 0.5f, 1, 1)); //Aqua
-                    break;
-                case 5:
-                default:
-                    ModelConversion.SetDyeableColor(modelNode, ModelConversion.DyeableChickAccessoryNames, new Vector4(1, 0.5f, 0, 1)); //Orange
-                    break;
-            }
-        }
+					ModelConversion.SetEnabledFromMatName(modelNode, new List<string>() { ModelConversion.ChickNPCHairBow, ModelConversion.ChickNPCEggShellCap, ModelConversion.ChickNPCDress }, ModelConversion.AllToggleableChickAccessoryNames);
+					break;
+			}
+			switch (obj.intProperty4)
+			{
+				case 0:
+					ModelConversion.SetDyeableColor(modelNode, ModelConversion.DyeableChickAccessoryNames, new Vector4(1, 0, 0, 1));  //Red
+					break;
+				case 1:
+					ModelConversion.SetDyeableColor(modelNode, ModelConversion.DyeableChickAccessoryNames, new Vector4(0, 0.5f, 0, 1)); //Green
+					break;
+				case 2:
+					ModelConversion.SetDyeableColor(modelNode, ModelConversion.DyeableChickAccessoryNames, new Vector4(0, 0, 1, 1)); //Blue
+					break;
+				case 3:
+					ModelConversion.SetDyeableColor(modelNode, ModelConversion.DyeableChickAccessoryNames, new Vector4(0.5f, 0, 0.5f, 1)); //Purple
+					break;
+				case 4:
+					ModelConversion.SetDyeableColor(modelNode, ModelConversion.DyeableChickAccessoryNames, new Vector4(0, 0.5f, 1, 1)); //Aqua
+					break;
+				case 5:
+				default:
+					ModelConversion.SetDyeableColor(modelNode, ModelConversion.DyeableChickAccessoryNames, new Vector4(1, 0.5f, 0, 1)); //Orange
+					break;
+			}
+		}
 
-        public static void CleanModelNode(Node3D modelNode)
+		public static void CleanModelNode(Node3D modelNode)
 		{
 			bool reAddCamera = false;
 			bool reAddTransform = false;
@@ -549,19 +555,19 @@ namespace OverEasy.Billy
 				CacheEggContentData(geEgg, gplTextures, gplAlphaTypes);
 			}
 
-            var eggGoldPath = OverEasyGlobals.GetAssetPath("egg_gold.arc");
-            if (eggGoldPath != "")
-            {
-                var eggGoldObj = new EggGold_Suit(File.ReadAllBytes(eggGoldPath));
-                CacheModel("object_28", eggGoldObj.models[0], null, eggGoldObj.gvm, false, false);
-            }
-            var cagePath = OverEasyGlobals.GetAssetPath("geobj_cage.arc");
-            if (cagePath != "")
-            {
-                var cageObj = new GEObj_Object(File.ReadAllBytes(cagePath));
-                CacheModel("object_33", cageObj.models["model"], cageObj.texLists["texlist"], cageObj.gvm, false, false);
-            }
-            var darkGatePath = OverEasyGlobals.GetAssetPath("geobj_darkgate.arc");
+			var eggGoldPath = OverEasyGlobals.GetAssetPath("egg_gold.arc");
+			if (eggGoldPath != "")
+			{
+				var eggGoldObj = new EggGold_Suit(File.ReadAllBytes(eggGoldPath));
+				CacheModel("object_28", eggGoldObj.models[0], null, eggGoldObj.gvm, false, false);
+			}
+			var cagePath = OverEasyGlobals.GetAssetPath("geobj_cage.arc");
+			if (cagePath != "")
+			{
+				var cageObj = new GEObj_Object(File.ReadAllBytes(cagePath));
+				CacheModel("object_33", cageObj.models["model"], cageObj.texLists["texlist"], cageObj.gvm, false, false);
+			}
+			var darkGatePath = OverEasyGlobals.GetAssetPath("geobj_darkgate.arc");
 			if (darkGatePath != "")
 			{
 				var darkGateObj = new GEObj_Object(File.ReadAllBytes(darkGatePath));
@@ -587,14 +593,38 @@ namespace OverEasy.Billy
 				var coinObjRed = new GEObj_Object(File.ReadAllBytes(objCoinPath));
 				CacheModel("object_38_red", coinObjRed.models["model"], null, coinObjRed.gvm, false, false);
 			}
-            var eggSuitPath = OverEasyGlobals.GetAssetPath("egg_suit.arc");
-            if (eggSuitPath != "")
-            {
-                var eggSuitObj = new EggGold_Suit(File.ReadAllBytes(eggSuitPath));
-                CacheModel("object_46", eggSuitObj.models[0], null, eggSuitObj.gvm, false, false);
-            }
-            //Load common geobj data
-            var commonObjectsPath = OverEasyGlobals.GetAssetPath("geobj_common.arc");
+			var objBombPath = OverEasyGlobals.GetAssetPath("obj_ms_bomb.arc");
+			if (objBombPath != "")
+			{
+				var objBomb = new ObjMsBomb(File.ReadAllBytes(objBombPath));
+				CacheModel("object_39", objBomb.model, null, objBomb.gvm, false, false);
+			}
+			var chickenPath = OverEasyGlobals.GetAssetPath("geobj_chicken.arc");
+			if (chickenPath != "")
+			{
+				var chickenObj = new GEObj_Object(File.ReadAllBytes(chickenPath));
+				for (int j = 0; j < chickenObj.texLists.Count; j++)
+				{
+					if (chickenObj.texLists.ContainsKey($"texList_{j}"))
+					{
+						BillyModelIO.CacheModel($"object_41_{j}", chickenObj.models["model_0"], chickenObj.texLists[$"texList_{j}"], chickenObj.gvm, false, false);
+					}
+				}
+			}
+			var mgLeaderPath = OverEasyGlobals.GetAssetPath("geobj_mg_leader.arc");
+			if (mgLeaderPath != "")
+			{
+				var mgLeaderObj = new GEObj_Object(File.ReadAllBytes(mgLeaderPath));
+				CacheModel("object_42", mgLeaderObj.models["model_0"], null, mgLeaderObj.gvm, false, false);
+			}
+			var eggSuitPath = OverEasyGlobals.GetAssetPath("egg_suit.arc");
+			if (eggSuitPath != "")
+			{
+				var eggSuitObj = new EggGold_Suit(File.ReadAllBytes(eggSuitPath));
+				CacheModel("object_46", eggSuitObj.models[0], null, eggSuitObj.gvm, false, false);
+			}
+			//Load common geobj data
+			var commonObjectsPath = OverEasyGlobals.GetAssetPath("geobj_common.arc");
 			var commonObjectsDefPath = OverEasyGlobals.GetAssetPath("stgobj_common.arc");
 			if(commonObjectsPath != "" && commonObjectsDefPath != "")
 			{
@@ -676,40 +706,40 @@ namespace OverEasy.Billy
 				CacheModel("object_12", stageGeo.models["MODEL_STAND"], stageGeo.texLists["TLS_MODEL_STAND"], stageGeo.gvm, false, true);
 			}
 
-            //Chicken Elder
-            if (stageGeo.models.ContainsKey("MODEL_CHICKEN_BOSS"))
-            {
-                CacheModel("object_21", stageGeo.models["MODEL_CHICKEN_BOSS"], stageGeo.texLists["TLS_MODEL_CHICKEN_BOSS"], stageGeo.gvm, false, true);
-            }
+			//Chicken Elder
+			if (stageGeo.models.ContainsKey("MODEL_CHICKEN_BOSS"))
+			{
+				CacheModel("object_21", stageGeo.models["MODEL_CHICKEN_BOSS"], stageGeo.texLists["TLS_MODEL_CHICKEN_BOSS"], stageGeo.gvm, false, true);
+			}
 
 			//Bridge
 			if (stageGeo.models.ContainsKey("MODEL_TURIBASHI_HASHIRA01"))
 			{
 				CacheModel("MODEL_TURIBASHI_HASHIRA01", stageGeo.models["MODEL_TURIBASHI_HASHIRA01"], stageGeo.texLists["TLS_MODEL_TURIBASHI_HASHIRA01"], stageGeo.gvm, false, true, null, true);
-            }
-            if (stageGeo.models.ContainsKey("MODEL_TURIBASHI_HASHIRA02"))
-            {
-                CacheModel("MODEL_TURIBASHI_HASHIRA02", stageGeo.models["MODEL_TURIBASHI_HASHIRA02"], stageGeo.texLists["TLS_MODEL_TURIBASHI_HASHIRA02"], stageGeo.gvm, false, true, null, true);
-            }
-            if (stageGeo.models.ContainsKey("MODEL_TURIBASHI_ITA01"))
-            {
-                CacheModel("MODEL_TURIBASHI_ITA01", stageGeo.models["MODEL_TURIBASHI_ITA01"], stageGeo.texLists["TLS_MODEL_TURIBASHI_ITA01"], stageGeo.gvm, false, true, null, true);
-            }
-            if (stageGeo.models.ContainsKey("MODEL_TURIBASHI_ITA02"))
-            {
-                CacheModel("MODEL_TURIBASHI_ITA02", stageGeo.models["MODEL_TURIBASHI_ITA02"], stageGeo.texLists["TLS_MODEL_TURIBASHI_ITA02"], stageGeo.gvm, false, true, null, true);
-            }
-            if (stageGeo.models.ContainsKey("MODEL_TURIBASHI_ITA03"))
-            {
-                CacheModel("MODEL_TURIBASHI_ITA03", stageGeo.models["MODEL_TURIBASHI_ITA03"], stageGeo.texLists["TLS_MODEL_TURIBASHI_ITA03"], stageGeo.gvm, false, true, null, true);
-            }
-            if (stageGeo.models.ContainsKey("MODEL_TURIBASHI_ROPE"))
-            {
-                CacheModel("MODEL_TURIBASHI_ROPE", stageGeo.models["MODEL_TURIBASHI_ROPE"], stageGeo.texLists["TLS_MODEL_TURIBASHI_ROPE"], stageGeo.gvm, false, true, null, true);
-            }
+			}
+			if (stageGeo.models.ContainsKey("MODEL_TURIBASHI_HASHIRA02"))
+			{
+				CacheModel("MODEL_TURIBASHI_HASHIRA02", stageGeo.models["MODEL_TURIBASHI_HASHIRA02"], stageGeo.texLists["TLS_MODEL_TURIBASHI_HASHIRA02"], stageGeo.gvm, false, true, null, true);
+			}
+			if (stageGeo.models.ContainsKey("MODEL_TURIBASHI_ITA01"))
+			{
+				CacheModel("MODEL_TURIBASHI_ITA01", stageGeo.models["MODEL_TURIBASHI_ITA01"], stageGeo.texLists["TLS_MODEL_TURIBASHI_ITA01"], stageGeo.gvm, false, true, null, true);
+			}
+			if (stageGeo.models.ContainsKey("MODEL_TURIBASHI_ITA02"))
+			{
+				CacheModel("MODEL_TURIBASHI_ITA02", stageGeo.models["MODEL_TURIBASHI_ITA02"], stageGeo.texLists["TLS_MODEL_TURIBASHI_ITA02"], stageGeo.gvm, false, true, null, true);
+			}
+			if (stageGeo.models.ContainsKey("MODEL_TURIBASHI_ITA03"))
+			{
+				CacheModel("MODEL_TURIBASHI_ITA03", stageGeo.models["MODEL_TURIBASHI_ITA03"], stageGeo.texLists["TLS_MODEL_TURIBASHI_ITA03"], stageGeo.gvm, false, true, null, true);
+			}
+			if (stageGeo.models.ContainsKey("MODEL_TURIBASHI_ROPE"))
+			{
+				CacheModel("MODEL_TURIBASHI_ROPE", stageGeo.models["MODEL_TURIBASHI_ROPE"], stageGeo.texLists["TLS_MODEL_TURIBASHI_ROPE"], stageGeo.gvm, false, true, null, true);
+			}
 
-            //Scenery
-            for (int i = 0; i < stgobj.objEntries.Count; i++)
+			//Scenery
+			for (int i = 0; i < stgobj.objEntries.Count; i++)
 			{
 				var objEntry = stgobj.objEntries[i];
 
@@ -766,54 +796,54 @@ namespace OverEasy.Billy
 			var chickNPC = ModelConversion.NinjaToGDModel("chickNPC", commonGeo.models["model_14"], chickTexSubset, chickAlphaTypes, chickAQN);
 			var baseballCap = ModelConversion.NinjaToGDModel("chickNPCBaseballCap", commonGeo.models["model_15"], chickTexSubset, chickAlphaTypes, null, null, chickNPC, System.Numerics.Matrix4x4.CreateTranslation(chickAQN.nodeList[14].GetInverseBindPoseMatrixInverted().Translation));
 			var hairBow = ModelConversion.NinjaToGDModel("chickNPCHairBow", commonGeo.models["model_16"], chickTexSubset, chickAlphaTypes, null, null, chickNPC, System.Numerics.Matrix4x4.CreateTranslation(chickAQN.nodeList[14].GetInverseBindPoseMatrixInverted().Translation));
-            var bowTie = ModelConversion.NinjaToGDModel("chickNPCBowTie", commonGeo.models["model_17"], chickTexSubset, chickAlphaTypes, null, null, chickNPC, System.Numerics.Matrix4x4.CreateTranslation(chickAQN.nodeList[38].GetInverseBindPoseMatrixInverted().Translation));
-            var eggshellCap = ModelConversion.NinjaToGDModel("chickNPCEggShellCap", commonGeo.models["model_18"], chickTexSubset, chickAlphaTypes, null, null, chickNPC, System.Numerics.Matrix4x4.CreateTranslation(chickAQN.nodeList[14].GetInverseBindPoseMatrixInverted().Translation));
-            var dress = ModelConversion.NinjaToGDModel("chickNPCDress", commonGeo.models["model_19"], chickTexSubset, chickAlphaTypes, null, null, chickNPC, System.Numerics.Matrix4x4.CreateTranslation(chickAQN.nodeList[38].GetInverseBindPoseMatrixInverted().Translation));
+			var bowTie = ModelConversion.NinjaToGDModel("chickNPCBowTie", commonGeo.models["model_17"], chickTexSubset, chickAlphaTypes, null, null, chickNPC, System.Numerics.Matrix4x4.CreateTranslation(chickAQN.nodeList[38].GetInverseBindPoseMatrixInverted().Translation));
+			var eggshellCap = ModelConversion.NinjaToGDModel("chickNPCEggShellCap", commonGeo.models["model_18"], chickTexSubset, chickAlphaTypes, null, null, chickNPC, System.Numerics.Matrix4x4.CreateTranslation(chickAQN.nodeList[14].GetInverseBindPoseMatrixInverted().Translation));
+			var dress = ModelConversion.NinjaToGDModel("chickNPCDress", commonGeo.models["model_19"], chickTexSubset, chickAlphaTypes, null, null, chickNPC, System.Numerics.Matrix4x4.CreateTranslation(chickAQN.nodeList[38].GetInverseBindPoseMatrixInverted().Translation));
 			ModelConversion.CreateObjectCollision(chickNPC);
 			OverEasyGlobals.modelDictionary["chickNPC"] = chickNPC;
 
-            //Bowling Ball
-            if (commonGeo.models.ContainsKey($"model_20"))
-            {
-                CacheModel($"object_23", commonGeo.models[$"model_20"], new NJTextureList() { texNames = new List<string>() { "h_common0564", "h_common0464" } }, commonGeo.gvm, false, true);
-            }
+			//Bowling Ball
+			if (commonGeo.models.ContainsKey($"model_20"))
+			{
+				CacheModel($"object_23", commonGeo.models[$"model_20"], new NJTextureList() { texNames = new List<string>() { "h_common0564", "h_common0464" } }, commonGeo.gvm, false, true);
+			}
 
 			//Bowling Launcher
-            if (commonGeo.models.ContainsKey($"model_21"))
-            { 
+			if (commonGeo.models.ContainsKey($"model_21"))
+			{ 
 				var bowlingAqn = new AquaNode();
 				var bowlingTexSet = ModelConversion.GetTextureSubset(gvmTextures, new NJTextureList() { texNames = new List<string>() { "h_common03256" } }, gvrAlphaTypes, out var bowlingTexTypes);
-                var bowlingLauncher = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_21"], bowlingTexSet, bowlingTexTypes, bowlingAqn);
-                var bowlingLauncher1 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_22"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher);
-                var bowlingPin0 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(0, 0, 200f), false, 0.15f);
-                var bowlingPin1 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(0, 0, 280f), false, 0.15f);
-                var bowlingPin2 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(23f, 0, 240f), false, 0.15f);
-                var bowlingPin3 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(-23f, 0, 240f), false, 0.15f);
-                var bowlingPin4 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(-46f, 0, 280f), false, 0.15f);
-                var bowlingPin5 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(46f, 0, 280f), false, 0.15f);
-                var bowlingPin6 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(-69f, 0, 320f), false, 0.15f);
-                var bowlingPin7 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(69f, 0, 320f), false, 0.15f);
-                var bowlingPin8 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(-23f, 0, 320f), false, 0.15f);
-                var bowlingPin9 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(23f, 0, 320f), false, 0.15f);
-                ModelConversion.CreateObjectCollision(bowlingLauncher);
-                OverEasyGlobals.modelDictionary["object_24"] = bowlingLauncher;
-            }
+				var bowlingLauncher = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_21"], bowlingTexSet, bowlingTexTypes, bowlingAqn);
+				var bowlingLauncher1 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_22"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher);
+				var bowlingPin0 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(0, 0, 200f), false, 0.15f);
+				var bowlingPin1 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(0, 0, 280f), false, 0.15f);
+				var bowlingPin2 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(23f, 0, 240f), false, 0.15f);
+				var bowlingPin3 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(-23f, 0, 240f), false, 0.15f);
+				var bowlingPin4 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(-46f, 0, 280f), false, 0.15f);
+				var bowlingPin5 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(46f, 0, 280f), false, 0.15f);
+				var bowlingPin6 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(-69f, 0, 320f), false, 0.15f);
+				var bowlingPin7 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(69f, 0, 320f), false, 0.15f);
+				var bowlingPin8 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(-23f, 0, 320f), false, 0.15f);
+				var bowlingPin9 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(23f, 0, 320f), false, 0.15f);
+				ModelConversion.CreateObjectCollision(bowlingLauncher);
+				OverEasyGlobals.modelDictionary["object_24"] = bowlingLauncher;
+			}
 
-            //Egg Bounce Switch
-            var switchTexSet = ModelConversion.GetTextureSubset(gvmTextures, commonGeo.texLists["texList_11"], gvrAlphaTypes, out var bounceAlphaTypes);
-            var eggBounceSwitchModel = ModelConversion.NinjaToGDModel($"object_26_base", commonGeo.models[$"model_32"], switchTexSet, bounceAlphaTypes);
-            var eggBounceSwitchFinalModel = ModelConversion.NinjaToGDModel($"object_26", commonGeo.models[$"model_33"], switchTexSet, bounceAlphaTypes, null, null, eggBounceSwitchModel);
-            ModelConversion.CreateObjectCollision(eggBounceSwitchFinalModel);
-            OverEasyGlobals.modelDictionary["object_26"] = eggBounceSwitchFinalModel;
+			//Egg Bounce Switch
+			var switchTexSet = ModelConversion.GetTextureSubset(gvmTextures, commonGeo.texLists["texList_11"], gvrAlphaTypes, out var bounceAlphaTypes);
+			var eggBounceSwitchModel = ModelConversion.NinjaToGDModel($"object_26_base", commonGeo.models[$"model_32"], switchTexSet, bounceAlphaTypes);
+			var eggBounceSwitchFinalModel = ModelConversion.NinjaToGDModel($"object_26", commonGeo.models[$"model_33"], switchTexSet, bounceAlphaTypes, null, null, eggBounceSwitchModel);
+			ModelConversion.CreateObjectCollision(eggBounceSwitchFinalModel);
+			OverEasyGlobals.modelDictionary["object_26"] = eggBounceSwitchFinalModel;
 
-            //Animal Breakable Boulder
-            CacheModel($"object_27", commonGeo.models[$"model_36"], commonGeo.texLists["texList_36"], commonGeo.gvm, false, true);
+			//Animal Breakable Boulder
+			CacheModel($"object_27", commonGeo.models[$"model_36"], commonGeo.texLists["texList_36"], commonGeo.gvm, false, true);
 
-            //Cannon
-            CacheModel($"object_29", commonGeo.models[$"model_35"], commonGeo.texLists["texList_34"], commonGeo.gvm, false, true);
+			//Cannon
+			CacheModel($"object_29", commonGeo.models[$"model_35"], commonGeo.texLists["texList_34"], commonGeo.gvm, false, true);
 
-            //Chick Coin
-            CacheModel($"object_47", commonGeo.models[$"model_52"], commonGeo.texLists["texList_45"], commonGeo.gvm, false, true);
+			//Chick Coin
+			CacheModel($"object_47", commonGeo.models[$"model_52"], commonGeo.texLists["texList_45"], commonGeo.gvm, false, true);
 
 			//Fruit balls
 			var tfm = System.Numerics.Matrix4x4.CreateTranslation(new System.Numerics.Vector3(0, 5, 0));
@@ -919,17 +949,17 @@ namespace OverEasy.Billy
 					posMat = System.Numerics.Matrix4x4.CreateTranslation(0, 1.5f, 0);
 					rootTfm = System.Numerics.Matrix4x4.Identity * posMat;
 					break;
-                case "object_28":
+				case "object_28":
 				case "object_46":
 					rootTfm = System.Numerics.Matrix4x4.CreateScale(1.5f, 1.5f, 1.5f) * System.Numerics.Matrix4x4.CreateTranslation(new System.Numerics.Vector3(0, 7.5f, 0));
-                    break;
+					break;
 			}
 
 			var modelNode = ModelConversion.NinjaToGDModel(name, nj, textureSubSet, texAlphaTypes, null, null, null, rootTfm, blockVertColors, forceOpacity);
 			if(!skipCollision)
-            {
-                ModelConversion.CreateObjectCollision(modelNode);
-            }
+			{
+				ModelConversion.CreateObjectCollision(modelNode);
+			}
 			if (forceAdd || !OverEasyGlobals.modelDictionary.ContainsKey(name))
 			{
 				OverEasyGlobals.modelDictionary[name] = modelNode;
