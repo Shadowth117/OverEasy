@@ -512,8 +512,9 @@ namespace OverEasy
 			var def = stgDef.defs[currentMissionId];
 			daySkybox = null;
 			nightSkybox = null;
-			settingsBtn.GetPopup().SetItemChecked(0, true);
-			isDay = true;
+			displayBtn.GetPopup().SetItemChecked(0, true);
+			isDay = displayBtn.dayNightPreviewToggle = true;
+
 			SetCameraSettingsBilly();
 			ClearModelAndTextureData();
 
@@ -581,7 +582,7 @@ namespace OverEasy
 			if (File.Exists(lndPath))
 			{
 				var lnd = Billy.ModelConversion.LNDToGDModel(def.lndFilename, new LND(File.ReadAllBytes(lndPath)));
-				lnd.Visible = displayBtn.GetPopup().IsItemChecked(0);
+				lnd.Visible = displayBtn.displayLndTerrain;
 				terrainModels.Add(lnd);
 				modelRoot.AddChild(lnd);
 			}
@@ -589,7 +590,7 @@ namespace OverEasy
 			if (File.Exists(mc2Path))
 			{
 				var mc2 = Billy.ModelConversion.MC2ToGDModel(def.mc2Filename, new MC2(File.ReadAllBytes(mc2Path)));
-				mc2.Visible = displayBtn.GetPopup().IsItemChecked(1);
+				mc2.Visible = displayBtn.displayMc2Terrain;
 				terrainCollision.Add(mc2);
 				modelRoot.AddChild(mc2);
 			}
@@ -677,15 +678,15 @@ namespace OverEasy
 						var commonGeobj = new GEObj_Stage(currentCommonPRD.files[i]);
 						BillyModelIO.CacheGeobjCommon(commonGeobj);
 						break;
-                    case "geobj_cage.arc":
-                        var cageObj = new GEObj_Object(currentCommonPRD.files[i]);
-                        BillyModelIO.CacheModel("object_33", cageObj.models["model"], cageObj.texLists["texlist"], cageObj.gvm, false, false);
-                        break;
-                    case "geobj_emblem.arc":
+					case "geobj_cage.arc":
+						var cageObj = new GEObj_Object(currentCommonPRD.files[i]);
+						BillyModelIO.CacheModel("object_33", cageObj.models["model"], cageObj.texLists["texlist"], cageObj.gvm, false, false);
+						break;
+					case "geobj_emblem.arc":
 						var emblemObj = new GEObj_Object(currentCommonPRD.files[i]);
 						BillyModelIO.CacheModel("object_37", emblemObj.models["model"], emblemObj.texLists["texlist"], emblemObj.gvm, false, false);
 						break;
-                    case "set_light_param.bin":
+					case "set_light_param.bin":
 						currentLightsParam = new SetLightParam(currentCommonPRD.files[i]);
 						break;
 					case "stgobj_common.arc":
@@ -718,7 +719,7 @@ namespace OverEasy
 				{
 					enemyArchiveDict.Add(Path.GetFileNameWithoutExtension(currentPRD.fileNames[i].ToLower().Replace("ar_", "")), new ArEnemy(currentPRD.files[i]));
 				}
-				else if (currentPRD.fileNames[i].ToLower().StartsWith("ene_") && Path.GetExtension(currentPRD.fileNames[i].ToLower()) == ".gvm")
+				else if ((currentPRD.fileNames[i].ToLower().StartsWith("ene_") || currentPRD.fileNames[i].ToLower().StartsWith("obj_")) && Path.GetExtension(currentPRD.fileNames[i].ToLower()) == ".gvm")
 				{
 					enemyGVMDict.Add(Path.GetFileNameWithoutExtension(currentPRD.fileNames[i].ToLower()), new PuyoFile(currentPRD.files[i]));
 				}
@@ -742,13 +743,13 @@ namespace OverEasy
 				{
 					var bantam = new GEPlayer(currentPRD.files[i]);
 					BillyModelIO.CachePlayerModel("player_4", bantam, true);
-                }
-                else if (currentPRD.fileNames[i] == "egg_gold.arc")
-                {
-                    var eggGold = new EggGold_Suit(currentPRD.files[i]);
-                    BillyModelIO.CacheModel("object_28", eggGold.models[0], null, eggGold.gvm, false, false);
-                }
-                else if (currentPRD.fileNames[i] == "geobj_darkgate.arc")
+				}
+				else if (currentPRD.fileNames[i] == "egg_gold.arc")
+				{
+					var eggGold = new EggGold_Suit(currentPRD.files[i]);
+					BillyModelIO.CacheModel("object_28", eggGold.models[0], null, eggGold.gvm, false, false);
+				}
+				else if (currentPRD.fileNames[i] == "geobj_darkgate.arc")
 				{
 					var darkGate = new GEObj_Object(currentPRD.files[i]);
 					BillyModelIO.CacheModel("object_35", darkGate.models["model"], darkGate.texLists["texlist"], darkGate.gvm, false, false);
@@ -764,15 +765,15 @@ namespace OverEasy
 					BillyModelIO.CacheModel("object_38_blue", coinObjBlue.models["model"], null, coinObjBlue.gvm, false, false);
 					var coinObjRed = new GEObj_Object(currentPRD.files[i]);
 					BillyModelIO.CacheModel("object_38_red", coinObjRed.models["model"], null, coinObjRed.gvm, false, false);
-                }
+				}
 				else if (currentPRD.fileNames[i] == "obj_ms_bomb.arc")
 				{
-                    var objBomb = new ObjMsBomb(currentPRD.files[i]);
-                    BillyModelIO.CacheModel("object_39", objBomb.model, null, objBomb.gvm, false, false);
-                }
-                else if (currentPRD.fileNames[i] == "geobj_chicken.arc")
-                {
-                    var chicken = new GEObj_Object(currentPRD.files[i]);
+					var objBomb = new ObjMsBomb(currentPRD.files[i]);
+					BillyModelIO.CacheModel("object_39", objBomb.model, null, objBomb.gvm, false, false);
+				}
+				else if (currentPRD.fileNames[i] == "geobj_chicken.arc")
+				{
+					var chicken = new GEObj_Object(currentPRD.files[i]);
 					for(int j = 0; j < chicken.texLists.Count; j++)
 					{
 						if (chicken.texLists.ContainsKey($"texList_{j}"))
@@ -780,18 +781,18 @@ namespace OverEasy
 							BillyModelIO.CacheModel($"object_41_{j}", chicken.models["model"], chicken.texLists[$"texList_{j}"], chicken.gvm, false, false);
 						}
 					}
-                }
-                else if (currentPRD.fileNames[i] == "geobj_mg_leader.arc")
-                {
-                    var goal = new GEObj_Object(currentPRD.files[i]);
-                    BillyModelIO.CacheModel("object_42", goal.models["models_0"], goal.texLists["texlist"], goal.gvm, false, false);
-                }
-                else if (currentPRD.fileNames[i] == "egg_suit.arc")
-                {
-                    var eggSuit = new EggGold_Suit(currentPRD.files[i]);
-                    BillyModelIO.CacheModel("object_46", eggSuit.models[0], null, eggSuit.gvm, false, false);
-                }
-                else
+				}
+				else if (currentPRD.fileNames[i] == "geobj_mg_leader.arc")
+				{
+					var goal = new GEObj_Object(currentPRD.files[i]);
+					BillyModelIO.CacheModel("object_42", goal.models["models_0"], goal.texLists["texlist"], goal.gvm, false, false);
+				}
+				else if (currentPRD.fileNames[i] == "egg_suit.arc")
+				{
+					var eggSuit = new EggGold_Suit(currentPRD.files[i]);
+					BillyModelIO.CacheModel("object_46", eggSuit.models[0], null, eggSuit.gvm, false, false);
+				}
+				else
 
 				//Load Set Camera
 
@@ -906,6 +907,25 @@ namespace OverEasy
 
 				switch (pair.Key)
 				{
+					case "obj_blue_katana":
+						ModelConversion.LoadGVM("ene_blue_katana.gvm", enemyGVMDict[pair.Key], out var katanaTex, out List<int> katanaGvrAlphaTypes);
+						List<Texture2D> katanaTexSet = new() { katanaTex[0] };
+						katanaTexSet.Add(katanaTexSet[0]);
+						katanaGvrAlphaTypes.Add(0);
+						var objKatanaArc = pair.Value;
+						var katanaBlade = ModelConversion.NinjaToGDModel("object_259_blade", objKatanaArc.models[0], katanaTexSet, katanaGvrAlphaTypes);
+						var katanaHilt = ModelConversion.NinjaToGDModel("object_259", objKatanaArc.models[1], katanaTexSet, katanaGvrAlphaTypes, null, null, katanaBlade);
+						ModelConversion.CreateObjectCollision(katanaHilt);
+						OverEasyGlobals.modelDictionary["object_259"] = katanaHilt;
+						break;
+					case "obj_blue_boss":
+						ModelConversion.LoadGVM("obj_blue_boss.gvm", enemyGVMDict[pair.Key], out var bossTex, out List<int> bossGvrAlphaTypes);
+						var ropeFence = BillyModelIO.CacheModel("object_513", pair.Value.models[0], pair.Value.texList[0], enemyGVMDict[pair.Key], false, true);
+						var fenceBladeHilt = ModelConversion.NinjaToGDModel("object_512", pair.Value.models[1], bossTex, bossGvrAlphaTypes);
+						var fenceBlade = ModelConversion.NinjaToGDModel("object_512_blade", pair.Value.models[2], bossTex, bossGvrAlphaTypes, null, null, fenceBladeHilt);
+						ModelConversion.CreateObjectCollision(fenceBlade);
+						OverEasyGlobals.modelDictionary["object_512"] = fenceBlade;
+						break;
 					case "ene_am02":
 					case "ene_blue_boss":
 					case "ene_orange_boss":
@@ -1526,7 +1546,7 @@ namespace OverEasy
 						break;
 					case "IntProperty1":
 						var intProperty1Value = (int)GetSpinBoxValue("IntProperty1");
-						if ((objRaw.objectId == 50 || objRaw.objectId == 41 || objRaw.objectId == 40 || objRaw.objectId == 38 || objRaw.objectId == 30 || objRaw.objectId == 25 || objRaw.objectId == 11 
+						if ((objRaw.objectId == 50 || objRaw.objectId == 45 || objRaw.objectId == 41 || objRaw.objectId == 40 || objRaw.objectId == 38 || objRaw.objectId == 30 || objRaw.objectId == 25 || objRaw.objectId == 11 
 							|| objRaw.objectId == 10 || objRaw.objectId == 4) && objRaw.intProperty1 != intProperty1Value)
 						{
 							shouldReloadModel = true;
@@ -1550,13 +1570,13 @@ namespace OverEasy
 						objRaw.intProperty3 = intProperty3Value;
 						break;
 					case "IntProperty4":
-                        var intProperty4Value = (int)GetSpinBoxValue("IntProperty4");
-                        if ((objRaw.objectId == 18) && objRaw.intProperty3 != intProperty4Value)
-                        {
-                            shouldReloadModel = true;
-                        }
-                        objRaw.intProperty4 = intProperty4Value;
-                        break;
+						var intProperty4Value = (int)GetSpinBoxValue("IntProperty4");
+						if ((objRaw.objectId == 18) && objRaw.intProperty3 != intProperty4Value)
+						{
+							shouldReloadModel = true;
+						}
+						objRaw.intProperty4 = intProperty4Value;
+						break;
 					case "FloatProperty1":
 						objRaw.fltProperty1 = (float)GetSpinBoxValue("FloatProperty1");
 						break;
@@ -1571,7 +1591,7 @@ namespace OverEasy
 						if(objRaw.objectId == 27 && objRaw.fltProperty4 != floatProperty4Value)
 						{
 							shouldReloadModel = true;
-                        }
+						}
 						objRaw.fltProperty4 = floatProperty4Value;
 						break;
 					case "ByteProperty1":
@@ -1598,8 +1618,8 @@ namespace OverEasy
 			parentNode.GlobalPosition = new Vector3(objPosition.X, objPosition.Y, objPosition.Z);
 			parentNode.RotationDegrees = new Vector3(objRotation.X, objRotation.Y, objRotation.Z);
 
-            //Insert over original file object values
-            setObjList.setObjs[objectId] = objRaw;
+			//Insert over original file object values
+			setObjList.setObjs[objectId] = objRaw;
 		}
 
 		public static void UpdateBillySetEnemies(int objectId)

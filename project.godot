@@ -31,7 +31,8 @@ project/assembly_name="OverEasy"
 
 [filesystem]
 
-import/fbx/enabled=false
+import/fbx2gltf/enabled=false
+import/fbx/enabled=true
 
 [input]
 

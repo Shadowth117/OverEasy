@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://byyuk3xwv63rk"
+path="res://.godot/imported/HoopSphere.obj-21db297a8be4f2d3ee416d068c68bf42.mesh"
+
+[deps]
+
+files=["res://.godot/imported/HoopSphere.obj-21db297a8be4f2d3ee416d068c68bf42.mesh"]
+
+source_file="res://Models/HoopSphere.obj"
+dest_files=["res://.godot/imported/HoopSphere.obj-21db297a8be4f2d3ee416d068c68bf42.mesh", "res://.godot/imported/HoopSphere.obj-21db297a8be4f2d3ee416d068c68bf42.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

@@ -4,23 +4,34 @@ using AquaModelLibrary.Data.BillyHatcher.SetData;
 using AquaModelLibrary.Data.Ninja;
 using AquaModelLibrary.Data.Ninja.Model;
 using AquaModelLibrary.Data.PSO2.Aqua;
-using AquaModelLibrary.Data.PSO2.Aqua.AquaNodeData;
+using AquaModelLibrary.Data.PSO2.Aqua.CharacterMakingIndexData;
 using ArchiveLib;
 using Godot;
 using OverEasy.TextInfo;
 using System.Collections.Generic;
 using System.IO;
-using System.Xml.Linq;
 using VrSharp.Gvr;
 
 namespace OverEasy.Billy
 {
 	public class BillyModelIO
 	{
+
+		public static Color orangeHoopColor = new Color(1f, 0.61f, 0.22f, 1f);
+		public static Color yellowHoopColor = new Color(1f, .99f, 0f, 1f);
+		public static Color greenHoopColor = new Color(.38f, 1f, 0f, 1f);
+		public static Color blueHoopColor = new Color(0, .53f, 1f, 1f);
+		public static Color tealHoopColor = new Color(0, 1f, .85f, 1f);
+		public static Color magentaHoopColor = new Color(1f, 0f, .815f, 1f);
+		
 		public static void CacheEnemyModelsPC()
 		{
 			foreach (var set in ObjectVariants.enemyFileMap)
 			{
+				if(set.Value == null)
+				{
+					continue;
+				}
 				//Load textures
 				string texturePath = null;
 				switch (set.Key)
@@ -203,6 +214,14 @@ namespace OverEasy.Billy
 					break;
 				case 41:
 					name += $"_{obj.intProperty1}";
+					break;
+				case 45:
+					int hoopType = obj.intProperty1;
+					if(hoopType > 5 || hoopType < 0)
+					{
+						hoopType = 5;
+					}
+					name += $"_{hoopType}";
 					break;
 				case 50:
 					name = $"segg_{obj.intProperty1}";
@@ -647,7 +666,9 @@ namespace OverEasy.Billy
 			var objDefFile = def.commonData != null ? def.commonData.objectDefinition : "";
 			var localObjectsPath = OverEasyGlobals.GetAssetPath(objDataFile);
 			var localObjectsDefPath = OverEasyGlobals.GetAssetPath(objDefFile);
-			if(localObjectsPath != "" && localObjectsDefPath != "")
+			GEObj_Stage localGeobj = null;
+
+			if (localObjectsPath != "" && localObjectsDefPath != "")
 			{
 				var localStgobj = new StageObj(File.ReadAllBytes(localObjectsDefPath));
 				for (int i = 0; i < localStgobj.objEntries.Count; i++)
@@ -659,9 +680,41 @@ namespace OverEasy.Billy
 					}
 				}
 
-				var localGeobj = new GEObj_Stage(File.ReadAllBytes(localObjectsPath));
+				localGeobj = new GEObj_Stage(File.ReadAllBytes(localObjectsPath));
 				CacheGeobjLocal(localStgobj, localGeobj);
 			}
+
+			var objKatanaPath = OverEasyGlobals.GetAssetPath("ar_obj_blue_katana.arc");
+			var objKatanaGvmPath = OverEasyGlobals.GetAssetPath("obj_blue_katana.gvm");
+			if (objKatanaPath != "" && objKatanaGvmPath != "")
+			{
+				ModelConversion.LoadGVM("blueKatanaGvm", new PuyoFile(File.ReadAllBytes(objKatanaGvmPath)), out var katanaTex, out List<int> gvrAlphaTypes);
+				List<Texture2D> textures = new() { katanaTex[0] };
+				textures.Add(textures[0]);
+				gvrAlphaTypes.Add(0);
+				var objKatanaArc = new ArEnemy(File.ReadAllBytes(objKatanaPath));
+				var katanaBlade = ModelConversion.NinjaToGDModel("object_259_blade", objKatanaArc.models[0], textures, gvrAlphaTypes);
+				var katanaHilt = ModelConversion.NinjaToGDModel("object_259", objKatanaArc.models[1], textures, gvrAlphaTypes, null, null, katanaBlade);
+				ModelConversion.CreateObjectCollision(katanaHilt);
+				OverEasyGlobals.modelDictionary["object_259"] = katanaHilt;
+			}
+
+			var objBlueBossPath = OverEasyGlobals.GetAssetPath("ar_obj_blue_boss.arc");
+			var objBlueBossGvmPath = OverEasyGlobals.GetAssetPath("obj_blue_boss.gvm");
+
+			if (objBlueBossPath != "" && objBlueBossGvmPath != "")
+			{
+				var objBlueBoss = new ArEnemy(File.ReadAllBytes(objBlueBossPath));
+				var gvm = new PuyoFile(File.ReadAllBytes(objBlueBossGvmPath));
+				ModelConversion.LoadGVM("obj_blue_boss.gvm", gvm, out var bossTex, out List<int> bossGvrAlphaTypes);
+				var ropeFence = BillyModelIO.CacheModel("object_513", objBlueBoss.models[0], objBlueBoss.texList[0], gvm, false, true);
+				var fenceBladeHilt = ModelConversion.NinjaToGDModel("object_512", objBlueBoss.models[1], bossTex, bossGvrAlphaTypes);
+				var fenceBlade = ModelConversion.NinjaToGDModel("object_512_blade", objBlueBoss.models[2], bossTex, bossGvrAlphaTypes, null, null, fenceBladeHilt);
+				ModelConversion.CreateObjectCollision(fenceBlade);
+				OverEasyGlobals.modelDictionary["object_512"] = fenceBlade;
+			}
+
+			//Magma
 		}
 
 		public static void LoadGPLTextures(PRD nrc, out List<Texture2D> gplTextures, out List<int> gplAlphaTypes)
@@ -738,6 +791,90 @@ namespace OverEasy.Billy
 				CacheModel("MODEL_TURIBASHI_ROPE", stageGeo.models["MODEL_TURIBASHI_ROPE"], stageGeo.texLists["TLS_MODEL_TURIBASHI_ROPE"], stageGeo.gvm, false, true, null, true);
 			}
 
+			var def = OverEasyGlobals.stgDef.defs[OverEasyGlobals.currentMissionId];
+			switch (def.worldName)
+			{
+				case "green":
+					break;
+				case "blue":
+					//Autofire cannons, not to be confused with the ones that launch the player
+					var cannonTfm = System.Numerics.Matrix4x4.CreateTranslation(new System.Numerics.Vector3(0, 23, 0));
+					cannonTfm *= System.Numerics.Matrix4x4.CreateScale(0.5f, 0.5f, 0.5f);
+					cannonTfm *= System.Numerics.Matrix4x4.CreateRotationY(-Mathf.Pi / 2);
+					var cannonBaseTfm = System.Numerics.Matrix4x4.Identity;
+					cannonBaseTfm *= System.Numerics.Matrix4x4.CreateScale(0.5f, 0.5f, 0.5f);
+					cannonBaseTfm *= System.Numerics.Matrix4x4.CreateRotationY(-Mathf.Pi / 2);
+
+					var cannonSubset = ModelConversion.GetTextureSubset(gvmTextures, stageGeo.texLists["texList_3"], gvrAlphaTypes, out var cannonGvrTypes);
+					var cannon = ModelConversion.NinjaToGDModel("object_256", stageGeo.models["model_3"], cannonSubset, cannonGvrTypes, null, null, null, cannonTfm);
+					cannon = ModelConversion.NinjaToGDModel("object_256", stageGeo.models["model_4"], cannonSubset, cannonGvrTypes, null, null, cannon, cannonBaseTfm);
+					ModelConversion.CreateObjectCollision(cannon);
+					OverEasyGlobals.modelDictionary["object_256"] = cannon;
+
+					//Anchor
+					CacheModel("object_257", stageGeo.models["model_2"], stageGeo.texLists["texList_2"], stageGeo.gvm, false, true, null);
+
+					//Shark
+					CacheModel("object_258", stageGeo.models["model_0"], stageGeo.texLists["texList_0"], stageGeo.gvm, false, true, null);
+
+					//Waterfall + Vent
+					var waterfallSubset = ModelConversion.GetTextureSubset(gvmTextures, stageGeo.texLists["texList_19"], gvrAlphaTypes, out var waterfallGvrTypes);
+					var waterfall = ModelConversion.NinjaToGDModel("object_260", stageGeo.models["model_21"], waterfallSubset, waterfallGvrTypes);
+					waterfall = ModelConversion.NinjaToGDModel("object_260", stageGeo.models["model_22"], waterfallSubset, waterfallGvrTypes, null, null, waterfall);
+					ModelConversion.CreateObjectCollision(waterfall);
+					OverEasyGlobals.modelDictionary["object_260"] = waterfall;
+
+					//Fire Arrow
+					CacheModel("object_261", stageGeo.models["model_5"], stageGeo.texLists["texList_5"], stageGeo.gvm, false, true);
+
+					//Skull & Crossbones Arrow Spawners
+					CacheModel("object_262", stageGeo.models["model_1"], stageGeo.texLists["texList_1"], stageGeo.gvm, false, true);
+
+					//Giant Skull + Hookhand
+					var hookSubset = ModelConversion.GetTextureSubset(gvmTextures, stageGeo.texLists["texList_19"], gvrAlphaTypes, out var hookGvrTypes);
+					var giantSkull = ModelConversion.NinjaToGDModel("object_263", stageGeo.models["model_18"], hookSubset, hookGvrTypes);
+					var giantHookHandle = ModelConversion.NinjaToGDModel("object_263", stageGeo.models["model_19"], hookSubset, hookGvrTypes, null, null, giantSkull);
+					var giantHook = ModelConversion.NinjaToGDModel("object_263", stageGeo.models["model_20"], hookSubset, hookGvrTypes, null, null, giantSkull);
+					ModelConversion.CreateObjectCollision(giantSkull);
+					OverEasyGlobals.modelDictionary["object_263"] = giantSkull;
+
+					//Ship
+					CacheModel("object_264", stageGeo.models["model_14"], stageGeo.texLists["texList_14"], stageGeo.gvm, false, true);
+
+					//Flag banners
+					//CacheModel("object_265", stageGeo.models[""], stageGeo.texLists[""], stageGeo.gvm, false, true);
+					//CacheModel("object_267", stageGeo.models[""], stageGeo.texLists[""], stageGeo.gvm, false, true);
+					break;
+				case "red":
+					break;
+				case "purple":
+					break;
+				case "orange":
+					break;
+				case "yellow":
+					break;
+				case "last":
+					break;
+				case "blueboss":
+					break;
+				case "redboss":
+					break;
+				case "purpleboss":
+					break;
+				case "orangeboss":
+					break;
+				case "yellowboss":
+					break;
+				case "greenboss":
+					break;
+				case "lastboss":
+					break;
+				case "lastboss2":
+					break;
+				case "title":
+					break;
+			}
+
 			//Scenery
 			for (int i = 0; i < stgobj.objEntries.Count; i++)
 			{
@@ -810,7 +947,7 @@ namespace OverEasy.Billy
 
 			//Bowling Launcher
 			if (commonGeo.models.ContainsKey($"model_21"))
-			{ 
+			{
 				var bowlingAqn = new AquaNode();
 				var bowlingTexSet = ModelConversion.GetTextureSubset(gvmTextures, new NJTextureList() { texNames = new List<string>() { "h_common03256" } }, gvrAlphaTypes, out var bowlingTexTypes);
 				var bowlingLauncher = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_21"], bowlingTexSet, bowlingTexTypes, bowlingAqn);
@@ -842,12 +979,55 @@ namespace OverEasy.Billy
 			//Cannon
 			CacheModel($"object_29", commonGeo.models[$"model_35"], commonGeo.texLists["texList_34"], commonGeo.gvm, false, true);
 
+			//Hoops
+			//Base Hoop
+			var hoopMainMesh = (Mesh)GD.Load(@"res://Models/HoopModel.obj");
+			var hoopSphereMesh = (Mesh)GD.Load(@"res://Models/HoopSphere.obj");
+			var hoopStretchSphere = (PackedScene)GD.Load(@"res://Models/HoopStretchSphere.fbx");
+
+			//Orange
+			Node3D orangeHoop = GetBaseHoop(hoopMainMesh, orangeHoopColor);
+			GetHoopSphere(orangeHoop, hoopSphereMesh, orangeHoopColor, new Vector3(0, 0, 25));
+			GetHoopSphere(orangeHoop, hoopSphereMesh, orangeHoopColor, new Vector3(21.65f, 0, -12.5f)); //Since these are angled at 60 degrees and still 25 units away, we can use the 30 60 90 rule to get this 
+			GetHoopSphere(orangeHoop, hoopSphereMesh, orangeHoopColor, new Vector3(-21.65f, 0, -12.5f)); //We could have placed the origin at the center and rotated, but that's no fun
+			ModelConversion.CreateObjectCollision(orangeHoop);
+			OverEasyGlobals.modelDictionary["object_45_0"] = orangeHoop;
+
+			//Yellow
+			Node3D yellowHoop = GetBaseHoop(hoopMainMesh, yellowHoopColor);
+			ModelConversion.CreateObjectCollision(yellowHoop);
+			OverEasyGlobals.modelDictionary["object_45_1"] = yellowHoop;
+
+			//Green
+			Node3D greenHoop = GetBaseHoop(hoopMainMesh, greenHoopColor);
+			ModelConversion.CreateObjectCollision(greenHoop);
+			OverEasyGlobals.modelDictionary["object_45_2"] = greenHoop;
+
+			//Blue
+			Node3D blueHoop = GetBaseHoop(hoopMainMesh, blueHoopColor, true);
+			GetHoopSphere(blueHoop, hoopSphereMesh, blueHoopColor, new Vector3(0, 27, 0));
+			ModelConversion.CreateObjectCollision(blueHoop);
+			OverEasyGlobals.modelDictionary["object_45_3"] = blueHoop;
+
+			//Teal
+			Node3D tealHoop = GetBaseHoop(hoopMainMesh, tealHoopColor, true);
+			ModelConversion.CreateObjectCollision(tealHoop);
+			OverEasyGlobals.modelDictionary["object_45_4"] = tealHoop;
+
+			//Magenta
+			Node3D magentaHoop = GetBaseHoop(hoopMainMesh, magentaHoopColor, true);
+			ModelConversion.CreateObjectCollision(magentaHoop);
+			OverEasyGlobals.modelDictionary["object_45_5"] = magentaHoop;
+
 			//Chick Coin
 			CacheModel($"object_47", commonGeo.models[$"model_52"], commonGeo.texLists["texList_45"], commonGeo.gvm, false, true);
 
+			//Breakable X Platform
+			CacheModel($"object_49", commonGeo.models[$"model_53"], commonGeo.texLists["texList_47"], commonGeo.gvm, false, true);
+			
 			//Fruit balls
 			var tfm = System.Numerics.Matrix4x4.CreateTranslation(new System.Numerics.Vector3(0, 5, 0));
-			
+
 			var appleBall = ModelConversion.NinjaToGDModel("fruitBall", commonGeo.models["model_24"], ModelConversion.GetTextureSubset(gvmTextures, commonGeo.texLists["texList_23"], gvrAlphaTypes, out var sphereAlphaTypes), sphereAlphaTypes, null, null, null, tfm);
 			var bananaBall = ModelConversion.GDModelClone(appleBall);
 			var cherryBall = ModelConversion.GDModelClone(appleBall);
@@ -882,11 +1062,38 @@ namespace OverEasy.Billy
 			OverEasyGlobals.modelDictionary["object_11_6"] = watermelon;
 
 			//Scenery
-			for(int i = 0; i < commonGeo.model2s.Count; i++)
+			for (int i = 0; i < commonGeo.model2s.Count; i++)
 			{
 				//Model2s all share the same texlist
 				CacheModel($"commGeoM2Common_{i}", commonGeo.model2s[$"model2_{i}"], commonGeo.texList2s["texList2_0"], commonGeo.gvm, false, true);
 			}
+		}
+
+		private static Node3D GetBaseHoop(Mesh hoopMainMesh, Color color, bool rotateX = false)
+		{
+			Node3D hoop = new();
+			MeshInstance3D hoopInst = new();
+			hoopInst.SetMeta("skipNight", 1);
+			hoopInst.Name = "hoopMesh";
+			hoopInst.Mesh = hoopMainMesh;
+			hoopInst.MaterialOverride = new StandardMaterial3D() { AlbedoColor = color };
+			hoop.AddChild(hoopInst);
+			if(rotateX)
+			{
+				hoopInst.RotateX(Mathf.Pi / 2);
+			}
+			return hoop;
+		}
+
+		private static Node3D GetHoopSphere(Node3D root, Mesh hoopSphereMesh, Color color, Vector3 offset)
+		{
+			MeshInstance3D orangeHoopInst = new();
+			orangeHoopInst.Mesh = hoopSphereMesh;
+			orangeHoopInst.MaterialOverride = new StandardMaterial3D() { AlbedoColor = color };
+			root.AddChild(orangeHoopInst);
+			orangeHoopInst.Translate(offset);
+
+			return root;
 		}
 
 		public static void CachePlayerModelsPC()

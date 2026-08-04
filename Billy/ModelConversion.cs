@@ -78,9 +78,9 @@ namespace OverEasy.Billy
 		}
 		public static void BillyModeNightToggle(Node parentNode)
 		{
-			if (parentNode is MeshInstance3D)
+			if (parentNode is MeshInstance3D meshInst)
 			{
-				if (((MeshInstance3D)parentNode).Mesh is ArrayMesh)
+				if (meshInst.Mesh is ArrayMesh && !meshInst.HasMeta("skipNight"))
 				{
 					BillyModeNightToggleMesh((ArrayMesh)((MeshInstance3D)parentNode).Mesh);
 				}
@@ -475,7 +475,23 @@ namespace OverEasy.Billy
 					ccoin.SetShaderParameter("albedoMultiplier", 1f);
 					overrideMaterials.Add(0, ccoin);
 					break;
-			}
+				case "object_259_blade":
+                    ShaderMaterial blade = new();
+                    blade.Shader = (Shader)GD.Load("res://Shaders/matcapVariableAlpha.gdshader");
+                    blade.SetShaderParameter("matcap", gvrTextures[1]);
+                    blade.SetShaderParameter("alphaValue", 1f);
+                    blade.SetShaderParameter("albedoMultiplier", 3.0f);
+                    overrideMaterials.Add(0, blade);
+                    break;
+                case "object_512_blade":
+                    ShaderMaterial bossBlade = new();
+                    bossBlade.Shader = (Shader)GD.Load("res://Shaders/matcapVariableAlpha.gdshader");
+                    bossBlade.SetShaderParameter("matcap", gvrTextures[1]);
+                    bossBlade.SetShaderParameter("alphaValue", 1f);
+                    bossBlade.SetShaderParameter("albedoMultiplier", 3.0f);
+                    overrideMaterials.Add(0, bossBlade);
+                    break;
+            }
 		}
 
 		private static void GetOverlayMaterial(string name, List<Texture2D> gvrTextures, Dictionary<int, Material> overlayMaterials)

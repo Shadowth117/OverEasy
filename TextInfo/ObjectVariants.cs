@@ -166,6 +166,8 @@ namespace OverEasy.TextInfo
 
         public static Dictionary<string, string> enemyFileMap = new()
         {
+            {"ar_obj_katana.arc", null},
+            {"ar_obj_blue_boss.arc", null},
             {"ar_ene_am02.arc", "102" },
             {"ar_ene_ants_queen.arc", "106" },
             {"ar_ene_armadillo.arc", "10A"},
