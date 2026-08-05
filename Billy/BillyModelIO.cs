@@ -230,6 +230,15 @@ namespace OverEasy.Billy
 						name = "segg_0";
 					}
 					break;
+				case 768: //Both of these use the same models
+				case 769:
+					name = $"object_768_{obj.intProperty1}";
+					break;
+				case 777:
+					name += $"_{obj.intProperty1}";
+					break;
+				default:
+					break;
 			}
 
 			//If it's not null, we clean up the node.
@@ -239,7 +248,23 @@ namespace OverEasy.Billy
 			}
 			if (OverEasyGlobals.modelDictionary.ContainsKey(name) && obj.objectId != 30)
 			{
-				modelNode = ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary[name], modelNode);
+				bool ignoreParentTransform = false;
+				Transform3D? rootTransform = null;
+				switch(obj.objectId)
+				{
+					case 777:
+						ignoreParentTransform = true;
+                        rootTransform = Transform3D.Identity;
+                        rootTransform = rootTransform.Value.Translated(new Vector3(0, 5, 0));
+                        break;
+                    case 768:
+                    case 769:
+                    case 4615:
+					case 4616:
+						ignoreParentTransform = true;
+						break;
+				}
+				modelNode = ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary[name], modelNode, ignoreParentTransform, rootTransform);
 			}
 			else if (obj.objectId == 0 || obj.objectId == 30)
 			{
@@ -474,23 +499,23 @@ namespace OverEasy.Billy
 		{
 			ModelConversion.LoadGVM("titleObj", gvm, out var gvmTextures, out var gvrAlphaTypes);
 			//Small flowers
-			CacheModel("object_4610", titleObj.models[1], titleObj.texList[0], gvm, false);
+			CacheModel("object_4610", titleObj.models[1], titleObj.texList[0], gvm, false, true);
 			//Big flowers
-			CacheModel("object_4609", titleObj.models[3], titleObj.texList[0], gvm, false);
+			CacheModel("object_4609", titleObj.models[3], titleObj.texList[0], gvm, false, true);
 			//Tree
-			CacheModel("object_4611", titleObj.models[4], titleObj.texList[0], gvm, false);
+			CacheModel("object_4611", titleObj.models[4], titleObj.texList[0], gvm, false, true);
 			//Bush
-			CacheModel("object_4608", titleObj.models[2], titleObj.texList[0], gvm, false);
+			CacheModel("object_4608", titleObj.models[2], titleObj.texList[0], gvm, false, true);
 			//Waterfall
-			//CacheModel("object_4616", titleObj.models[7], titleObj.texList[0], gvm, false);
+			CacheModel("object_4616", titleObj.models[7], titleObj.texList[0], gvm, false, true);
 			//Water
-			//CacheModel("object_4615", titleObj.models[8], titleObj.texList[0], gvm, false);
+			CacheModel("object_4615", titleObj.models[8], titleObj.texList[0], gvm, false, true);
 			//Rainbow
-			CacheModel("object_4617", titleObj.models[9], titleObj.texList[0], gvm, false);
+			CacheModel("object_4617", titleObj.models[9], titleObj.texList[0], gvm, false, true);
 			//Chick
-			CacheModel("object_4612", titleObj.models[0], titleObj.texList[0], gvm, false);
+			CacheModel("object_4612", titleObj.models[0], titleObj.texList[0], gvm, false, true);
 			//Crow
-			CacheModel("object_4612_1", titleObj.models[5], titleObj.texList[0], gvm, false);
+			CacheModel("object_4612_1", titleObj.models[5], titleObj.texList[0], gvm, false, true);
 		}
 
 		public static void CacheEggContentData(GEEGG gegg, List<Texture2D> gplTextures, List<int> gplAlphaTypes)
@@ -545,12 +570,12 @@ namespace OverEasy.Billy
 				var textureSubSet = ModelConversion.GetTextureSubset(gvmTextures, texList, gvrAlphaTypes, out var itemAlphaTypes);
 				textureSubSet.Add(gplTextures[^2]);
 				itemAlphaTypes.Add(gplAlphaTypes[^2]);
-				itemModel = ModelConversion.NinjaToGDModel($"egg_{eggId}", itemNj, textureSubSet, itemAlphaTypes, null, null, null, tfm, false, 0.5f);
-				itemModel2 = ModelConversion.NinjaToGDModel($"segg_{eggId}", itemNj, textureSubSet, itemAlphaTypes, null, null, null, tfm, false, 0.5f);
+				itemModel = ModelConversion.NinjaToGDModel($"egg_{eggId}", itemNj, textureSubSet, itemAlphaTypes, null, null, null, tfm, false, new List<float?> { 0.5f });
+				itemModel2 = ModelConversion.NinjaToGDModel($"segg_{eggId}", itemNj, textureSubSet, itemAlphaTypes, null, null, null, tfm, false, new List<float?> { 0.5f });
 			}
 			itemModel = ModelConversion.NinjaToGDModel($"egg_{eggId}", gegg.models[0], new List<Texture2D>() { gplTextures[eggId], gplTextures[^2] }, new List<int>() { gplAlphaTypes[eggId], gplAlphaTypes[^1] }, null, null, itemModel, tfmEgg);
 			ModelConversion.CreateObjectCollision(itemModel);
-			itemModel2 = ModelConversion.NinjaToGDModel($"segg_{eggId}", gegg.models[0], new List<Texture2D>() { gplTextures[eggId], gplTextures[^2] }, new List<int>() { gplAlphaTypes[eggId], gplAlphaTypes[^1] }, null, null, itemModel2, tfmEgg, false, 0.5f);
+			itemModel2 = ModelConversion.NinjaToGDModel($"segg_{eggId}", gegg.models[0], new List<Texture2D>() { gplTextures[eggId], gplTextures[^2] }, new List<int>() { gplAlphaTypes[eggId], gplAlphaTypes[^1] }, null, null, itemModel2, tfmEgg, false, new List<float?> { 0.5f });
 			ModelConversion.CreateObjectCollision(itemModel2);
 			OverEasyGlobals.modelDictionary[$"egg_{eggId}"] = itemModel;
 			OverEasyGlobals.modelDictionary[$"segg_{eggId}"] = itemModel2;
@@ -701,7 +726,6 @@ namespace OverEasy.Billy
 
 			var objBlueBossPath = OverEasyGlobals.GetAssetPath("ar_obj_blue_boss.arc");
 			var objBlueBossGvmPath = OverEasyGlobals.GetAssetPath("obj_blue_boss.gvm");
-
 			if (objBlueBossPath != "" && objBlueBossGvmPath != "")
 			{
 				var objBlueBoss = new ArEnemy(File.ReadAllBytes(objBlueBossPath));
@@ -715,6 +739,21 @@ namespace OverEasy.Billy
 			}
 
 			//Magma
+			var objRedMagmaPath = OverEasyGlobals.GetAssetPath("ar_obj_red_magma.arc");
+			var objRedMagmaGvmPath = OverEasyGlobals.GetAssetPath("obj_red_magma.gvm");
+			if (objRedMagmaPath != "" && objRedMagmaGvmPath != "")
+			{
+				var objRedMagma = new ArEnemy(File.ReadAllBytes(objRedMagmaPath));
+				var magmaGvm = new PuyoFile(File.ReadAllBytes(objRedMagmaGvmPath));
+				CacheModel("object_768_0", objRedMagma.models[0], null, magmaGvm, false);
+				CacheModel("object_768_1", objRedMagma.models[1], null, magmaGvm, false);
+				CacheModel("object_768_2", objRedMagma.models[2], null, magmaGvm, false);
+				CacheModel("object_768_3", objRedMagma.models[3], null, magmaGvm, false);
+				CacheModel("object_768_4", objRedMagma.models[4], null, magmaGvm, false);
+				CacheModel("object_768_5", objRedMagma.models[5], null, magmaGvm, false);
+				CacheModel("object_768_6", objRedMagma.models[6], null, magmaGvm, false);
+			}
+
 		}
 
 		public static void LoadGPLTextures(PRD nrc, out List<Texture2D> gplTextures, out List<int> gplAlphaTypes)
@@ -846,7 +885,23 @@ namespace OverEasy.Billy
 					//CacheModel("object_267", stageGeo.models[""], stageGeo.texLists[""], stageGeo.gvm, false, true);
 					break;
 				case "red":
-					break;
+					//Rising Meteor
+					CacheModel("object_772", stageGeo.models["model_0"], stageGeo.texLists["texList_0"], stageGeo.gvm, false, true);
+
+					//Dino Mouth Shooter
+					CacheModel("object_774", stageGeo.models["model_1"], stageGeo.texLists["texList_1"], stageGeo.gvm, false, true);
+
+					//Bone Dragon Head
+					CacheModel("object_775", stageGeo.models["model_8"], stageGeo.texLists["texList_8"], stageGeo.gvm, false, true);
+
+					//Cooled lava rocks
+					CacheModel("object_777_0", stageGeo.models["model_2"], stageGeo.texLists["texList_2"], stageGeo.gvm, false, true);
+					CacheModel("object_777_1", stageGeo.models["model_3"], stageGeo.texLists["texList_2"], stageGeo.gvm, false, true);
+					CacheModel("object_777_2", stageGeo.models["model_4"], stageGeo.texLists["texList_2"], stageGeo.gvm, false, true);
+
+                    //WWE Rope
+                    CacheModel("object_778", stageGeo.models["model_19"], stageGeo.texLists["texList_10"], stageGeo.gvm, false, true);
+                    break;
 				case "purple":
 					break;
 				case "orange":
@@ -895,9 +950,10 @@ namespace OverEasy.Billy
 			ModelConversion.LoadGVM("geobjCommon", commonGeo.gvm, out var gvmTextures, out var gvrAlphaTypes, diffuseAsAlphaList);
 
 			//Switches
-			CacheModel($"object_4_0", commonGeo.models[$"model_{0}"], commonGeo.texLists["texList_0"], commonGeo.gvm, false, true, 0.5f);
-			CacheModel($"object_4_1", commonGeo.models[$"model_{0}"], commonGeo.texLists["texList_0"], commonGeo.gvm, false, true, 0.5f);
-			CacheModel($"object_4_2", commonGeo.models[$"model_{0}"], commonGeo.texLists["texList_0"], commonGeo.gvm, false, true, 0.5f);
+			List<float?> invisOpacity = new List<float?>() { 0.5f };
+			CacheModel($"object_4_0", commonGeo.models[$"model_{0}"], commonGeo.texLists["texList_0"], commonGeo.gvm, false, true, invisOpacity);
+			CacheModel($"object_4_1", commonGeo.models[$"model_{0}"], commonGeo.texLists["texList_0"], commonGeo.gvm, false, true, invisOpacity);
+			CacheModel($"object_4_2", commonGeo.models[$"model_{0}"], commonGeo.texLists["texList_0"], commonGeo.gvm, false, true, invisOpacity);
 			CacheModel($"object_4_3", commonGeo.models[$"model_{0}"], commonGeo.texLists["texList_0"], commonGeo.gvm, false, true);
 			CacheModel($"object_4_4", commonGeo.models[$"model_{0}"], commonGeo.texLists["texList_0"], commonGeo.gvm, false, true);
 			CacheModel($"object_4_5", commonGeo.models[$"model_{0}"], commonGeo.texLists["texList_0"], commonGeo.gvm, false, true);
@@ -952,16 +1008,17 @@ namespace OverEasy.Billy
 				var bowlingTexSet = ModelConversion.GetTextureSubset(gvmTextures, new NJTextureList() { texNames = new List<string>() { "h_common03256" } }, gvrAlphaTypes, out var bowlingTexTypes);
 				var bowlingLauncher = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_21"], bowlingTexSet, bowlingTexTypes, bowlingAqn);
 				var bowlingLauncher1 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_22"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher);
-				var bowlingPin0 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(0, 0, 200f), false, 0.15f);
-				var bowlingPin1 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(0, 0, 280f), false, 0.15f);
-				var bowlingPin2 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(23f, 0, 240f), false, 0.15f);
-				var bowlingPin3 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(-23f, 0, 240f), false, 0.15f);
-				var bowlingPin4 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(-46f, 0, 280f), false, 0.15f);
-				var bowlingPin5 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(46f, 0, 280f), false, 0.15f);
-				var bowlingPin6 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(-69f, 0, 320f), false, 0.15f);
-				var bowlingPin7 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(69f, 0, 320f), false, 0.15f);
-				var bowlingPin8 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(-23f, 0, 320f), false, 0.15f);
-				var bowlingPin9 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(23f, 0, 320f), false, 0.15f);
+				var pinOpacity = new List<float?>() { 0.15f };
+				var bowlingPin0 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(0, 0, 200f), false, pinOpacity);
+				var bowlingPin1 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(0, 0, 280f), false, pinOpacity);
+				var bowlingPin2 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(23f, 0, 240f), false, pinOpacity);
+				var bowlingPin3 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(-23f, 0, 240f), false, pinOpacity);
+				var bowlingPin4 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(-46f, 0, 280f), false, pinOpacity);
+				var bowlingPin5 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(46f, 0, 280f), false, pinOpacity);
+				var bowlingPin6 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(-69f, 0, 320f), false, pinOpacity);
+				var bowlingPin7 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(69f, 0, 320f), false, pinOpacity);
+				var bowlingPin8 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(-23f, 0, 320f), false, pinOpacity);
+				var bowlingPin9 = ModelConversion.NinjaToGDModel($"object_24", commonGeo.models[$"model_23"], bowlingTexSet, bowlingTexTypes, bowlingAqn, null, bowlingLauncher, System.Numerics.Matrix4x4.CreateTranslation(23f, 0, 320f), false, pinOpacity);
 				ModelConversion.CreateObjectCollision(bowlingLauncher);
 				OverEasyGlobals.modelDictionary["object_24"] = bowlingLauncher;
 			}
@@ -1127,7 +1184,7 @@ namespace OverEasy.Billy
 			return modelNode;
 		}
 
-		public static Node3D CacheModel(string name, NJSObject nj, NJTextureList njtl, PuyoFile gvm, bool forceAdd, bool blockVertColors = false, float? forceOpacity = null, bool skipCollision = false)
+		public static Node3D CacheModel(string name, NJSObject nj, NJTextureList njtl, PuyoFile gvm, bool forceAdd, bool blockVertColors = false, List<float?> forcedOpacityList = null, bool skipCollision = false)
 		{
 			ModelConversion.LoadGVM(name, gvm, out var gvmTextures, out var gvrAlphaTypes);
 			List<Texture2D> textureSubSet;
@@ -1162,7 +1219,7 @@ namespace OverEasy.Billy
 					break;
 			}
 
-			var modelNode = ModelConversion.NinjaToGDModel(name, nj, textureSubSet, texAlphaTypes, null, null, null, rootTfm, blockVertColors, forceOpacity);
+			var modelNode = ModelConversion.NinjaToGDModel(name, nj, textureSubSet, texAlphaTypes, null, null, null, rootTfm, blockVertColors, forcedOpacityList);
 			if(!skipCollision)
 			{
 				ModelConversion.CreateObjectCollision(modelNode);

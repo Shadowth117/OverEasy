@@ -170,7 +170,7 @@ namespace OverEasy.Billy
 			return root;
 		}
 
-		public static Node3D GDModelClone(Node3D modelNode, Node3D root = null)
+		public static Node3D GDModelClone(Node3D modelNode, Node3D root = null, bool ignoreParentTransform = false, Transform3D? newRootTransform = null)
 		{
 			if(root == null)
 			{
@@ -178,7 +178,16 @@ namespace OverEasy.Billy
 			}
 			foreach(var child in modelNode.GetChildren())
 			{
-				root.AddChild(child.Duplicate());
+				var childClone = child.Duplicate();
+				if(childClone is Node3D childClone3d)
+				{
+					childClone3d.TopLevel = ignoreParentTransform;
+					if(newRootTransform != null)
+					{
+						childClone3d.Transform = newRootTransform.Value;
+					}
+				}
+                root.AddChild(childClone);
 			}
 
 			return root;
@@ -266,7 +275,7 @@ namespace OverEasy.Billy
 		/// Note that providing a rootTfm input will NOT transform bones by it!
 		/// </summary>
 		public static Node3D NinjaToGDModel(string name, NJSObject nj, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes, AquaNode aqn = null, 
-			System.Numerics.Matrix4x4? baseTfm = null, Node3D root = null, System.Numerics.Matrix4x4? rootTfm = null, bool blockVertColors = false, float? forcedOpacity = null)
+			System.Numerics.Matrix4x4? baseTfm = null, Node3D root = null, System.Numerics.Matrix4x4? rootTfm = null, bool blockVertColors = false, List<float?> forcedOpacityList = null)
 		{
 			//Skip meshes dict
 			List<int> skipMeshes;
@@ -329,7 +338,7 @@ namespace OverEasy.Billy
 			Dictionary<int, Material> overlayMaterials = new();
 			GetOverlayMaterial(name, gvrTextures, overlayMaterials);
 			IterateNJSObject(nj, fullVertList, ref nodeId, -1, root, root is Skeleton3D ? (Skeleton3D)root : new Skeleton3D(), (System.Numerics.Matrix4x4)baseTfm, gvrTextures, gvrAlphaTypes, (System.Numerics.Matrix4x4)rootTfm, ref meshCounter,
-				overrideMaterials, overlayMaterials, skipMeshes, uvAdjustDict, aqn, blockVertColors, forcedOpacity, addBones);
+				overrideMaterials, overlayMaterials, skipMeshes, uvAdjustDict, aqn, blockVertColors, forcedOpacityList, addBones);
 
 			/*
 			 This won't work here
@@ -491,6 +500,13 @@ namespace OverEasy.Billy
                     bossBlade.SetShaderParameter("albedoMultiplier", 3.0f);
                     overrideMaterials.Add(0, bossBlade);
                     break;
+				case "object_772":
+                    ShaderMaterial meteor = new();
+                    meteor.Shader = (Shader)GD.Load("res://Shaders/BasicShaderValueAsAlpha.gdshader");
+                    meteor.SetShaderParameter("albedo_texture", gvrTextures[0]);
+                    overrideMaterials.Add(1, meteor);
+                    overrideMaterials.Add(5, meteor);
+                    break;
             }
 		}
 
@@ -588,7 +604,7 @@ namespace OverEasy.Billy
 
 		private static void IterateNJSObject(NJSObject nj, VTXL fullVertList, ref int nodeId, int parentId, Node3D modelRoot, Skeleton3D skel,
 			System.Numerics.Matrix4x4 parentMatrix, List<Texture2D> gvrTextures, List<int> gvrAlphaTypes, System.Numerics.Matrix4x4 rootTfm, ref int meshCounter, Dictionary<int, Material> overrideMaterials, Dictionary<int, Material> overlayMaterials, 
-			List<int> skipMeshes, Dictionary<int, Vector2> uvAdjustDict, AquaNode aqn = null, bool blockVertColors = false, float? forcedOpacity = null, bool addBones = true)
+			List<int> skipMeshes, Dictionary<int, Vector2> uvAdjustDict, AquaNode aqn = null, bool blockVertColors = false, List<float?> forcedOpacityList = null, bool addBones = true)
 		{
 			int currentNodeId = nodeId;
 			if(addBones)
@@ -663,7 +679,13 @@ namespace OverEasy.Billy
 				//Assign vertex and face data to GD ArrayMesh
 				foreach(var tempTri in testAqo.tempTris)
 				{
-					if(skipMeshes.Contains(meshCounter++))
+					float? forcedOpacity = null;
+					if(forcedOpacityList != null && forcedOpacityList.Count > meshCounter)
+					{
+						forcedOpacity = forcedOpacityList[meshCounter];
+					}
+
+                    if (skipMeshes.Contains(meshCounter++))
 					{
 						continue;
 					}
@@ -863,13 +885,13 @@ namespace OverEasy.Billy
 			if(nj.childObject != null)
 			{
 				nodeId++;
-				IterateNJSObject(nj.childObject, fullVertList, ref nodeId, currentNodeId, modelRoot, skel, mat, gvrTextures, gvrAlphaTypes, rootTfm, ref meshCounter, overrideMaterials, overlayMaterials, skipMeshes, uvAdjustDict, aqn, blockVertColors, forcedOpacity, addBones);
+				IterateNJSObject(nj.childObject, fullVertList, ref nodeId, currentNodeId, modelRoot, skel, mat, gvrTextures, gvrAlphaTypes, rootTfm, ref meshCounter, overrideMaterials, overlayMaterials, skipMeshes, uvAdjustDict, aqn, blockVertColors, forcedOpacityList, addBones);
 			}
 
 			if(nj.siblingObject != null)
 			{
 				nodeId++;
-				IterateNJSObject(nj.siblingObject, fullVertList, ref nodeId, parentId, modelRoot, skel, parentMatrix, gvrTextures, gvrAlphaTypes, rootTfm, ref meshCounter, overrideMaterials, overlayMaterials, skipMeshes, uvAdjustDict, aqn, blockVertColors, forcedOpacity, addBones);
+				IterateNJSObject(nj.siblingObject, fullVertList, ref nodeId, parentId, modelRoot, skel, parentMatrix, gvrTextures, gvrAlphaTypes, rootTfm, ref meshCounter, overrideMaterials, overlayMaterials, skipMeshes, uvAdjustDict, aqn, blockVertColors, forcedOpacityList, addBones);
 			}
 		}
 

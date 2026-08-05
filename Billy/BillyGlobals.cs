@@ -926,6 +926,15 @@ namespace OverEasy
 						ModelConversion.CreateObjectCollision(fenceBlade);
 						OverEasyGlobals.modelDictionary["object_512"] = fenceBlade;
 						break;
+					case "ar_obj_red_magma":
+						BillyModelIO.CacheModel("object_768_0", pair.Value.models[0], pair.Value.texList[0], enemyGVMDict[pair.Key], false);
+						BillyModelIO.CacheModel("object_768_1", pair.Value.models[1], pair.Value.texList[0], enemyGVMDict[pair.Key], false);
+						BillyModelIO.CacheModel("object_768_2", pair.Value.models[2], pair.Value.texList[0], enemyGVMDict[pair.Key], false);
+						BillyModelIO.CacheModel("object_768_3", pair.Value.models[3], pair.Value.texList[0], enemyGVMDict[pair.Key], false);
+						BillyModelIO.CacheModel("object_768_4", pair.Value.models[4], pair.Value.texList[0], enemyGVMDict[pair.Key], false);
+						BillyModelIO.CacheModel("object_768_5", pair.Value.models[5], pair.Value.texList[0], enemyGVMDict[pair.Key], false);
+						BillyModelIO.CacheModel("object_768_6", pair.Value.models[6], pair.Value.texList[0], enemyGVMDict[pair.Key], false);
+						break;
 					case "ene_am02":
 					case "ene_blue_boss":
 					case "ene_orange_boss":
