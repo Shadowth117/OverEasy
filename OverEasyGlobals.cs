@@ -386,59 +386,59 @@ namespace OverEasy
 			}
 		}
 
-        /// <summary>
-        /// Method for setting up the current display menu
-        /// </summary>
-        public static void GetCurrentDisplayMenu()
-        {
-            displayBtn.GetPopup().Clear();
+		/// <summary>
+		/// Method for setting up the current display menu
+		/// </summary>
+		public static void GetCurrentDisplayMenu()
+		{
+			displayBtn.GetPopup().Clear();
 
-            switch (gameType)
-            {
-                case GameType.BillyGC:
-                case GameType.BillyPC:
+			switch (gameType)
+			{
+				case GameType.BillyGC:
+				case GameType.BillyPC:
 					displayBtn.GetPopup().AddItem("Day/Night Preview Toggle", 0);
 					displayBtn.GetPopup().SetItemAsCheckable(0, true);
 					displayBtn.GetPopup().SetItemChecked(0, displayBtn.dayNightPreviewToggle);
-                    displayBtn.GetPopup().AddItem("Display LND Terrain", 1);
-                    displayBtn.GetPopup().SetItemAsCheckable(1, true);
-                    displayBtn.GetPopup().SetItemChecked(1, displayBtn.displayLndTerrain);
-                    displayBtn.GetPopup().AddItem("Display MC2 Collision", 2);
-                    displayBtn.GetPopup().SetItemAsCheckable(2, true);
-                    displayBtn.GetPopup().SetItemChecked(2, displayBtn.displayMc2Terrain);
-                    break;
-                default:
-                    break;
-            }
-        }
+					displayBtn.GetPopup().AddItem("Display LND Terrain", 1);
+					displayBtn.GetPopup().SetItemAsCheckable(1, true);
+					displayBtn.GetPopup().SetItemChecked(1, displayBtn.displayLndTerrain);
+					displayBtn.GetPopup().AddItem("Display MC2 Collision", 2);
+					displayBtn.GetPopup().SetItemAsCheckable(2, true);
+					displayBtn.GetPopup().SetItemChecked(2, displayBtn.displayMc2Terrain);
+					break;
+				default:
+					break;
+			}
+		}
 
-        /// <summary>
-        /// Method for setting up the current settings menu
-        /// </summary>
-        public static void GetCurrentSettingsMenu()
-        {
-            settingsBtn.GetPopup().Clear();
+		/// <summary>
+		/// Method for setting up the current settings menu
+		/// </summary>
+		public static void GetCurrentSettingsMenu()
+		{
+			settingsBtn.GetPopup().Clear();
 
-            switch (gameType)
-            {
-                case GameType.BillyGC:
-                case GameType.BillyPC:
-                    settingsBtn.GetPopup().AddCheckItem("World Transform Toggle", 0);
-                    settingsBtn.GetPopup().SetItemAsCheckable(0, true);
-                    settingsBtn.GetPopup().SetItemChecked(0, settingsBtn.worldTransformToggle);
-                    settingsBtn.GetPopup().AddCheckItem("Warp Camera To Selected", 1);
-                    settingsBtn.GetPopup().SetItemAsCheckable(1, true);
-                    settingsBtn.GetPopup().SetItemChecked(1, settingsBtn.warpCameraToSelected);
-                    break;
-                default:
-                    break;
-            }
-        }
+			switch (gameType)
+			{
+				case GameType.BillyGC:
+				case GameType.BillyPC:
+					settingsBtn.GetPopup().AddCheckItem("World Transform Toggle", 0);
+					settingsBtn.GetPopup().SetItemAsCheckable(0, true);
+					settingsBtn.GetPopup().SetItemChecked(0, settingsBtn.worldTransformToggle);
+					settingsBtn.GetPopup().AddCheckItem("Warp Camera To Selected", 1);
+					settingsBtn.GetPopup().SetItemAsCheckable(1, true);
+					settingsBtn.GetPopup().SetItemChecked(1, settingsBtn.warpCameraToSelected);
+					break;
+				default:
+					break;
+			}
+		}
 
-        /// <summary>
-        /// Method for handling what happens when we select an option under the Edit menu
-        /// </summary>
-        public static void OnEditButtonMenuSelection(long id)
+		/// <summary>
+		/// Method for handling what happens when we select an option under the Edit menu
+		/// </summary>
+		public static void OnEditButtonMenuSelection(long id)
 		{
 			switch (currentEditorType)
 			{
@@ -486,43 +486,43 @@ namespace OverEasy
 		}
 
 		public static void OnDisplayButtonMenuSelection(int id)
-        {
+		{
 			displayBtn.GetPopup().SetItemChecked(id, !displayBtn.GetPopup().IsItemChecked(id));
-            
+			
 			switch(id)
 			{
 				case 0:
-                    var previousIsDay = isDay;
-                    displayBtn.dayNightPreviewToggle = isDay = displayBtn.GetPopup().IsItemChecked(0);
+					var previousIsDay = isDay;
+					displayBtn.dayNightPreviewToggle = isDay = displayBtn.GetPopup().IsItemChecked(0);
 
-                    //Handle day/night settings
-                    if (previousIsDay != isDay)
-                    {
-                        if (daySkybox != null)
-                        {
-                            daySkybox.Visible = isDay;
-                        }
-                        if (nightSkybox != null)
-                        {
-                            nightSkybox.Visible = !isDay;
-                        }
-                        ModelConversion.BillyModeNightToggleParent(modelRoot);
-                    }
-                    break;
+					//Handle day/night settings
+					if (previousIsDay != isDay)
+					{
+						if (daySkybox != null)
+						{
+							daySkybox.Visible = isDay;
+						}
+						if (nightSkybox != null)
+						{
+							nightSkybox.Visible = !isDay;
+						}
+						ModelConversion.BillyModeNightToggleParent(modelRoot);
+					}
+					break;
 				case 1:
-                    var showTerrain = displayBtn.displayLndTerrain = displayBtn.GetPopup().IsItemChecked(1);
-                    foreach (var trn in terrainModels)
-                    {
-                        trn.Visible = showTerrain;
-                    }
-                    break;
+					var showTerrain = displayBtn.displayLndTerrain = displayBtn.GetPopup().IsItemChecked(1);
+					foreach (var trn in terrainModels)
+					{
+						trn.Visible = showTerrain;
+					}
+					break;
 				case 2:
-                    var showCollision = displayBtn.displayMc2Terrain = displayBtn.GetPopup().IsItemChecked(2);
-                    foreach (var trn in terrainCollision)
-                    {
-                        trn.Visible = showCollision;
-                    }
-                    break;
+					var showCollision = displayBtn.displayMc2Terrain = displayBtn.GetPopup().IsItemChecked(2);
+					foreach (var trn in terrainCollision)
+					{
+						trn.Visible = showCollision;
+					}
+					break;
 				default:
 					break;
 			}
@@ -535,18 +535,18 @@ namespace OverEasy
 			switch (id)
 			{
 				case 0:
-                    var previousTransformGizmoWorld = TransformGizmoWorld;
-                    TransformGizmoWorld = settingsBtn.worldTransformToggle = settingsBtn.GetPopup().IsItemChecked(0);
+					var previousTransformGizmoWorld = TransformGizmoWorld;
+					TransformGizmoWorld = settingsBtn.worldTransformToggle = settingsBtn.GetPopup().IsItemChecked(0);
 
-                    //World transform toggle
-                    if (previousTransformGizmoWorld != TransformGizmoWorld)
-                    {
-                        SetGizmoWorldStatus(TransformGizmoWorld);
-                    }
-                    break;
+					//World transform toggle
+					if (previousTransformGizmoWorld != TransformGizmoWorld)
+					{
+						SetGizmoWorldStatus(TransformGizmoWorld);
+					}
+					break;
 				case 1:
-                    WarpCameraToNewSelection = settingsBtn.warpCameraToSelected = settingsBtn.GetPopup().IsItemChecked(1);
-                    break;
+					WarpCameraToNewSelection = settingsBtn.warpCameraToSelected = settingsBtn.GetPopup().IsItemChecked(1);
+					break;
 			}
 		}
 

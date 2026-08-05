@@ -6,5 +6,11 @@
   "PositionZ": null,
   "RotationX": null,
   "RotationY": null,
-  "RotationZ": null
+  "RotationZ": null,
+  "IntProperty1": "Mirror Group ID",
+  "IntProperty1Hint": "This mirror's group id",
+  "IntProperty2": "Mirror Group Event ID?",
+  "IntProperty2Hint": "Probably the mirror group's event id, 100 more than Mirror Group ID",
+  "IntProperty4": "Local Mirror ID",
+  "IntProperty4Hint": "This mirror's ID within its group. Correct mirror is random between those in the group"
 }

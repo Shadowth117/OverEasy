@@ -8,6 +8,7 @@ using AquaModelLibrary.Data.PSO2.Aqua.CharacterMakingIndexData;
 using ArchiveLib;
 using Godot;
 using OverEasy.TextInfo;
+using OverEasy.Util;
 using System.Collections.Generic;
 using System.IO;
 using VrSharp.Gvr;
@@ -313,7 +314,10 @@ namespace OverEasy.Billy
 				case 30:
 					SetBridgeModel(obj, modelNode);
 					break;
-				default:
+                case 33:
+                    modelNode.Scale = new Vector3(1 + obj.fltProperty1, 1 + obj.fltProperty1, 1 + obj.fltProperty1);
+                    break;
+                default:
 					modelNode.Scale = new Vector3(1, 1, 1);
 					break;
 			}
@@ -754,7 +758,41 @@ namespace OverEasy.Billy
 				CacheModel("object_768_6", objRedMagma.models[6], null, magmaGvm, false);
 			}
 
-		}
+            //Snowman
+            var objSnowmanPath = OverEasyGlobals.GetAssetPath("obj_snowman.arc");
+            if (objSnowmanPath != "")
+            {
+                var objSnowmanObj = new ObjSnowman(File.ReadAllBytes(objSnowmanPath));
+                CacheModel("object_1025", objSnowmanObj.models[0], objSnowmanObj.texLists[0], objSnowmanObj.gvm, false, true);
+                CacheModel("object_1026", objSnowmanObj.models[1], objSnowmanObj.texLists[0], objSnowmanObj.gvm, false, true);
+            }
+
+            //Fireworks Ball
+            var objFireworksBallPath = OverEasyGlobals.GetAssetPath("obj_ms_fwball.arc");
+            if (objFireworksBallPath != "")
+            {
+                var objFireworksBall = new ObjMsFwBall(File.ReadAllBytes(objFireworksBallPath));
+                CacheModel("object_1284", objFireworksBall.model, objFireworksBall.texList, objFireworksBall.gvm, false, true);
+            }
+
+            //Fireworks Cannon
+            var orangeCannonPath = OverEasyGlobals.GetAssetPath("geobj_orange_cannon.arc");
+            if (orangeCannonPath != "")
+            {
+                var orangeCannon = new GEObj_Object(File.ReadAllBytes(orangeCannonPath));
+                CacheModel("object_1287", orangeCannon.models["model_0"], orangeCannon.texLists["texList_0"], orangeCannon.gvm, false, true);
+            }
+
+            //Orange Boss Fence Post with Stringed Flags
+            var objOrangeBossPath = OverEasyGlobals.GetAssetPath("ar_obj_orange_boss.arc");
+            var objOrangeBossGvmPath = OverEasyGlobals.GetAssetPath("obj_orange_boss.gvm");
+            if (objOrangeBossPath != "" && objOrangeBossGvmPath != "")
+            {
+                var objOrangeBoss = new ArEnemy(File.ReadAllBytes(objOrangeBossPath));
+                var objOrangeBossGvm = new PuyoFile(File.ReadAllBytes(objOrangeBossGvmPath));
+                CacheModel("object_1536", objOrangeBoss.models[0], null, objOrangeBossGvm, false);
+            }
+        }
 
 		public static void LoadGPLTextures(PRD nrc, out List<Texture2D> gplTextures, out List<int> gplAlphaTypes)
 		{
@@ -830,7 +868,62 @@ namespace OverEasy.Billy
 				CacheModel("MODEL_TURIBASHI_ROPE", stageGeo.models["MODEL_TURIBASHI_ROPE"], stageGeo.texLists["TLS_MODEL_TURIBASHI_ROPE"], stageGeo.gvm, false, true, null, true);
 			}
 
-			var def = OverEasyGlobals.stgDef.defs[OverEasyGlobals.currentMissionId];
+            //Ice Fence D
+			if(stageGeo.models.ContainsKey("MODEL_ICE_FENCE_D"))
+            {
+                CacheModel("object_1028", stageGeo.models["MODEL_ICE_FENCE_D"], stageGeo.texLists["TLS_MODEL_ICE_FENCE_D"], stageGeo.gvm, false, true);
+            }
+
+            //Ice Wall
+			if(stageGeo.models.ContainsKey("MODEL_ICE_WALL"))
+            {
+                CacheModel("object_1029", stageGeo.models["MODEL_ICE_WALL"], stageGeo.texLists["TLS_MODEL_ICE_WALL"], stageGeo.gvm, false, true);
+            }
+
+            //Ice Floor
+			if(stageGeo.models.ContainsKey("MODEL_ICE_FLOOR"))
+            {
+                CacheModel("object_1030", stageGeo.models["MODEL_ICE_FLOOR"], stageGeo.texLists["TLS_MODEL_ICE_FLOOR"], stageGeo.gvm, false, true);
+            }
+
+            //Wood Snowflake Gear
+			if(stageGeo.models.ContainsKey("MODEL_GEAR_S"))
+            {
+                CacheModel("object_1031", stageGeo.models["MODEL_GEAR_S"], stageGeo.texLists["TLS_MODEL_GEAR_S"], stageGeo.gvm, false, true);
+            }
+
+            //Ice Snowflake Gear
+			if(stageGeo.models.ContainsKey("MODEL_ICE_GEAR_S"))
+            {
+                CacheModel("object_1032", stageGeo.models["MODEL_ICE_GEAR_S"], stageGeo.texLists["TLS_MODEL_ICE_GEAR_S"], stageGeo.gvm, false, true);
+            }
+
+            //Ice Large Snowflake Gear
+			if(stageGeo.models.ContainsKey("MODEL_ICE_GEAR_L"))
+            {
+                CacheModel("object_1033", stageGeo.models["MODEL_ICE_GEAR_L"], stageGeo.texLists["TLS_MODEL_ICE_GEAR_L"], stageGeo.gvm, false, true);
+            }
+
+            //Propeller
+			if(stageGeo.models.ContainsKey("MODEL_PROPELLER"))
+            {
+                CacheModel("object_1034", stageGeo.models["MODEL_PROPELLER"], stageGeo.texLists["TLS_MODEL_PROPELLER"], stageGeo.gvm, false, true);
+            }
+
+
+            //Puzzle Panels
+			if(stageGeo.models.ContainsKey("MODEL_PANEL_FLOOR"))
+            {
+                CacheModel("object_1280", stageGeo.models["MODEL_PANEL_FLOOR"], stageGeo.texLists["TLS_MODEL_PANEL_FLOOR"], stageGeo.gvm, false, true);
+            }
+
+            //Battery
+			if(stageGeo.models.ContainsKey("MODEL_BATTERY"))
+            {
+                CacheModel("object_1281", stageGeo.models["MODEL_BATTERY"], stageGeo.texLists["TLS_MODEL_BATTERY"], stageGeo.gvm, false, true);
+            }
+
+            var def = OverEasyGlobals.stgDef.defs[OverEasyGlobals.currentMissionId];
 			switch (def.worldName)
 			{
 				case "green":
@@ -903,11 +996,109 @@ namespace OverEasy.Billy
                     CacheModel("object_778", stageGeo.models["model_19"], stageGeo.texLists["texList_10"], stageGeo.gvm, false, true);
                     break;
 				case "purple":
-					break;
+                    //Snowflake Iceshooter
+                    CacheModel("object_1035", stageGeo.models["model_4"], stageGeo.texLists["texList_1"], stageGeo.gvm, false, true);
+                    break;
 				case "orange":
-					break;
+                    //Funhouse mirror
+                    CacheModel("object_1282", stageGeo.models["model_9"], stageGeo.texLists["texList_10"], stageGeo.gvm, false, true);
+
+                    //Clockwork Tower
+                    var clockWorkSubset = ModelConversion.GetTextureSubset(gvmTextures, stageGeo.texLists["texList_4"], gvrAlphaTypes, out var clockWorkGvrTypes);
+                    var clockWorkSubset1 = ModelConversion.GetTextureSubset(gvmTextures, stageGeo.texLists["texList_5"], gvrAlphaTypes, out var clockWorkGvrTypes1);
+                    var clockWorkSubset2 = ModelConversion.GetTextureSubset(gvmTextures, stageGeo.texLists["texList_6"], gvrAlphaTypes, out var clockWorkGvrTypes2);
+                    var clockWorkSubset3 = ModelConversion.GetTextureSubset(gvmTextures, stageGeo.texLists["texList_7"], gvrAlphaTypes, out var clockWorkGvrTypes3);
+                    var clockWorkSubset4 = ModelConversion.GetTextureSubset(gvmTextures, stageGeo.texLists["texList_8"], gvrAlphaTypes, out var clockWorkGvrTypes4);
+                    var clockWork = ModelConversion.NinjaToGDModel("object_1283", stageGeo.models["model_3"], clockWorkSubset, clockWorkGvrTypes);
+                    clockWork = ModelConversion.NinjaToGDModel("object_1283", stageGeo.models["model_4"], clockWorkSubset1, clockWorkGvrTypes1, null, null, clockWork);
+                    clockWork = ModelConversion.NinjaToGDModel("object_1283", stageGeo.models["model_5"], clockWorkSubset2, clockWorkGvrTypes2, null, null, clockWork);
+                    clockWork = ModelConversion.NinjaToGDModel("object_1283", stageGeo.models["model_6"], clockWorkSubset3, clockWorkGvrTypes3, null, null, clockWork);
+                    clockWork = ModelConversion.NinjaToGDModel("object_1283", stageGeo.models["model_7"], clockWorkSubset4, clockWorkGvrTypes4, null, null, clockWork);
+                    ModelConversion.CreateObjectCollision(clockWork);
+                    OverEasyGlobals.modelDictionary["object_1283"] = clockWork;
+                    break;
 				case "yellow":
-					break;
+                    //Ground Gate
+                    CacheModel("object_1792", stageGeo.models["model_0"], stageGeo.texLists["texList_0"], stageGeo.gvm, false, true);
+
+                    //Crowshooter
+                    CacheModel("object_1793", stageGeo.models["model_1"], stageGeo.texLists["texList_1"], stageGeo.gvm, false, true);
+
+                    //Elder Statue
+                    CacheModel("object_1795", stageGeo.models["model_2"], stageGeo.texLists["texList_2"], stageGeo.gvm, false, true);
+
+                    //Falling Pillar
+                    CacheModel("object_1797", stageGeo.models["model_6"], stageGeo.texLists["texList_6"], stageGeo.gvm, false, true);
+
+                    //Falling Sand Room Platforms
+                    CacheModel("object_1798", stageGeo.models["model_3"], stageGeo.texLists["texList_3"], stageGeo.gvm, false, true);
+
+                    //Falling Sand Flow
+                    CacheModel("object_1799", stageGeo.models["model_4"], stageGeo.texLists["texList_4"], stageGeo.gvm, false, true);
+
+                    //Fog Elder
+                    CacheModel("object_1801", stageGeo.models["model_7"], stageGeo.texLists["texList_7"], stageGeo.gvm, false, true);
+
+                    //Falling Sand's Rising Sand Pool
+                    CacheModel("object_1802", stageGeo.models["model_8"], stageGeo.texLists["texList_8"], stageGeo.gvm, false, true);
+
+                    //Rainbow Gate + Light Gates
+                    var rainbowGateTexSet = ModelConversion.GetTextureSubset(gvmTextures, stageGeo.texLists["texList_10"], gvrAlphaTypes, out var rainbowGvrTypes);
+                    var greenGateTexSet = ModelConversion.GetTextureSubset(gvmTextures, stageGeo.texLists["texList_11"], gvrAlphaTypes, out var greenGvrTypes);
+                    var blueGateTexSet = ModelConversion.GetTextureSubset(gvmTextures, stageGeo.texLists["texList_12"], gvrAlphaTypes, out var blueGvrTypes);
+                    var redGateTexSet = ModelConversion.GetTextureSubset(gvmTextures, stageGeo.texLists["texList_13"], gvrAlphaTypes, out var redGvrTypes);
+                    var purpleGateTexSet = ModelConversion.GetTextureSubset(gvmTextures, stageGeo.texLists["texList_14"], gvrAlphaTypes, out var purpleGvrTypes);
+                    var orangeGateTexSet = ModelConversion.GetTextureSubset(gvmTextures, stageGeo.texLists["texList_15"], gvrAlphaTypes, out var orangeGvrTypes);
+                    var yellowGateTexSet = ModelConversion.GetTextureSubset(gvmTextures, stageGeo.texLists["texList_16"], gvrAlphaTypes, out var yellowGvrTypes);
+                    var rainbowGate = ModelConversion.NinjaToGDModel("object_1803", stageGeo.models["model_10"], rainbowGateTexSet, rainbowGvrTypes);
+
+                    //Math for other gates. They're each placed at 60 degree increments with a starting offset of 30 degrees with some post adjustments
+                    //Based on https://stackoverflow.com/questions/13695317/rotate-a-point-around-another-point, simplified since 0 is x and our center is the origin
+                    List<Vector3> gateTranslations = new List<Vector3>();
+					for(int i = 0; i < 6; i++)
+					{
+						double radAngle = (i * 60 + 30) * Mathf.Pi / 180;
+						double cosTheta = Mathf.Cos(radAngle);
+						double sinTheta = Mathf.Sin(radAngle);
+						var distance = 180;
+						var x = -sinTheta * distance;
+						var z = cosTheta * distance;
+						var pos = new Vector3((float)x, 0, (float)z);
+						
+						//Sonic Team manually adjusted some of these
+						switch(i)
+						{
+							case 0:
+                                pos += new Vector3(1.1f, 0, -2f);
+                                break;
+                            case 1:
+								pos += new Vector3(-7f, 0, -2f);
+                                break;
+                            case 2:
+                                pos += new Vector3(-1.2f, 0, 0);
+                                break;
+                            case 3:
+                                pos += new Vector3(-3.2f, 0, 0);
+                                break;
+                            case 4:
+                                pos += new Vector3(3f, 0, -2f);
+                                break;
+                            case 5:
+                                pos += new Vector3(-3.8f, 0, -2f);
+                                break;
+                        }
+                        gateTranslations.Add(pos);
+					}
+
+                    rainbowGate = ModelConversion.NinjaToGDModel("object_1803", stageGeo.models["model_11"], greenGateTexSet, greenGvrTypes, null, null, rainbowGate, System.Numerics.Matrix4x4.Identity * System.Numerics.Matrix4x4.CreateTranslation(gateTranslations[0].ToSNVec3()));
+                    rainbowGate = ModelConversion.NinjaToGDModel("object_1803", stageGeo.models["model_11"], blueGateTexSet, blueGvrTypes, null, null, rainbowGate, System.Numerics.Matrix4x4.Identity * System.Numerics.Matrix4x4.CreateTranslation(gateTranslations[1].ToSNVec3()));
+                    rainbowGate = ModelConversion.NinjaToGDModel("object_1803", stageGeo.models["model_11"], redGateTexSet, redGvrTypes, null, null, rainbowGate, System.Numerics.Matrix4x4.Identity * System.Numerics.Matrix4x4.CreateTranslation(gateTranslations[2].ToSNVec3()));
+                    rainbowGate = ModelConversion.NinjaToGDModel("object_1803", stageGeo.models["model_11"], purpleGateTexSet, purpleGvrTypes, null, null, rainbowGate, System.Numerics.Matrix4x4.Identity * System.Numerics.Matrix4x4.CreateTranslation(gateTranslations[3].ToSNVec3()));
+                    rainbowGate = ModelConversion.NinjaToGDModel("object_1803", stageGeo.models["model_11"], orangeGateTexSet, orangeGvrTypes, null, null, rainbowGate, System.Numerics.Matrix4x4.Identity * System.Numerics.Matrix4x4.CreateTranslation(gateTranslations[4].ToSNVec3()));
+                    rainbowGate = ModelConversion.NinjaToGDModel("object_1803", stageGeo.models["model_11"], yellowGateTexSet, yellowGvrTypes, null, null, rainbowGate, System.Numerics.Matrix4x4.Identity * System.Numerics.Matrix4x4.CreateTranslation(gateTranslations[5].ToSNVec3()));
+                    ModelConversion.CreateObjectCollision(rainbowGate);
+                    OverEasyGlobals.modelDictionary["object_1803"] = rainbowGate;
+                    break;
 				case "last":
 					break;
 				case "blueboss":
@@ -1025,7 +1216,7 @@ namespace OverEasy.Billy
 
 			//Egg Bounce Switch
 			var switchTexSet = ModelConversion.GetTextureSubset(gvmTextures, commonGeo.texLists["texList_11"], gvrAlphaTypes, out var bounceAlphaTypes);
-			var eggBounceSwitchModel = ModelConversion.NinjaToGDModel($"object_26_base", commonGeo.models[$"model_32"], switchTexSet, bounceAlphaTypes);
+			var eggBounceSwitchModel = ModelConversion.NinjaToGDModel($"object_26_base", commonGeo.models[$"model_32"], switchTexSet, bounceAlphaTypes, null, null, null, System.Numerics.Matrix4x4.Identity * System.Numerics.Matrix4x4.CreateTranslation(0, -8, 0));
 			var eggBounceSwitchFinalModel = ModelConversion.NinjaToGDModel($"object_26", commonGeo.models[$"model_33"], switchTexSet, bounceAlphaTypes, null, null, eggBounceSwitchModel);
 			ModelConversion.CreateObjectCollision(eggBounceSwitchFinalModel);
 			OverEasyGlobals.modelDictionary["object_26"] = eggBounceSwitchFinalModel;

@@ -792,7 +792,23 @@ namespace OverEasy
 					var eggSuit = new EggGold_Suit(currentPRD.files[i]);
 					BillyModelIO.CacheModel("object_46", eggSuit.models[0], null, eggSuit.gvm, false, false);
 				}
-				else
+				else if (currentPRD.fileNames[i] == "obj_snowman.arc")
+                {
+                    var objSnowmanObj = new ObjSnowman(currentPRD.files[i]);
+                    BillyModelIO.CacheModel("object_1025", objSnowmanObj.models[0], objSnowmanObj.texLists[0], objSnowmanObj.gvm, false, true);
+                    BillyModelIO.CacheModel("object_1026", objSnowmanObj.models[1], objSnowmanObj.texLists[0], objSnowmanObj.gvm, false, true);
+                }
+				else if (currentPRD.fileNames[i] == "obj_ms_fwball.arc")
+                {
+                    var objFireworksBall = new ObjMsFwBall(currentPRD.files[i]);
+                    BillyModelIO.CacheModel("object_1284", objFireworksBall.model, objFireworksBall.texList, objFireworksBall.gvm, false, true);
+                }
+                else if (currentPRD.fileNames[i] == "geobj_orange_cannon.arc")
+                {
+                    var goal = new GEObj_Object(currentPRD.files[i]);
+                    BillyModelIO.CacheModel("object_1287", goal.models["models_0"], goal.texLists["texlist"], goal.gvm, false, false);
+                }
+                else
 
 				//Load Set Camera
 
@@ -935,7 +951,10 @@ namespace OverEasy
 						BillyModelIO.CacheModel("object_768_5", pair.Value.models[5], pair.Value.texList[0], enemyGVMDict[pair.Key], false);
 						BillyModelIO.CacheModel("object_768_6", pair.Value.models[6], pair.Value.texList[0], enemyGVMDict[pair.Key], false);
 						break;
-					case "ene_am02":
+					case "ar_obj_orange_boss":
+                        BillyModelIO.CacheModel("object_1536", pair.Value.models[0], pair.Value.texList[0], enemyGVMDict[pair.Key], false);
+                        break;
+                    case "ene_am02":
 					case "ene_blue_boss":
 					case "ene_orange_boss":
 						model = pair.Value.models[1];
