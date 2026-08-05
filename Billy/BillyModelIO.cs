@@ -260,6 +260,8 @@ namespace OverEasy.Billy
                         break;
                     case 768:
                     case 769:
+					case 1798:
+					case 1802:
                     case 4615:
 					case 4616:
 						ignoreParentTransform = true;
@@ -1040,7 +1042,14 @@ namespace OverEasy.Billy
                     CacheModel("object_1801", stageGeo.models["model_7"], stageGeo.texLists["texList_7"], stageGeo.gvm, false, true);
 
                     //Falling Sand's Rising Sand Pool
-                    CacheModel("object_1802", stageGeo.models["model_8"], stageGeo.texLists["texList_8"], stageGeo.gvm, false, true);
+                    var sandSubset = ModelConversion.GetTextureSubset(gvmTextures, stageGeo.texLists["texList_8"], gvrAlphaTypes, out var sandGvrTypes);
+                    var sandSubset1 = ModelConversion.GetTextureSubset(gvmTextures, stageGeo.texLists["texList_9"], gvrAlphaTypes, out var sandGvrTypes1);
+                    var sand = ModelConversion.NinjaToGDModel("object_1802", stageGeo.models["model_8"], sandSubset, sandGvrTypes, null, null, null, null, true);
+                    sand = ModelConversion.NinjaToGDModel("object_1802", stageGeo.models["model_9"], sandSubset1, sandGvrTypes1, null, null, sand, null, true);
+                    ModelConversion.CreateObjectCollision(sand);
+                    OverEasyGlobals.modelDictionary["object_1802"] = sand;
+
+                    //CacheModel("object_1802", stageGeo.models["model_8"], stageGeo.texLists["texList_8"], stageGeo.gvm, false, true);
 
                     //Rainbow Gate + Light Gates
                     var rainbowGateTexSet = ModelConversion.GetTextureSubset(gvmTextures, stageGeo.texLists["texList_10"], gvrAlphaTypes, out var rainbowGvrTypes);

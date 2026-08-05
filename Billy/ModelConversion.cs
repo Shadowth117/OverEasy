@@ -19,15 +19,15 @@ using Material = Godot.Material;
 namespace OverEasy.Billy
 {
 	public class ModelConversion
-    {
-        public const string ChickNPCBaseballCap = "chickNPCBaseballCap";
-        public const string ChickNPCHairBow = "chickNPCHairBow";
-        public const string ChickNPCBowTie = "chickNPCBowTie";
-        public const string ChickNPCEggShellCap = "chickNPCEggShellCap";
-        public const string ChickNPCDress = "chickNPCDress";
-        public const string ChickNPCHairTie = "chickNPCHairTie";
+	{
+		public const string ChickNPCBaseballCap = "chickNPCBaseballCap";
+		public const string ChickNPCHairBow = "chickNPCHairBow";
+		public const string ChickNPCBowTie = "chickNPCBowTie";
+		public const string ChickNPCEggShellCap = "chickNPCEggShellCap";
+		public const string ChickNPCDress = "chickNPCDress";
+		public const string ChickNPCHairTie = "chickNPCHairTie";
 
-        private static Dictionary<string, List<int>> SkipMeshesDict = new Dictionary<string, List<int>>()
+		private static Dictionary<string, List<int>> SkipMeshesDict = new Dictionary<string, List<int>>()
 		{
 			{ "object_4_0", new List<int>() { 3 } },
 			{ "object_4_1", new List<int>() { 3 } },
@@ -39,23 +39,23 @@ namespace OverEasy.Billy
 
 		public static List<string> DyeableChickAccessoryNames = new List<string>()
 		{
-            "chickNPCBaseballCap",
+			"chickNPCBaseballCap",
 			"chickNPCHairBow",
 			"chickNPCBowTie",
 			"chickNPCDress",
             "chickNPCHairTie"
-        };
+		};
 
-        public static List<string> AllToggleableChickAccessoryNames = new List<string>()
-        {
-            "chickNPCBaseballCap",
-            "chickNPCHairBow",
-            "chickNPCBowTie",
-            "chickNPCEggShellCap",
-            "chickNPCDress",
-        };
+		public static List<string> AllToggleableChickAccessoryNames = new List<string>()
+		{
+			"chickNPCBaseballCap",
+			"chickNPCHairBow",
+			"chickNPCBowTie",
+			"chickNPCEggShellCap",
+			"chickNPCDress",
+		};
 
-        private static Dictionary<string, Dictionary<int, Vector2>> UVAdjustmentDict = new Dictionary<string, Dictionary<int, Vector2>>()
+		private static Dictionary<string, Dictionary<int, Vector2>> UVAdjustmentDict = new Dictionary<string, Dictionary<int, Vector2>>()
 		{
 			{ "object_4_3", new Dictionary<int, Vector2>() //Switch variant 3
 				{ 
@@ -187,7 +187,7 @@ namespace OverEasy.Billy
 						childClone3d.Transform = newRootTransform.Value;
 					}
 				}
-                root.AddChild(childClone);
+				root.AddChild(childClone);
 			}
 
 			return root;
@@ -372,64 +372,64 @@ namespace OverEasy.Billy
 			return root;
 		}
 
-        /// <summary>
-        /// matNamesToEnable are material names whose objects should be visible.
+		/// <summary>
+		/// matNamesToEnable are material names whose objects should be visible.
 		/// matNamesToAffect are material names whose objects should not be visible unless sthey are in matNamesToEnable.
-        /// </summary>
-        public static void SetEnabledFromMatName(Node parentNode, List<string> matNamesToEnable, List<string> matNamesToAffect)
-        {
-            if (parentNode is MeshInstance3D meshInst)
-            {
-                if (meshInst.Mesh is ArrayMesh ar)
-                {
-                    var mat = ar.SurfaceGetMaterial(0);
-					if(mat.HasMeta("matname"))
-                    {
-                        var matName = mat.GetMeta("matname").ToString();
-                        if (matNamesToEnable.Contains(matName))
-                        {
-                            meshInst.Visible = true;
-                        }
-                        else if (matNamesToAffect.Contains(matName))
-                        {
-                            meshInst.Visible = false;
-                        }
-                    }	
-                }
-            }
-            var nodes = parentNode.GetChildren();
-            foreach (var node in nodes)
-            {
-                SetEnabledFromMatName(node, matNamesToEnable, matNamesToAffect);
-            }
-        }
-
-        public static void SetDyeableColor(Node parentNode, List<string> matNamesToColor, Vector4 color)
-        {
-            if (parentNode is MeshInstance3D meshInst)
-            {
-                if (meshInst.Mesh is ArrayMesh ar)
-                {
+		/// </summary>
+		public static void SetEnabledFromMatName(Node parentNode, List<string> matNamesToEnable, List<string> matNamesToAffect)
+		{
+			if (parentNode is MeshInstance3D meshInst)
+			{
+				if (meshInst.Mesh is ArrayMesh ar)
+				{
 					var mat = ar.SurfaceGetMaterial(0);
-                    if (mat.HasMeta("matname"))
+					if(mat.HasMeta("matname"))
 					{
 						var matName = mat.GetMeta("matname").ToString();
-                        if (matNamesToColor.Contains(matName))
-                        {
-                            meshInst.SetInstanceShaderParameter("dyeColor", color);
-                        }
-                    }
-                        
-                }
-            }
-            var nodes = parentNode.GetChildren();
-            foreach (var node in nodes)
-            {
-                SetDyeableColor(node, matNamesToColor, color);
-            }
-        }
+						if (matNamesToEnable.Contains(matName))
+						{
+							meshInst.Visible = true;
+						}
+						else if (matNamesToAffect.Contains(matName))
+						{
+							meshInst.Visible = false;
+						}
+					}	
+				}
+			}
+			var nodes = parentNode.GetChildren();
+			foreach (var node in nodes)
+			{
+				SetEnabledFromMatName(node, matNamesToEnable, matNamesToAffect);
+			}
+		}
 
-        private static void GetOverrideMaterial(string name, List<Texture2D> gvrTextures, Dictionary<int, Material> overrideMaterials)
+		public static void SetDyeableColor(Node parentNode, List<string> matNamesToColor, Vector4 color)
+		{
+			if (parentNode is MeshInstance3D meshInst)
+			{
+				if (meshInst.Mesh is ArrayMesh ar)
+				{
+					var mat = ar.SurfaceGetMaterial(0);
+					if (mat.HasMeta("matname"))
+					{
+						var matName = mat.GetMeta("matname").ToString();
+						if (matNamesToColor.Contains(matName))
+						{
+							meshInst.SetInstanceShaderParameter("dyeColor", color);
+						}
+					}
+						
+				}
+			}
+			var nodes = parentNode.GetChildren();
+			foreach (var node in nodes)
+			{
+				SetDyeableColor(node, matNamesToColor, color);
+			}
+		}
+
+		private static void GetOverrideMaterial(string name, List<Texture2D> gvrTextures, Dictionary<int, Material> overrideMaterials)
 		{
 			switch (name)
 			{
@@ -441,22 +441,22 @@ namespace OverEasy.Billy
 					ShaderMaterial chickClothing = new();
 					chickClothing.SetMeta("matname", name);
 					chickClothing.Shader = (Shader)GD.Load("res://Shaders/BasicShaderDyeable.gdshader");
-                    chickClothing.SetShaderParameter("albedoTexture", gvrTextures[0]);
-                    overrideMaterials.Add(0, chickClothing);
-                    overrideMaterials.Add(1, chickClothing);
-                    overrideMaterials.Add(2, chickClothing);
-                    overrideMaterials.Add(3, chickClothing);
-                    overrideMaterials.Add(4, chickClothing);
-                    overrideMaterials.Add(5, chickClothing);
-                    break;
+					chickClothing.SetShaderParameter("albedoTexture", gvrTextures[0]);
+					overrideMaterials.Add(0, chickClothing);
+					overrideMaterials.Add(1, chickClothing);
+					overrideMaterials.Add(2, chickClothing);
+					overrideMaterials.Add(3, chickClothing);
+					overrideMaterials.Add(4, chickClothing);
+					overrideMaterials.Add(5, chickClothing);
+					break;
 				case "chickNPC":
-                    ShaderMaterial chickHairTie = new();
-                    chickHairTie.SetMeta("matname", ChickNPCHairTie);
-                    chickHairTie.Shader = (Shader)GD.Load("res://Shaders/BasicShaderDyeable.gdshader");
-                    chickHairTie.SetShaderParameter("albedoTexture", gvrTextures[0]);
-                    overrideMaterials.Add(0, chickHairTie);
-                    break;
-                case "object_37":
+					ShaderMaterial chickHairTie = new();
+					chickHairTie.SetMeta("matname", ChickNPCHairTie);
+					chickHairTie.Shader = (Shader)GD.Load("res://Shaders/BasicShaderDyeable.gdshader");
+					chickHairTie.SetShaderParameter("albedoTexture", gvrTextures[0]);
+					overrideMaterials.Add(0, chickHairTie);
+					break;
+				case "object_37":
 					ShaderMaterial emblem = new();
 					emblem.Shader = (Shader)GD.Load("res://Shaders/brightUnlit.gdshader");
 					emblem.SetShaderParameter("albedoTexture", gvrTextures[0]);
@@ -485,55 +485,55 @@ namespace OverEasy.Billy
 					overrideMaterials.Add(0, ccoin);
 					break;
 				case "object_259_blade":
-                    ShaderMaterial blade = new();
-                    blade.Shader = (Shader)GD.Load("res://Shaders/matcapVariableAlpha.gdshader");
-                    blade.SetShaderParameter("matcap", gvrTextures[1]);
-                    blade.SetShaderParameter("alphaValue", 1f);
-                    blade.SetShaderParameter("albedoMultiplier", 3.0f);
-                    overrideMaterials.Add(0, blade);
-                    break;
-                case "object_512_blade":
-                    ShaderMaterial bossBlade = new();
-                    bossBlade.Shader = (Shader)GD.Load("res://Shaders/matcapVariableAlpha.gdshader");
-                    bossBlade.SetShaderParameter("matcap", gvrTextures[1]);
-                    bossBlade.SetShaderParameter("alphaValue", 1f);
-                    bossBlade.SetShaderParameter("albedoMultiplier", 3.0f);
-                    overrideMaterials.Add(0, bossBlade);
-                    break;
+					ShaderMaterial blade = new();
+					blade.Shader = (Shader)GD.Load("res://Shaders/matcapVariableAlpha.gdshader");
+					blade.SetShaderParameter("matcap", gvrTextures[1]);
+					blade.SetShaderParameter("alphaValue", 1f);
+					blade.SetShaderParameter("albedoMultiplier", 3.0f);
+					overrideMaterials.Add(0, blade);
+					break;
+				case "object_512_blade":
+					ShaderMaterial bossBlade = new();
+					bossBlade.Shader = (Shader)GD.Load("res://Shaders/matcapVariableAlpha.gdshader");
+					bossBlade.SetShaderParameter("matcap", gvrTextures[1]);
+					bossBlade.SetShaderParameter("alphaValue", 1f);
+					bossBlade.SetShaderParameter("albedoMultiplier", 3.0f);
+					overrideMaterials.Add(0, bossBlade);
+					break;
 				case "object_772":
-                    ShaderMaterial meteor = new();
-                    meteor.Shader = (Shader)GD.Load("res://Shaders/BasicShaderValueAsAlpha.gdshader");
-                    meteor.SetShaderParameter("albedo_texture", gvrTextures[0]);
-                    overrideMaterials.Add(1, meteor);
-                    overrideMaterials.Add(5, meteor);
-                    break;
-            }
+					ShaderMaterial meteor = new();
+					meteor.Shader = (Shader)GD.Load("res://Shaders/BasicShaderValueAsAlpha.gdshader");
+					meteor.SetShaderParameter("albedo_texture", gvrTextures[0]);
+					overrideMaterials.Add(1, meteor);
+					overrideMaterials.Add(5, meteor);
+					break;
+			}
 		}
 
 		private static void GetOverlayMaterial(string name, List<Texture2D> gvrTextures, Dictionary<int, Material> overlayMaterials)
 		{
 			switch (name)
-            {
-                case "object_23":
+			{
+				case "object_23":
 					/*
-                    ShaderMaterial bowlingBall = new();
-                    bowlingBall.Shader = (Shader)GD.Load("res://Shaders/matcapRedAlpha.gdshader");
-                    bowlingBall.SetShaderParameter("matcap", gvrTextures[1]);
-                    bowlingBall.SetShaderParameter("maskTex", gvrTextures[0]);
-                    bowlingBall.SetShaderParameter("alphaValue", 1.0f);
-                    bowlingBall.SetShaderParameter("albedoMultiplier", 3.0f);
-                    overlayMaterials.Add(0, bowlingBall);
+					ShaderMaterial bowlingBall = new();
+					bowlingBall.Shader = (Shader)GD.Load("res://Shaders/matcapRedAlpha.gdshader");
+					bowlingBall.SetShaderParameter("matcap", gvrTextures[1]);
+					bowlingBall.SetShaderParameter("maskTex", gvrTextures[0]);
+					bowlingBall.SetShaderParameter("alphaValue", 1.0f);
+					bowlingBall.SetShaderParameter("albedoMultiplier", 3.0f);
+					overlayMaterials.Add(0, bowlingBall);
 					*/
-                    break;
-                case "object_28":
-                    ShaderMaterial eggGold = new();
-                    eggGold.Shader = (Shader)GD.Load("res://Shaders/matcapVariableAlphaMultiply.gdshader");
-                    eggGold.SetShaderParameter("matcap", gvrTextures[2]);
-                    eggGold.SetShaderParameter("alphaValue", 1.0f);
-                    eggGold.SetShaderParameter("albedoMultiplier", 3.0f);
-                    overlayMaterials.Add(0, eggGold);
-                    break;
-                case "object_38_blue":
+					break;
+				case "object_28":
+					ShaderMaterial eggGold = new();
+					eggGold.Shader = (Shader)GD.Load("res://Shaders/matcapVariableAlphaMultiply.gdshader");
+					eggGold.SetShaderParameter("matcap", gvrTextures[2]);
+					eggGold.SetShaderParameter("alphaValue", 1.0f);
+					eggGold.SetShaderParameter("albedoMultiplier", 3.0f);
+					overlayMaterials.Add(0, eggGold);
+					break;
+				case "object_38_blue":
 					gvrTextures[0] = gvrTextures[2]; //Hack to avoid reassigning tex id
 					ShaderMaterial blueCoinShad = new();
 					blueCoinShad.Shader = (Shader)GD.Load("res://Shaders/matcapVariableAlpha.gdshader");
@@ -550,23 +550,23 @@ namespace OverEasy.Billy
 					redCoinShad.SetShaderParameter("albedoMultiplier", 3.0f);
 					overlayMaterials.Add(0, redCoinShad);
 					break;
-                case "object_39":
-                    ShaderMaterial objBombShad = new();
-                    objBombShad.Shader = (Shader)GD.Load("res://Shaders/matcapVariableAlpha.gdshader");
-                    objBombShad.SetShaderParameter("matcap", gvrTextures[1]);
-                    objBombShad.SetShaderParameter("alphaValue", 0.5f);
-                    objBombShad.SetShaderParameter("albedoMultiplier", 3.0f);
-                    overlayMaterials.Add(0, objBombShad);
-                    break;
-                case "object_46":
-                    ShaderMaterial eggSuit = new();
-                    eggSuit.Shader = (Shader)GD.Load("res://Shaders/matcapVariableAlphaMultiply.gdshader");
-                    eggSuit.SetShaderParameter("matcap", gvrTextures[2]);
-                    eggSuit.SetShaderParameter("alphaValue", 1.0f);
-                    eggSuit.SetShaderParameter("albedoMultiplier", 1.0f);
-                    overlayMaterials.Add(0, eggSuit);
-                    break;
-                case "object_47":
+				case "object_39":
+					ShaderMaterial objBombShad = new();
+					objBombShad.Shader = (Shader)GD.Load("res://Shaders/matcapVariableAlpha.gdshader");
+					objBombShad.SetShaderParameter("matcap", gvrTextures[1]);
+					objBombShad.SetShaderParameter("alphaValue", 0.5f);
+					objBombShad.SetShaderParameter("albedoMultiplier", 3.0f);
+					overlayMaterials.Add(0, objBombShad);
+					break;
+				case "object_46":
+					ShaderMaterial eggSuit = new();
+					eggSuit.Shader = (Shader)GD.Load("res://Shaders/matcapVariableAlphaMultiply.gdshader");
+					eggSuit.SetShaderParameter("matcap", gvrTextures[2]);
+					eggSuit.SetShaderParameter("alphaValue", 1.0f);
+					eggSuit.SetShaderParameter("albedoMultiplier", 1.0f);
+					overlayMaterials.Add(0, eggSuit);
+					break;
+				case "object_47":
 					ShaderMaterial ccoin = new();
 					ccoin.Shader = (Shader)GD.Load("res://Shaders/matcapVariableAlpha.gdshader");
 					ccoin.SetShaderParameter("matcap", gvrTextures[1]);
@@ -685,7 +685,7 @@ namespace OverEasy.Billy
 						forcedOpacity = forcedOpacityList[meshCounter];
 					}
 
-                    if (skipMeshes.Contains(meshCounter++))
+					if (skipMeshes.Contains(meshCounter++))
 					{
 						continue;
 					}
