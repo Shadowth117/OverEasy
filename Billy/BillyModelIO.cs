@@ -1049,8 +1049,6 @@ namespace OverEasy.Billy
                     ModelConversion.CreateObjectCollision(sand);
                     OverEasyGlobals.modelDictionary["object_1802"] = sand;
 
-                    //CacheModel("object_1802", stageGeo.models["model_8"], stageGeo.texLists["texList_8"], stageGeo.gvm, false, true);
-
                     //Rainbow Gate + Light Gates
                     var rainbowGateTexSet = ModelConversion.GetTextureSubset(gvmTextures, stageGeo.texLists["texList_10"], gvrAlphaTypes, out var rainbowGvrTypes);
                     var greenGateTexSet = ModelConversion.GetTextureSubset(gvmTextures, stageGeo.texLists["texList_11"], gvrAlphaTypes, out var greenGvrTypes);
