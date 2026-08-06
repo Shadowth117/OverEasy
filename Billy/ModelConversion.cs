@@ -507,6 +507,15 @@ namespace OverEasy.Billy
 					overrideMaterials.Add(1, meteor);
 					overrideMaterials.Add(5, meteor);
 					break;
+				case "object_hardcodedSand":
+					var gdMaterial = new StandardMaterial3D();
+					var smat = (StandardMaterial3D)gdMaterial;
+					smat.ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded;
+					smat.CullMode = BaseMaterial3D.CullModeEnum.Disabled;
+					smat.DiffuseMode = BaseMaterial3D.DiffuseModeEnum.Lambert;
+					smat.AlbedoTexture = gvrTextures[0];
+					overrideMaterials.Add(0, gdMaterial);
+					break;
 			}
 		}
 

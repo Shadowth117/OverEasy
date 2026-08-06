@@ -837,7 +837,7 @@ namespace OverEasy
 				if (currentPRD.fileNames[i] == def.lndFilename)
 				{
 					var lnd = Billy.ModelConversion.LNDToGDModel(def.lndFilename, new LND(currentPRD.files[i]));
-					lnd.Visible = displayBtn.GetPopup().IsItemChecked(0);
+					lnd.Visible = displayBtn.displayLndTerrain;
 					terrainModels.Add(lnd);
 					modelRoot.AddChild(lnd);
 				}
@@ -877,7 +877,7 @@ namespace OverEasy
 				if (currentPRD.fileNames[i] == def.mc2Filename)
 				{
 					var mc2 = Billy.ModelConversion.MC2ToGDModel(def.mc2Filename, new MC2(currentPRD.files[i]));
-					mc2.Visible = displayBtn.GetPopup().IsItemChecked(1);
+					mc2.Visible = displayBtn.displayMc2Terrain;
 					terrainCollision.Add(mc2);
 					modelRoot.AddChild(mc2);
 				}
@@ -942,7 +942,12 @@ namespace OverEasy
 						ModelConversion.CreateObjectCollision(fenceBlade);
 						OverEasyGlobals.modelDictionary["object_512"] = fenceBlade;
 						break;
-					case "ar_obj_red_magma":
+					case "obj_green_boss":
+                        BillyModelIO.CacheModel("object_4352", pair.Value.models[1], pair.Value.texList[0], enemyGVMDict[pair.Key], false, true);
+                        BillyModelIO.CacheModel("object_4353", pair.Value.models[0], pair.Value.texList[0], enemyGVMDict[pair.Key], false, true);
+                        BillyModelIO.CacheModel("object_4354", pair.Value.models[2], pair.Value.texList[0], enemyGVMDict[pair.Key], false, true);
+                        break;
+					case "obj_red_magma":
 						BillyModelIO.CacheModel("object_768_0", pair.Value.models[0], pair.Value.texList[0], enemyGVMDict[pair.Key], false);
 						BillyModelIO.CacheModel("object_768_1", pair.Value.models[1], pair.Value.texList[0], enemyGVMDict[pair.Key], false);
 						BillyModelIO.CacheModel("object_768_2", pair.Value.models[2], pair.Value.texList[0], enemyGVMDict[pair.Key], false);
@@ -951,7 +956,14 @@ namespace OverEasy
 						BillyModelIO.CacheModel("object_768_5", pair.Value.models[5], pair.Value.texList[0], enemyGVMDict[pair.Key], false);
 						BillyModelIO.CacheModel("object_768_6", pair.Value.models[6], pair.Value.texList[0], enemyGVMDict[pair.Key], false);
 						break;
-					case "ar_obj_orange_boss":
+					case "obj_yellow_sand":
+                        BillyModelIO.CacheModel("object_hardcodedSand", pair.Value.models[0], pair.Value.texList[0], enemyGVMDict[pair.Key], false, true);
+                        var sandClone = ModelConversion.GDModelClone(OverEasyGlobals.modelDictionary["object_hardcodedSand"]);
+                        sandClone.Visible = displayBtn.displayLndTerrain;
+                        terrainModels.Add(sandClone);
+                        modelRoot.AddChild(sandClone);
+                        break;
+					case "obj_orange_boss":
                         BillyModelIO.CacheModel("object_1536", pair.Value.models[0], pair.Value.texList[0], enemyGVMDict[pair.Key], false);
                         break;
                     case "ene_am02":
@@ -975,7 +987,10 @@ namespace OverEasy
 							modelDictionary[modelRef] = modelNode;
 						}
 						break;
-					default:
+                    case "ene_red_boss":
+                        BillyModelIO.CacheModel($"enemy_{ObjectVariants.enemyFileMap[$"ar_{pair.Key}.arc"]}", model, pair.Value.texList[0], enemyGVMDict[pair.Key + "_dino"], false);
+                        break;
+                    default:
 						BillyModelIO.CacheModel($"enemy_{ObjectVariants.enemyFileMap[$"ar_{pair.Key}.arc"]}", model, pair.Value.texList[0], enemyGVMDict[pair.Key], false);
 						break;
 				}
